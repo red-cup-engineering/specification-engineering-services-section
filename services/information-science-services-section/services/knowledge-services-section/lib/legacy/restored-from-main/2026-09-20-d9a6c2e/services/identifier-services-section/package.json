@@ -1,8 +1,0 @@
-{
-  "name": "@561-group/identifier-services-section",
-  "version": "0.1.0",
-  "type": "module",
-  "description": "Knowledge-services node accountable for identifier resolution.",
-  "scripts": {
-  }
-}

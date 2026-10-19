@@ -1,8 +1,0 @@
-{
-  "name": "@561-group/glossary-services-section",
-  "version": "0.1.0",
-  "type": "module",
-  "description": "Communicating-services section accountable for glossary services.",
-  "scripts": {
-  }
-}
