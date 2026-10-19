@@ -4,8 +4,7 @@
   "description": "Fabricates Specification records from journaled rulings and semantic-record-journal rows into topic-sectioned, BCP14-clause Markdown carriers, never handwritten.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/red-cup-engineering/computer-content-engineering-services-section.git",
-    "directory": "services/computer-documents-engineering-services-section/services/computer-article-engineering-services-section/services/specification-engineering-services-section"
+    "url": "git+https://github.com/red-cup-engineering/specification-engineering-services-section.git"
   },
   "type": "module",
   "scripts": {
