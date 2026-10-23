@@ -1,0 +1,405 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "red-cup-engineering/architecture-description-candidate",
+  "title": "Source-qualified architecture description projection (NOT a 42010:2022 conformance certificate)",
+  "$comment": "Data record for a deterministic candidate 42010-profile document. Applicability, formal proof, authoritative adoption and standard conformance require separate independent source-owned receiving.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "type",
+    "version",
+    "identity",
+    "standard",
+    "system",
+    "upstream",
+    "sources",
+    "stakeholders",
+    "concerns",
+    "viewpoints",
+    "views",
+    "models",
+    "correspondences",
+    "decisions",
+    "openQuestions"
+  ],
+  "properties": {
+    "type": {
+      "const": "ArchitectureDescriptionCandidate"
+    },
+    "version": {
+      "const": 1
+    },
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "title",
+        "revision",
+        "owner",
+        "status"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "title": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "revision": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "owner": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "status": {
+          "enum": [
+            "draft",
+            "candidate"
+          ]
+        }
+      }
+    },
+    "standard": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "designation",
+        "edition",
+        "applicability",
+        "conformance"
+      ],
+      "properties": {
+        "designation": {
+          "const": "ISO/IEC/IEEE 42010"
+        },
+        "edition": {
+          "const": "2022"
+        },
+        "applicability": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "conformance": {
+          "const": "unassessed"
+        }
+      }
+    },
+    "system": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "description",
+        "sourceIds"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "description": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "sourceIds": {
+          "$ref": "#/$defs/refs"
+        }
+      }
+    },
+    "upstream": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requirementsSourceId",
+        "specificationSourceId"
+      ],
+      "properties": {
+        "requirementsSourceId": {
+          "$ref": "#/$defs/id"
+        },
+        "specificationSourceId": {
+          "$ref": "#/$defs/id"
+        }
+      }
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "locator",
+          "revision"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/id"
+          },
+          "locator": {
+            "$ref": "#/$defs/nonempty"
+          },
+          "revision": {
+            "$ref": "#/$defs/nonempty"
+          }
+        }
+      }
+    },
+    "stakeholders": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "name",
+          "concernIds"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/id"
+          },
+          "name": {
+            "$ref": "#/$defs/nonempty"
+          },
+          "concernIds": {
+            "$ref": "#/$defs/refs"
+          }
+        }
+      }
+    },
+    "concerns": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "statement",
+          "sourceIds"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/id"
+          },
+          "statement": {
+            "$ref": "#/$defs/nonempty"
+          },
+          "sourceIds": {
+            "$ref": "#/$defs/refs"
+          }
+        }
+      }
+    },
+    "viewpoints": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "name",
+          "concernIds",
+          "modelKinds",
+          "method"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/id"
+          },
+          "name": {
+            "$ref": "#/$defs/nonempty"
+          },
+          "concernIds": {
+            "$ref": "#/$defs/refs"
+          },
+          "modelKinds": {
+            "$ref": "#/$defs/strings"
+          },
+          "method": {
+            "$ref": "#/$defs/nonempty"
+          }
+        }
+      }
+    },
+    "views": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "name",
+          "viewpointId",
+          "modelIds",
+          "sourceIds"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/id"
+          },
+          "name": {
+            "$ref": "#/$defs/nonempty"
+          },
+          "viewpointId": {
+            "$ref": "#/$defs/id"
+          },
+          "modelIds": {
+            "$ref": "#/$defs/refs"
+          },
+          "sourceIds": {
+            "$ref": "#/$defs/refs"
+          }
+        }
+      }
+    },
+    "models": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "kind",
+          "content",
+          "sourceIds"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/id"
+          },
+          "kind": {
+            "$ref": "#/$defs/nonempty"
+          },
+          "content": {
+            "$ref": "#/$defs/nonempty"
+          },
+          "sourceIds": {
+            "$ref": "#/$defs/refs"
+          }
+        }
+      }
+    },
+    "correspondences": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "fromViewId",
+          "toViewId",
+          "rule",
+          "sourceIds"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/id"
+          },
+          "fromViewId": {
+            "$ref": "#/$defs/id"
+          },
+          "toViewId": {
+            "$ref": "#/$defs/id"
+          },
+          "rule": {
+            "$ref": "#/$defs/nonempty"
+          },
+          "sourceIds": {
+            "$ref": "#/$defs/refs"
+          }
+        }
+      }
+    },
+    "decisions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "statement",
+          "rationale",
+          "alternatives",
+          "concernIds",
+          "sourceIds"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/id"
+          },
+          "statement": {
+            "$ref": "#/$defs/nonempty"
+          },
+          "rationale": {
+            "$ref": "#/$defs/nonempty"
+          },
+          "alternatives": {
+            "$ref": "#/$defs/strings"
+          },
+          "concernIds": {
+            "$ref": "#/$defs/refs"
+          },
+          "sourceIds": {
+            "$ref": "#/$defs/refs"
+          }
+        }
+      }
+    },
+    "openQuestions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "question",
+          "blockedBy"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/id"
+          },
+          "question": {
+            "$ref": "#/$defs/nonempty"
+          },
+          "blockedBy": {
+            "$ref": "#/$defs/nonempty"
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$"
+    },
+    "nonempty": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S"
+    },
+    "refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/id"
+      }
+    },
+    "strings": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/nonempty"
+      }
+    }
+  }
+}
