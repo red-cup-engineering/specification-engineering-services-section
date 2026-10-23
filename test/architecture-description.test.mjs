@@ -25,7 +25,7 @@ function candidate() {
       { id: "boundary", name: "Authorization boundaries", concernIds: ["rights", "failure"], modelKinds: ["interface"], method: "Authored interface-contract projection" },
     ],
     views: [{ id: "boundary-view", name: "Bounded supplier view", viewpointId: "boundary", modelIds: ["auth-model"], sourceIds: ["spec"] }],
-    models: [{ id: "auth-model", kind: "interface", content: "Unauthorized request => refusal receipt", sourceIds: ["spec"] }],
+    models: [{ id: "auth-model", kind: "interface", content: "Unauthorized request => refusal receipt", concernIds: ["rights", "failure"], sourceIds: ["spec"] }],
     correspondences: [],
     decisions: [{
       id: "decision-1", statement: "Server verifies authorization", rationale: "Client-only checks can be bypassed",
@@ -74,6 +74,56 @@ test("missing viewpoint, source, governing model or stakeholder concern refuses,
     assert.equal(readout.valid, false, JSON.stringify(value));
     assert.throws(() => renderArchitectureDescriptionMarkdown(value), /architecture-description/u);
   }
+});
+
+test("architecture views require model-addressed original concerns, not just any diagram", () => {
+  const valid = candidate();
+  const md = renderArchitectureDescriptionMarkdown(valid);
+  assert.match(md, /Addressed concern IDs \(source-authored coverage only\): failure, rights/u);
+  for (const modify of [
+    (x) => { x.models[0].concernIds = ["rights"]; },
+    (x) => { x.models[0].concernIds = ["failure"]; },
+    (x) => { x.models[0].concernIds = ["missing"]; },
+    (x) => { x.models[0].concernIds = []; },
+    (x) => { delete x.models[0].concernIds; },
+  ]) {
+    const instance = candidate();
+    modify(instance);
+    const reading = validateArchitectureDescriptionRecord(instance);
+    assert.equal(reading.valid, false, JSON.stringify(instance));
+    assert.throws(() => renderArchitectureDescriptionMarkdown(instance), /architecture-description/u);
+  }
+});
+
+test("shared source model may not claim a concern outside a view's declared viewpoint", () => {
+  const x = candidate();
+  x.viewpoints.push({ id: "second", name: "Rights only", concernIds: ["rights"],
+    modelKinds: ["interface"], method: "Exact authored source model" });
+  x.views.push({id:"second-view", name:"Second boundary", viewpointId:"second",
+    modelIds:["auth-model"],sourceIds:["req"]});
+  const invalid=validateArchitectureDescriptionRecord(x);
+  assert.equal(invalid.valid,false);
+  assert.ok(invalid.issues.some(issue => /outside viewpoint second/u.test(issue.message)));
+  assert.throws(()=>renderArchitectureDescriptionMarkdown(x),/architecture-description/u);
+});
+
+test("separate source models can explicitly cover every concern of one original viewpoint", () => {
+  const x=candidate();
+  x.models[0].concernIds=["rights"];
+  x.models.push({id:"refusal-model",kind:"interface",
+    content:"Server persists one denied-work reply from original claim and source witness",
+    concernIds:["failure"],sourceIds:["spec"]});
+  x.views[0].modelIds.push("refusal-model");
+  const reading=validateArchitectureDescriptionRecord(x);
+  assert.equal(reading.valid,true,JSON.stringify(reading.issues));
+  const result=renderArchitectureDescriptionMarkdown(x);
+  assert.match(result,/Addressed concern IDs \(source-authored coverage only\): rights/u);
+  assert.match(result,/Addressed concern IDs \(source-authored coverage only\): failure/u);
+  assert.match(result,/conformance unassessed/u,"coverage cannot self-certify formal semantics");
+  const permuted=structuredClone(x);
+  permuted.models.reverse();
+  permuted.views[0].modelIds.reverse();
+  assert.equal(renderArchitectureDescriptionMarkdown(x),renderArchitectureDescriptionMarkdown(permuted));
 });
 
 test("duplicate IDs and absent original specification cut refuse deterministically", () => {
