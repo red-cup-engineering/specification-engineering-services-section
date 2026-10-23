@@ -49,3 +49,22 @@ test("deriveSpecificationRecord accepts an explicit identity field, overriding t
   const record = deriveSpecificationRecord(draft({ identity: { ...draft().identity, version: "2.0.0" } }), { now: "2026-09-06T00:00:00Z" });
   assert.equal(record.identity.version, "2.0.0");
 });
+
+test("derivation refuses implicit wall-clock timestamps for unpinned input", () => {
+  assert.throws(() => deriveSpecificationRecord(draft()), /pinned ISO UTC timestamp required/u);
+});
+
+test("a pinned identity date makes identical draft inputs byte-stable without --now", () => {
+  const current = draft({ identity: { ...draft().identity, "date-created": "2026-10-23" } });
+  const first = deriveSpecificationRecord(current);
+  const second = deriveSpecificationRecord(structuredClone(current));
+  assert.equal(JSON.stringify(first), JSON.stringify(second));
+  assert.equal(first.provenance.derivedAt, "2026-10-23T00:00:00.000Z");
+});
+
+test("an original timestamp is preferred to any unspecified ambient clock", () => {
+  const current = draft({ provenance: { derivedFrom: ["a ruling"], derivedAt: "2026-10-22T15:00:00Z" } });
+  const first = deriveSpecificationRecord(current);
+  assert.equal(first.identity["date-created"], "2026-10-22");
+  assert.equal(first.provenance.derivedAt, current.provenance.derivedAt);
+});
