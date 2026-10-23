@@ -266,6 +266,7 @@
           "id",
           "kind",
           "content",
+          "concernIds",
           "sourceIds"
         ],
         "properties": {
@@ -279,6 +280,9 @@
             "$ref": "#/$defs/nonempty"
           },
           "sourceIds": {
+            "$ref": "#/$defs/refs"
+          },
+          "concernIds": {
             "$ref": "#/$defs/refs"
           }
         }
