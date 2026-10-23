@@ -17,7 +17,7 @@ export function loadArchitectureDescriptionSchema() {
 const byId = (items) => new Map(items.map((item) => [item.id, item]));
 const ordered = (items) => [...items].sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
 const refs = (ids) => [...ids].sort().join(", ");
-const text = (value) => value.replace(/\r?\n/gu, " ").replace(/\\/gu, "\\\\").replace(/([|*_{}\[\]()#+!<>])/gu, "\\$1");
+const text = (value) => value.replace(/\r?\n/gu, " ").replace(/\\/gu, "\\\\").replace(/([|*_{}\[\]()#+!<>])/gu, "\\$1").replaceAll(String.fromCharCode(96), String.fromCharCode(92, 96));
 const row = (cells) => "| " + cells.map(text).join(" | ") + " |";
 const table = (headers, rows) => [row(headers), row(headers.map(() => "---")), ...rows.map(row)].join("\n");
 const heading = (level, value) => "#".repeat(level) + " " + text(value);
