@@ -71,15 +71,33 @@ function semanticIssues(record) {
     has("viewpoints", view.viewpointId, "views." + view.id + ".viewpointId");
     sourceRefs(view, "views." + view.id);
     const viewpoint = maps.viewpoints.get(view.viewpointId);
+    // An architecture view cannot discharge a viewpoint merely by referencing
+    // ANY model. Every declared concern must have an explicitly attributed
+    // model, and a model cannot claim a concern outside its governing viewpoint.
+    // This is graph coverage, NOT semantic evidence of correct behavior or Proof.
+    const addressed = new Set();
     for (const id of view.modelIds) {
       has("models", id, "views." + view.id + ".modelIds");
       const model = maps.models.get(id);
       if (model && viewpoint && !viewpoint.modelKinds.includes(model.kind))
         issue("views." + view.id, "model kind " + model.kind + " is not declared by viewpoint " + viewpoint.id);
+      if (!model) continue;
+      for (const concernId of model.concernIds) {
+        has("concerns", concernId, "models." + model.id + ".concernIds");
+        if (viewpoint && !viewpoint.concernIds.includes(concernId))
+          issue("views." + view.id, "model " + model.id + " claims concern " + concernId
+            + " outside viewpoint " + viewpoint.id);
+        addressed.add(concernId);
+      }
+    }
+    for (const concernId of viewpoint?.concernIds ?? []) {
+      if (!addressed.has(concernId))
+        issue("views." + view.id, "no model explicitly addresses viewpoint concern " + concernId);
     }
   }
   for (const model of record.models) {
     sourceRefs(model, "models." + model.id);
+    model.concernIds.forEach((id) => has("concerns", id, "models." + model.id + ".concernIds"));
     if (!record.views.some((item) => item.modelIds.includes(model.id)))
       issue("models." + model.id, "model has no governing view");
   }
@@ -141,7 +159,7 @@ export function renderArchitectureDescriptionMarkdown(record) {
     for (const modelId of [...view.modelIds].sort()) {
       const model = record.models.find((item) => item.id === modelId);
       sections.push(heading(4, model.kind + " model [" + model.id + "]"));
-      sections.push("Source IDs: " + refs(model.sourceIds) + ".");
+      sections.push("Source IDs: " + refs(model.sourceIds) + ". Addressed concern IDs (source-authored coverage only): " + refs(model.concernIds) + ".");
       sections.push(quote(model.content));
     }
   }
