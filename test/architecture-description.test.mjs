@@ -109,3 +109,31 @@ test("published package must include both source schemas required by its runtime
   assert.ok(pkg.files.includes("data/records/schema"), "packed package must ship the schema directory");
   assert.equal(pkg.exports["./architecture-description"], "./src/architecture-description.mjs");
 });
+
+test("a source cannot impersonate both accepted requirements and specification", () => {
+  const conflated = candidate();
+  conflated.upstream.specificationSourceId = conflated.upstream.requirementsSourceId;
+  const reading = validateArchitectureDescriptionRecord(conflated);
+  assert.equal(reading.valid, false);
+  assert.ok(reading.issues.some((issue) => issue.path === "upstream"));
+  assert.throws(() => renderArchitectureDescriptionMarkdown(conflated), /architecture-description/u);
+});
+
+test("a system view must retain its original upstream sources, not only a tertiary decision", () => {
+  const detached = candidate();
+  detached.system.sourceIds = ["decision-source"];
+  const reading = validateArchitectureDescriptionRecord(detached);
+  assert.equal(reading.valid, false);
+  assert.ok(reading.issues.some((issue) => issue.path === "system.sourceIds"));
+});
+
+test("untrusted model text remains literal, including Markdown links and remote-image syntax", () => {
+  const value = candidate();
+  value.models[0].content = "![remote](https://example.test/tracker)\n[role](https://example.test/redirect)\n## forged claim\n<script>alert(1)</script>";
+  const md = renderArchitectureDescriptionMarkdown(value);
+  assert.ok(md.includes(String.raw`> \!\[remote\]\(https://example.test/tracker\)`));
+  assert.ok(md.includes(String.raw`> \[role\]\(https://example.test/redirect\)`));
+  assert.doesNotMatch(md, /^> !\[/gmu);
+  assert.doesNotMatch(md, /^> \[role\]/gmu);
+  assert.match(md, /&lt;script&gt;/u);
+});
