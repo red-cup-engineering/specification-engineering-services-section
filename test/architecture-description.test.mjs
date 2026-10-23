@@ -42,7 +42,7 @@ test("source-qualified candidate validates and has an explicit unassessed 42010:
   for (const section of ["Stakeholders and concerns", "Viewpoints", "Architecture views and source models", "Cross-view correspondences", "Architecture decisions", "Source revisions"])
     assert.ok(md.includes(section), section);
   assert.match(md, /conformance unassessed/u);
-  assert.match(md, /source revisions \(author assertions/u);
+  assert.match(md, /Source revisions \(author assertions/u);
   assert.match(md, /sha-1/u);
   assert.match(md, /sha-2/u);
   assert.doesNotMatch(md, /conformance certified/u);
