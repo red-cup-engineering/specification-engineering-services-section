@@ -21,7 +21,9 @@ const text = (value) => value.replace(/\r?\n/gu, " ").replace(/\\/gu, "\\\\").re
 const row = (cells) => "| " + cells.map(text).join(" | ") + " |";
 const table = (headers, rows) => [row(headers), row(headers.map(() => "---")), ...rows.map(row)].join("\n");
 const heading = (level, value) => "#".repeat(level) + " " + text(value);
-const quote = (value) => value.replace(/\r\n?/gu, "\n").split("\n").map((line) => "> " + line.replace(/</gu, "&lt;").replace(/>/gu, "&gt;")).join("\n");
+const quote = (value) => value.replace(/\r\n?/gu, "\n").split("\n").map((line) =>
+  "> " + line.replace(/\\/gu, "\\\\").replace(/([`*_{}\[\]()#!])/gu, "\\$1")
+    .replace(/</gu, "&lt;").replace(/>/gu, "&gt;")).join("\n");
 
 function semanticIssues(record) {
   const issues = [];
@@ -32,6 +34,14 @@ function semanticIssues(record) {
   const issue = (path, message) => issues.push({
     kind: "architecture-description", path, keyword: "reference", message,
   });
+  // A shared source or an ungrounded system cannot silently discharge both
+  // distinct upstream engineering stages merely by claiming two field names.
+  if (record.upstream.requirementsSourceId === record.upstream.specificationSourceId)
+    issue("upstream", "requirements and specification must name distinct source identities");
+  for (const [role, sourceId] of Object.entries(record.upstream)) {
+    if (!record.system.sourceIds.includes(sourceId))
+      issue("system.sourceIds", "system of interest lacks the original " + role + " source " + sourceId);
+  }
   for (const kind of Object.keys(maps)) {
     if (maps[kind].size !== record[kind].length) issue(kind, "duplicate source-qualified identifier in " + kind);
   }
