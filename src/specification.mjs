@@ -242,22 +242,32 @@ function dedupLawsOrStandards(kind, topics) {
  * function collects them into the record's deduplicated top-level `laws`/`standards` arrays
  * (refusing when two topics define the same law/standard id with different content), fills
  * `identity.version`/`stability`/`status`/`date-created` and `provenance.derivedAt`/`derivedBy`
- * with defaults when the draft omits them, and strips each topic's now-redundant local
+ * with source-pinned defaults when the draft omits them, and strips each topic's now-redundant local
  * `laws`/`standards`. This is the "journals to interpreters" assembly step: the draft's prose,
  * clause content, and citations are still authored by whoever interprets the source journal
  * entries — this function only makes the assembly into one schema-valid record deterministic.
  * @param {object} draft An authoring draft: `identity` (partial), `whatThisIs`, `topics`
  *   (each with an optional local `laws`/`standards` array of full law-or-standard objects),
  *   `implementations`, `openQuestions`, and `provenance` (at least `derivedFrom`).
- * @param {{now?: string}} [options] `now` overrides the derived timestamp/date for determinism.
+ * @param {{now?: string}} [options] `now` overrides the pinned source timestamp; no ambient clock fallback is permitted.
  * @returns {object} A record shaped to validate against the house Specification schema.
  * @throws {TypeError} When two topics define the same law or standard id with different content.
  */
 export function deriveSpecificationRecord(draft, options = {}) {
-  const now = options.now ?? new Date().toISOString();
-  const today = now.slice(0, 10);
+  // Reject conflicting original claims before any provenance/default handling.
   const laws = dedupLawsOrStandards("laws", draft.topics);
   const standards = dedupLawsOrStandards("standards", draft.topics);
+  // Never use wall-clock time while compiling an immutable source record. Reuse
+  // a pinned original timestamp/date, or require the caller to provide one.
+  const originalDay = draft.identity?.["date-created"];
+  const now = options.now ?? draft.provenance?.derivedAt ??
+    (typeof originalDay === "string" ? originalDay + "T00:00:00.000Z" : undefined);
+  if (typeof now !== "string" ||
+      !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/u.test(now) ||
+      Number.isNaN(Date.parse(now))) {
+    throw new TypeError("deriveSpecificationRecord: pinned ISO UTC timestamp required via --now, provenance.derivedAt, or identity.date-created");
+  }
+  const today = originalDay ?? now.slice(0, 10);
   const topics = draft.topics.map(({ laws: _laws, standards: _standards, ...topic }) => topic);
   return {
     identity: {

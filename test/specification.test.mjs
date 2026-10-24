@@ -1,9 +1,21 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { relativeLinkPath } from "@red-cup-engineering/markdown-engineering-services-section/relocate-markdown-tree";
 import { classifyCitationTarget, countNormativeKeywords, renderSpecificationMarkdown, repoRootFromDestination, resolveCitationText, validateSpecificationRecord, verifyCitationTargetsExist } from "../src/specification.mjs";
 
-const REPO_ROOT = "/home/emsenn/info";
+// These assertions exercise the original file-bound reader, not a fake stat port
+// or the developer's historical /home/emsenn/info tree. Every fixture cleans up.
+function citationRepoFixture(t) {
+  const repoRoot = mkdtempSync(join(tmpdir(), "specification-citation-tree-"));
+  mkdirSync(join(repoRoot, ".claude/rules"), { recursive: true });
+  writeFileSync(join(repoRoot, "CLAUDE.md"), "# Source-bound fixture\n");
+  writeFileSync(join(repoRoot, ".claude/rules/org-layering.md"), "# Authored rule fixture\n");
+  t.after(() => rmSync(repoRoot, { recursive: true, force: true }));
+  return repoRoot;
+}
 
 function baseRecord(overrides = {}) {
   return {
@@ -146,25 +158,29 @@ test("repoRootFromDestination refuses when destinationPath does not end with ide
   assert.throws(() => repoRootFromDestination("/home/emsenn/info/other.md", "lib/emsenn/services/561-group/README.md"), /does not end with identity\.carrier/u);
 });
 
-test("verifyCitationTargetsExist reports no missing targets when every repo-relative citation resolves", async () => {
+test("verifyCitationTargetsExist reports no missing targets when every repo-relative citation resolves", async (t) => {
+  const repoRoot = citationRepoFixture(t);
   const record = baseRecord();
   record.laws[0].locator = "CLAUDE.md";
-  const result = await verifyCitationTargetsExist(record, { repoRoot: REPO_ROOT });
+  const result = await verifyCitationTargetsExist(record, { repoRoot });
   assert.deepEqual(result, { valid: true, missing: [] });
+  assert.equal(existsSync(join(repoRoot, "CLAUDE.md")), true);
 });
 
-test("verifyCitationTargetsExist reports a repo-relative citation target that does not exist", async () => {
+test("verifyCitationTargetsExist reports a repo-relative citation target that does not exist", async (t) => {
+  const repoRoot = citationRepoFixture(t);
   const record = baseRecord();
   record.laws[0].locator = "lib/emsenn/services/561-group/this-file-does-not-exist-anywhere.md";
-  const result = await verifyCitationTargetsExist(record, { repoRoot: REPO_ROOT });
+  const result = await verifyCitationTargetsExist(record, { repoRoot });
   assert.equal(result.valid, false);
   assert.equal(result.missing.length, 1);
   assert.equal(result.missing[0].target, "lib/emsenn/services/561-group/this-file-does-not-exist-anywhere.md");
 });
 
-test("verifyCitationTargetsExist checks a repo-relative citation inside a clause's backedBy", async () => {
+test("verifyCitationTargetsExist checks a repo-relative citation inside a clause's backedBy", async (t) => {
+  const repoRoot = citationRepoFixture(t);
   const record = baseRecord();
   record.topics[0].clauses[0].backedBy = ["[org-layering.md](.claude/rules/org-layering.md)"];
-  const result = await verifyCitationTargetsExist(record, { repoRoot: REPO_ROOT });
+  const result = await verifyCitationTargetsExist(record, { repoRoot });
   assert.deepEqual(result, { valid: true, missing: [] });
 });
