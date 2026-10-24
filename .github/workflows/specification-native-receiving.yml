@@ -1,0 +1,58 @@
+name: Specification Engineering native source and package receiving
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/specification-native-receiving.yml"
+      - ".npmrc"
+      - "package.json"
+      - "src/**"
+      - "scripts/**"
+      - "test/**"
+      - "data/records/schema/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: specification-source-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  original-source-and-package:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - name: Check out exact proposed source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Use Node 24
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: "24"
+      - name: Resolve declared dependencies from original registry
+        run: npm install --ignore-scripts --no-audit --no-fund --no-package-lock --registry=https://registry.561.group/
+      - name: Run every original native Node test
+        run: npm test
+      - name: Qualify packed source and both runtime schemas
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm pack --ignore-scripts --json --pack-destination "$RUNNER_TEMP" > "$RUNNER_TEMP/specification-pack.json"
+          tarball="$(node -e 'const p=require(process.argv[1]); if(p.length!==1 || typeof p[0]?.filename!=="string")process.exit(2); process.stdout.write(p[0].filename)' "$RUNNER_TEMP/specification-pack.json")"
+          tar -tzf "$RUNNER_TEMP/$tarball" > "$RUNNER_TEMP/specification-members.txt"
+          grep -Fx 'package/data/records/schema/specification.schema.json' "$RUNNER_TEMP/specification-members.txt"
+          grep -Fx 'package/data/records/schema/architecture-description.schema.json' "$RUNNER_TEMP/specification-members.txt"
+          test "$(grep -Fc 'package/data/records/schema/' "$RUNNER_TEMP/specification-members.txt")" -ge 2
+          mkdir -p "$RUNNER_TEMP/consumer"
+          cd "$RUNNER_TEMP/consumer"
+          npm init -y >/dev/null
+          npm install --ignore-scripts --no-audit --no-fund --no-package-lock --registry=https://registry.561.group/ "$RUNNER_TEMP/$tarball"
+          node --input-type=module -e '
+            import {loadArchitectureDescriptionSchema} from "@red-cup-engineering/specification-engineering-services-section/architecture-description";
+            const schema=loadArchitectureDescriptionSchema();
+            if(schema?.$schema!=="https://json-schema.org/draft/2020-12/schema"
+               || schema?.title?.includes("NOT a 42010:2022 conformance certificate")!==true) process.exit(2);
+          '
