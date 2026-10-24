@@ -240,3 +240,46 @@ test("source identities for laws and standards are global within each kind, not 
   assert.equal(validateSpecificationRecord(original).valid, true,
     "a law and a standard have distinct declaration namespaces");
 });
+
+if (process.env.SPEC_NORMATIVE_BASELINE_MODULE) {
+  test("original source-to-Specification compiler silently substituted a claim; current maker refuses both orders", async () => {
+    const { pathToFileURL } = await import("node:url");
+    const old = await import(pathToFileURL(process.env.SPEC_NORMATIVE_BASELINE_MODULE).href);
+    const incumbent = baseRecord();
+    const foreign = {
+      heading: "User-community testimony, not adopted law",
+      body: "Reported condition: {{clause:example-clause}}",
+      clauses: [{ id: "example-clause", keyword: "MUST NOT",
+        actor: "Unadmitted vendor", statement: "preserve the buyer's actual work",
+        backedBy: ["unassessed community testimony"] }],
+    };
+    assert.equal(old.validateSpecificationRecord(incumbent).valid, true);
+    assert.equal(validateSpecificationRecord(incumbent).valid, true);
+    assert.equal(old.renderSpecificationMarkdown(incumbent),
+      renderSpecificationMarkdown(incumbent),
+      "unchanged single-owner work must fabricate byte-identical carriers");
+
+    const outputs = [];
+    for (const topics of [
+      [...incumbent.topics, foreign],
+      [foreign, ...incumbent.topics],
+    ]) {
+      const sample = { ...incumbent, topics };
+      const oldAdmission = old.validateSpecificationRecord(sample);
+      assert.equal(oldAdmission.valid, true,
+        "observed original source bug: JSON Schema alone did not see two local claims");
+      outputs.push(old.renderSpecificationMarkdown(sample));
+      const reading = validateSpecificationRecord(sample);
+      assert.equal(reading.valid, false);
+      assert.ok(reading.issues.some(issue => issue.keyword === "unique-source-id"));
+      assert.throws(() => renderSpecificationMarkdown(sample), /declared twice/u,
+        "same original source cannot be remapped to a different claim by topic order");
+    }
+    assert.notEqual(outputs[0], outputs[1],
+      "original made conflicting normative statements depend on unrelated topic order");
+    assert.match(outputs[0], /Unadmitted vendor MUST NOT/u,
+      "the original compiler really replaced the customer's MUST in its own earlier topic");
+    console.log("Native before/after: same original source accepted two incompatible"
+      + " declarations; corrected maker refuses both while valid source remains byte-identical.");
+  });
+}
