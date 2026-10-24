@@ -1,6 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
 import { renderArchitectureDescriptionMarkdown, validateArchitectureDescriptionRecord } from "../src/architecture-description.mjs";
 
 function candidate() {
@@ -267,3 +269,22 @@ if (process.env.SPEC_ARCHITECTURE_BASELINE_MODULE) {
       +"; original full output byte-equal; adverse refusal equal.");
   });
 }
+
+test("actual native architecture-description command reads accepted JSON bytes and renders the identical sourced product", () => {
+  const original=candidate();
+  const cli=fileURLToPath(new URL("../scripts/render-architecture-description.mjs",import.meta.url));
+  const run=(value)=>spawnSync(process.execPath,[cli],{
+    input:value,encoding:"utf8",timeout:15_000,maxBuffer:2 * 1024 * 1024
+  });
+  const valid=run(JSON.stringify(original));
+  assert.equal(valid.status,0,valid.stderr);
+  assert.equal(valid.stdout,renderArchitectureDescriptionMarkdown(original),
+    "native command must produce the same exact original source artifact");
+  assert.equal(valid.stderr,"");
+  const incomplete=structuredClone(original);
+  incomplete.views[0].modelIds=["missing-model"];
+  const refused=run(JSON.stringify(incomplete));
+  assert.equal(refused.status,1,refused.stderr);
+  assert.equal(refused.stdout,"","invalid source cannot emit a partial architecture");
+  assert.match(refused.stderr,/unknown models identifier missing-model/u);
+});
