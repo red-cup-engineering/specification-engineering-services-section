@@ -1,6 +1,7 @@
 import { fileURLToPath } from "node:url";
 import { readFileText } from "@red-cup-engineering/computer-file-engineering-services-section/read-file";
 import { validateJsonSchema } from "@red-cup-engineering/json-schema-services-section/validation";
+import { artifactId } from "@red-cup-engineering/semiotic-eavt-services-section/identity";
 
 const SCHEMA_PATH = fileURLToPath(new URL("../data/records/schema/architecture-description.schema.json", import.meta.url));
 const SCHEMA = JSON.parse(await readFileText(SCHEMA_PATH));
@@ -17,11 +18,15 @@ export function loadArchitectureDescriptionSchema() {
 const byId = (items) => new Map(items.map((item) => [item.id, item]));
 const ordered = (items) => [...items].sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
 const refs = (ids) => [...ids].sort().join(", ");
-const text = (value) => value.replace(/\r?\n/gu, " ").replace(/\\/gu, "\\\\").replace(/([|*_{}\[\]()#+!<>])/gu, "\\$1").replaceAll(String.fromCharCode(96), String.fromCharCode(92, 96));
+// A source value is never allowed to introduce an unauthored Markdown line.
+// Retain all original ordinary-LF and CRLF rendering while flattening the
+// alternate line separators accepted by the existing source JSON schema.
+// Multiline model prose remains line-authored inside the original blockquote.
+const text = (value) => value.replace(/\r\n|[\r\n\u000b\u000c\u0085\u2028\u2029]/gu, " ").replace(/\\/gu, "\\\\").replace(/([|*_{}\[\]()#+!<>])/gu, "\\$1").replaceAll(String.fromCharCode(96), String.fromCharCode(92, 96));
 const row = (cells) => "| " + cells.map(text).join(" | ") + " |";
 const table = (headers, rows) => [row(headers), row(headers.map(() => "---")), ...rows.map(row)].join("\n");
 const heading = (level, value) => "#".repeat(level) + " " + text(value);
-const quote = (value) => value.replace(/\r\n?/gu, "\n").split("\n").map((line) =>
+const quote = (value) => value.replace(/\r\n?|[\u000b\u000c\u0085\u2028\u2029]/gu, "\n").split("\n").map((line) =>
   "> " + line.replace(/\\/gu, "\\\\").replace(/([`*_{}\[\]()#!])/gu, "\\$1")
     .replace(/</gu, "&lt;").replace(/>/gu, "&gt;")).join("\n");
 
@@ -128,6 +133,70 @@ export function validateArchitectureDescriptionRecord(record) {
   if (!basic.valid) return basic;
   const issues = semanticIssues(record);
   return { valid: issues.length === 0, issues };
+}
+
+
+/**
+ * Optional exact source-cut admission for original Engineering consumers.
+ * Ordinary ArchitectureDescription schema validation can prove internal
+ * referential coherence but cannot know whether a referenced Revision
+ * still matches a current Requirement/Specification. Supply both ACTUAL
+ * selected source objects to check immutable content addresses, plus the
+ * already-carried requirement->specification lineage. No external signer or
+ * rights are authenticated here; a valid result is still a candidate, not
+ * a 42010 certificate, a proof of the view's correctness or accepted Work.
+ */
+export function validateArchitectureDescriptionAgainstSourceCut(record, {
+  requirement, specification,
+} = {}) {
+  const base = validateArchitectureDescriptionRecord(record);
+  if (!base.valid) return base;
+  const issues = [];
+  const refuse = (path,message) => issues.push(Object.freeze({
+    kind:"architecture-description",path,keyword:"source-revision",message,
+  }));
+  if (!requirement || typeof requirement !== "object" ||
+      Array.isArray(requirement) || requirement.kind !== "requirement" ||
+      typeof requirement.id !== "string" ||
+      !Array.isArray(requirement["met-when"]) ||
+      requirement["met-when"].length === 0)
+    refuse("sourceCut.requirement","a complete original source Requirement is required");
+  if (!specification || typeof specification !== "object" ||
+      Array.isArray(specification) ||
+      typeof specification.identity?.id !== "string" ||
+      !Array.isArray(specification.provenance?.derivedFrom))
+    refuse("sourceCut.specification","a separately derived Specification is required");
+  if (issues.length > 0) return Object.freeze({valid:false,issues:Object.freeze(issues)});
+  // These identities are derived locally from the exact supplied source
+  // graph, not self-attested strings in the Architecture Description.
+  const expectedRequirement = artifactId(requirement);
+  const expectedSpecification = artifactId(specification);
+  const current = [
+    [record.upstream.requirementsSourceId,expectedRequirement,"requirementsSourceId"],
+    [record.upstream.specificationSourceId,expectedSpecification,"specificationSourceId"],
+  ];
+  for (const [id,expected,kind] of current) {
+    const stored = record.sources.find(item=>item.id===id);
+    if (stored?.revision !== expected)
+      refuse("sources."+id+".revision",kind+
+        " does not identify the selected source content");
+  }
+  const expectedRelation = requirement.id + "@" + expectedRequirement;
+  if (!specification.provenance.derivedFrom.includes(expectedRelation))
+    refuse("sourceCut.specification.provenance",
+      "Specification does not retain this exact original Requirement source");
+  return Object.freeze({
+    valid:issues.length===0,issues:Object.freeze(issues),
+  });
+}
+
+/** Source-bound render; unlike the unqualified preview, it refuses stale cuts. */
+export function renderArchitectureDescriptionFromSourceCut(record,sources) {
+  const sourceRead=validateArchitectureDescriptionAgainstSourceCut(record,sources);
+  if (!sourceRead.valid)
+    throw new TypeError("architecture-description: selected source cut: " +
+      JSON.stringify(sourceRead.issues));
+  return renderArchitectureDescriptionMarkdown(record);
 }
 
 /** Reproducible Markdown projection, not a conformance audit or proof of the architecture. */

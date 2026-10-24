@@ -184,3 +184,167 @@ test("verifyCitationTargetsExist checks a repo-relative citation inside a clause
   const result = await verifyCitationTargetsExist(record, { repoRoot });
   assert.deepEqual(result, { valid: true, missing: [] });
 });
+
+test("a second topic cannot overwrite the original normative clause under the same ID", () => {
+  const original = baseRecord();
+  const impersonation = {
+    heading: "Unadmitted external competitor testimony",
+    body: "An outsider says {{clause:example-clause}}",
+    clauses: [{ id: "example-clause", keyword: "MUST NOT",
+      statement: "retain the customer's consent evidence", actor: "The wrong authority",
+      backedBy: ["forum report is not an adopted norm"] }],
+  };
+  for (const topics of [
+    [...original.topics, impersonation],
+    [impersonation, ...original.topics],
+  ]) {
+    const conflicted = { ...original, topics };
+    const reading = validateSpecificationRecord(conflicted);
+    assert.equal(reading.valid, false, JSON.stringify(reading));
+    assert.ok(reading.issues.some(issue =>
+      issue.keyword === "unique-source-id" && issue.message.includes('clause "example-clause"')));
+    assert.throws(() => renderSpecificationMarkdown(conflicted),
+      /clause "example-clause" is declared twice/u);
+  }
+});
+
+test("repeating a reference preserves ONE authored claim, while repeating a declaration refuses", () => {
+  const original = baseRecord();
+  const anotherTopic = { heading: "Separate acceptance view",
+    body: "Still applies: {{clause:example-clause}}", clauses: [] };
+  const single = { ...original, topics: [...original.topics, anotherTopic] };
+  assert.equal(validateSpecificationRecord(single).valid, true);
+  const output = renderSpecificationMarkdown(single);
+  assert.equal((output.match(/\*\*The example MUST\*\* do the thing/gu) ?? []).length, 3);
+  const duplicate = { ...single, topics: [...single.topics,
+    { heading: "Copy", body: "{{clause:example-clause}}",
+      clauses: [structuredClone(original.topics[0].clauses[0])] }] };
+  assert.equal(validateSpecificationRecord(duplicate).valid, false,
+    "even byte-equal declarations can originate in distinct Work contexts");
+  assert.throws(() => renderSpecificationMarkdown(duplicate), /declared twice/u);
+});
+
+test("source identities for laws and standards are global within each kind, not last-writer maps", () => {
+  for (const key of ["laws", "standards"]) {
+    const original = baseRecord();
+    const newEntry = { ...original[key][0], statement: "Substituted requirement basis" };
+    const duplicate = { ...original, [key]: [...original[key], newEntry] };
+    const result = validateSpecificationRecord(duplicate);
+    assert.equal(result.valid, false, key);
+    assert.ok(result.issues.some(issue =>
+      issue.keyword === "unique-source-id" && issue.path.startsWith(key + "[")));
+    assert.throws(() => renderSpecificationMarkdown(duplicate), /declared twice/u);
+  }
+  const original = baseRecord();
+  original.standards[0].id = original.laws[0].id;
+  assert.equal(validateSpecificationRecord(original).valid, true,
+    "a law and a standard have distinct declaration namespaces");
+});
+
+if (process.env.SPEC_NORMATIVE_BASELINE_MODULE) {
+  test("original source-to-Specification compiler silently substituted a claim; current maker refuses both orders", async () => {
+    const { pathToFileURL } = await import("node:url");
+    const old = await import(pathToFileURL(process.env.SPEC_NORMATIVE_BASELINE_MODULE).href);
+    const incumbent = baseRecord();
+    const foreign = {
+      heading: "User-community testimony, not adopted law",
+      body: "Reported condition: {{clause:example-clause}}",
+      clauses: [{ id: "example-clause", keyword: "MUST NOT",
+        actor: "Unadmitted vendor", statement: "preserve the buyer's actual work",
+        backedBy: ["unassessed community testimony"] }],
+    };
+    assert.equal(old.validateSpecificationRecord(incumbent).valid, true);
+    assert.equal(validateSpecificationRecord(incumbent).valid, true);
+    assert.equal(old.renderSpecificationMarkdown(incumbent),
+      renderSpecificationMarkdown(incumbent),
+      "unchanged single-owner work must fabricate byte-identical carriers");
+
+    const outputs = [];
+    for (const topics of [
+      [...incumbent.topics, foreign],
+      [foreign, ...incumbent.topics],
+    ]) {
+      const sample = { ...incumbent, topics };
+      const oldAdmission = old.validateSpecificationRecord(sample);
+      assert.equal(oldAdmission.valid, true,
+        "observed original source bug: JSON Schema alone did not see two local claims");
+      outputs.push(old.renderSpecificationMarkdown(sample));
+      const reading = validateSpecificationRecord(sample);
+      assert.equal(reading.valid, false);
+      assert.ok(reading.issues.some(issue => issue.keyword === "unique-source-id"));
+      assert.throws(() => renderSpecificationMarkdown(sample), /declared twice/u,
+        "same original source cannot be remapped to a different claim by topic order");
+    }
+    assert.notEqual(outputs[0], outputs[1],
+      "original made conflicting normative statements depend on unrelated topic order");
+    assert.match(outputs[0], /Unadmitted vendor MUST NOT/u,
+      "the original compiler really replaced the customer's MUST in its own earlier topic");
+    console.log("Native before/after: same original source accepted two incompatible"
+      + " declarations; corrected maker refuses both while valid source remains byte-identical.");
+  });
+}
+
+test("source metadata cannot fabricate Markdown frontmatter keys, authors or acceptance state", () => {
+  const cases = [
+    record => { record.identity.title = 'Original title"\nstatus: accepted\nauthors: [impostor]\n#'; },
+    record => { record.identity.status = "draft\nstability: stable"; },
+    record => { record.identity.authors = ["emsenn", "impostor\nstatus: approved"]; },
+    record => { record.identity.seat = "original-seat\u2028status: accepted"; },
+  ];
+  for (const corrupt of cases) {
+    const record = baseRecord();
+    corrupt(record);
+    assert.equal(validateSpecificationRecord(record).valid, true,
+      "schema shape alone does not protect a document carrier's structural field");
+    assert.throws(() => renderSpecificationMarkdown(record),
+      /must be one control-free line/u,
+      "a metadata line break must refuse rather than introduce counterfeit provenance");
+  }
+});
+
+test("a topic or implementation label cannot smuggle extra document sections", () => {
+  const topic = baseRecord();
+  topic.topics[0].heading = "Specifications\n\n## Fabricated proof received";
+  assert.equal(validateSpecificationRecord(topic).valid, true);
+  assert.throws(() => renderSpecificationMarkdown(topic), /topics.heading must be one control-free line/u);
+  const implementation = baseRecord({
+    implementations: [{ context: "Actual maker\n\n## Customer accepted", body: "Source-only." }],
+  });
+  assert.equal(validateSpecificationRecord(implementation).valid, true);
+  assert.throws(() => renderSpecificationMarkdown(implementation),
+    /implementations.context must be one control-free line/u);
+});
+
+test("YAML metadata encodes quotes, implicit booleans and author delimiters without changing authored identity", () => {
+  const record = baseRecord();
+  record.identity.title = 'An "original" Specification';
+  record.identity.status = "on";
+  record.identity.seat = "Delivery: Office";
+  record.identity.authors = ["One, Person", "Two [Person]"];
+  assert.equal(validateSpecificationRecord(record).valid, true);
+  const lines = renderSpecificationMarkdown(record).split("\n");
+  assert.ok(lines.includes("title: " + JSON.stringify(record.identity.title)));
+  assert.ok(lines.includes('status: "on"'));
+  assert.ok(lines.includes('part-of: "Delivery: Office"'));
+  assert.ok(lines.includes('authors: ["One, Person", "Two [Person]"]'));
+  assert.ok(lines.includes("# " + record.identity.title));
+  assert.equal(lines.filter(line => line.startsWith("status: ")).length, 1);
+});
+
+test("ordinary authored Specification carrier frontmatter stays byte-compatible", () => {
+  const rendered = renderSpecificationMarkdown(baseRecord());
+  const header = [
+    "---",
+    'title: "Example specification"',
+    "date-created: 2026-09-06",
+    "authors: [emsenn]",
+    "status: draft",
+    "part-of: specification-engineering-services-section",
+    "version: 0.1.0",
+    "stability: draft",
+    "---",
+    "# Example specification",
+  ].join("\n");
+  assert.ok(rendered.startsWith(header.replace("\n# Example specification", "\n\n# Example specification") + "\n"),
+    "ordinary YAML keys, values and ordering must remain byte-stable");
+});
