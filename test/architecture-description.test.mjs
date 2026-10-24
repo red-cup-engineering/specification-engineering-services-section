@@ -3,7 +3,12 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
-import { renderArchitectureDescriptionMarkdown, validateArchitectureDescriptionRecord } from "../src/architecture-description.mjs";
+import {
+  renderArchitectureDescriptionMarkdown, validateArchitectureDescriptionRecord,
+  renderArchitectureDescriptionFromSourceCut, validateArchitectureDescriptionAgainstSourceCut,
+} from "../src/architecture-description.mjs";
+import { deriveSpecificationFromRequirementReview } from "../src/specification.mjs";
+import { artifactId } from "@red-cup-engineering/semiotic-eavt-services-section/identity";
 
 function candidate() {
   return {
@@ -309,4 +314,80 @@ test("actual native architecture-description command reads accepted JSON bytes a
   assert.equal(refused.status,1,refused.stderr);
   assert.equal(refused.stdout,"","invalid source cannot emit a partial architecture");
   assert.match(refused.stderr,/unknown models identifier missing-model/u);
+});
+
+function actualRequirementReviewSource() {
+ const requirement={id:"original-work-acceptance",kind:"requirement",
+   "met-when":[
+     {cell:"original-work-acceptance:source",target:"held",
+       says:"retain the original customer Work identity"},
+     {cell:"original-work-acceptance:receiver",target:"held",
+       says:"require separate independent acceptance of useful customer output"},
+   ]};
+ const review={
+   identity:{id:"work-acceptance-spec",title:"Customer receiving candidate",
+     seat:"source-review",carrier:"candidate/source-work.md",authors:["review-only"]},
+   at:"2026-10-24T19:00:00Z",reviewedBy:"unadmitted-review-test",
+   interpretations:[
+     {cell:"original-work-acceptance:source",clauseId:"source-work",
+       keyword:"MUST",actor:"The Work receiver"},
+     {cell:"original-work-acceptance:receiver",clauseId:"customer-acceptance",
+       keyword:"MUST NOT",actor:"The Work receiver"},
+   ],
+ };
+ const specification=deriveSpecificationFromRequirementReview(requirement,review);
+ return {requirement,specification};
+}
+
+test("actual Requirement->Specification->Architecture source cut refuses stale revisions",()=>{
+ const sources=actualRequirementReviewSource();
+ const architecture=candidate();
+ architecture.sources.find(source=>source.id==="req").revision=artifactId(sources.requirement);
+ architecture.sources.find(source=>source.id==="spec").revision=artifactId(sources.specification);
+ const checked=validateArchitectureDescriptionAgainstSourceCut(architecture,sources);
+ assert.equal(checked.valid,true,JSON.stringify(checked.issues));
+ assert.equal(validateArchitectureDescriptionRecord(architecture).valid,true);
+ const md=renderArchitectureDescriptionFromSourceCut(architecture,sources);
+ assert.match(md,/ISO\/IEC\/IEEE 42010:2022-informed/u);
+ assert.match(md,/conformance unassessed/u);
+ assert.match(md,/## Source revisions/u);
+ const changedRequirement=structuredClone(sources.requirement);
+ changedRequirement["met-when"][0].says="new source obligation with same Work ID";
+ assert.equal(validateArchitectureDescriptionRecord(architecture).valid,true,
+   "unchanged internal IDs cannot detect that the original customer source changed");
+ const stale=validateArchitectureDescriptionAgainstSourceCut(architecture,{
+   ...sources,requirement:changedRequirement,
+ });
+ assert.equal(stale.valid,false);
+ assert.ok(stale.issues.some(issue=>issue.keyword==="source-revision"));
+ assert.throws(()=>renderArchitectureDescriptionFromSourceCut(architecture,{
+   ...sources,requirement:changedRequirement,
+ }),/selected source cut/u);
+ const changedSpecification=structuredClone(sources.specification);
+ changedSpecification.identity.status="undelivered successor source";
+ assert.equal(validateArchitectureDescriptionAgainstSourceCut(architecture,{
+   ...sources,specification:changedSpecification,
+ }).valid,false);
+});
+
+test("matching architecture revision labels cannot counterfeit original Requirement lineage",()=>{
+ const sources=actualRequirementReviewSource();
+ const architecture=candidate();
+ architecture.sources.find(source=>source.id==="req").revision=artifactId(sources.requirement);
+ const forged=structuredClone(sources.specification);
+ forged.provenance.derivedFrom=["another-customer@ni:///sha-256;"+("A".repeat(43))];
+ architecture.sources.find(source=>source.id==="spec").revision=artifactId(forged);
+ assert.equal(validateArchitectureDescriptionRecord(architecture).valid,true,
+   "internally coherent but source-deceptive architecture needs actual source reader");
+ const result=validateArchitectureDescriptionAgainstSourceCut(architecture,{
+   ...sources,specification:forged,
+ });
+ assert.equal(result.valid,false);
+ assert.ok(result.issues.some(issue=>issue.path==="sourceCut.specification.provenance"));
+ assert.throws(()=>renderArchitectureDescriptionFromSourceCut(architecture,{
+   ...sources,specification:forged,
+ }),/selected source cut/u);
+ const absent=validateArchitectureDescriptionAgainstSourceCut(architecture,{});
+ assert.equal(absent.valid,false);
+ assert.ok(absent.issues.length>=2);
 });
