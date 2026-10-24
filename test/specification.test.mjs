@@ -302,7 +302,7 @@ test("ordinary authored Specification carrier frontmatter stays byte-compatible"
     "stability: draft",
     "---",
     "# Example specification",
-  ].join("\n\n"); 
-  assert.ok(rendered.startsWith(header.slice(0, header.indexOf("\n\n# Example specification"))),
+  ].join("\n");
+  assert.ok(rendered.startsWith(header.replace("\n# Example specification", "\n\n# Example specification") + "\n"),
     "ordinary YAML keys, values and ordering must remain byte-stable");
 });
