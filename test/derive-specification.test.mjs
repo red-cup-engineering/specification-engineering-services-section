@@ -192,7 +192,7 @@ test("source revision, unpinned time and untrusted identity cannot forge an acce
     {...review,at:undefined},
     {...review,at:"tomorrow"},
     {...review,reviewedBy:""},
-    {...review,identity:{...review.identity,title:"Trust me\\n## Accepted without review"}},
+    {...review,identity:{...review.identity,title:"Trust me\n## Accepted without review"}},
   ]) assert.throws(()=>deriveSpecificationFromRequirementReview(source,bad),
     /(requirement-to-specification|pinned ISO UTC timestamp)/u);
   const explicitlySpoofed={...review,identity:{...review.identity,
