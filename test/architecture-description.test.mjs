@@ -147,6 +147,28 @@ test("the renderer cannot promote a 2011 or self-claimed 2022 conformance label"
   assert.equal(validateArchitectureDescriptionRecord(other).valid, false);
 });
 
+// The incumbent specification-carrier structural-source work applies to its
+// architecture projection too: a source-local newline is not a new document
+// heading, metadata field, normative clause, or unquoted model instruction.
+test("source-authored architecture line separators stay inside original document cells and model quotes", () => {
+  const value = candidate();
+  value.identity.title = "Original architecture\r## forged proof";
+  value.concerns[0].statement = "Original source concern\u2028## forged requirement";
+  value.openQuestions[0].question = "Original question\u0085## forged answer";
+  value.models[0].content = "Step A\rStep B\u2029Step C";
+  const md = renderArchitectureDescriptionMarkdown(value);
+  assert.doesNotMatch(md, /[\r\u0085\u2028\u2029]/u,
+    "rendered architecture carrier must not leak alternate line separators");
+  assert.match(md, /Original architecture/u);
+  assert.match(md, /forged proof/u);
+  assert.doesNotMatch(md, /^## forged proof$/gmu,
+    "source identity must not forge a section");
+  assert.doesNotMatch(md, /^## forged requirement$/gmu,
+    "source concern must not forge a normative section");
+  assert.match(md, /> Step A\n> Step B\n> Step C/u,
+    "real authored model lines must remain within original blockquote custody");
+});
+
 test("source text cannot introduce untrusted headings or HTML through a generated model", () => {
   const value = candidate();
   value.identity.title = "A\n## forged claim";
