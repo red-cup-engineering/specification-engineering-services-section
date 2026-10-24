@@ -47,7 +47,28 @@ function fenceAfter(line, fence) {
 }
 
 function proseForRequirementScan(line) {
-  return line.replace(/`[^`\n]*`/gu, "");
+  // CommonMark code spans can use one or more backticks, with equal-length
+  // opening and closing delimiter runs. Build their next-match index once,
+  // so a long line with many unmatched delimiters is not rescanned per run.
+  const runs = [...line.matchAll(/`+/gu)].map(match => ({
+    at: match.index, size: match[0].length,
+  }));
+  const nextSame = new Array(runs.length).fill(-1);
+  const nearest = new Map();
+  for (let i = runs.length - 1; i >= 0; i--) {
+    nextSame[i] = nearest.get(runs[i].size) ?? -1;
+    nearest.set(runs[i].size, i);
+  }
+  let visible = "";
+  let cursor = 0;
+  for (let i = 0; i < runs.length;) {
+    const closing = nextSame[i];
+    if (closing < 0) { i++; continue; }
+    visible += line.slice(cursor, runs[i].at);
+    cursor = runs[closing].at + runs[closing].size;
+    i = closing + 1;
+  }
+  return visible + line.slice(cursor);
 }
 
 // Markdown HTML comments may span lines. Do not treat hidden notes, copied
@@ -85,15 +106,20 @@ export function specificationReadout(text) {
   const htmlComment = { open: false };
   let fence;
   for (const [offset, lineText] of lines.entries()) {
-    const nextFence = fenceAfter(lineText, fence);
-    if (fence !== undefined || nextFence !== undefined) {
-      fence = nextFence;
+    if (fence !== undefined) {
+      // Fenced code is inert even when it contains HTML comment delimiters.
+      fence = fenceAfter(lineText, fence);
       continue;
     }
-    // Inline code markers cannot open HTML comments in visible Markdown.
-    // Preserve original source line numbers while removing inert source
-    // fragments from the content used for keyword and reference readings.
+    // Strip true inline code before parsing comments, then identify fences
+    // only in content that is actually visible outside those comments.
+    // A pseudo-fence hidden inside an HTML comment must not mask later Work.
     const prose = outsideHtmlComments(proseForRequirementScan(lineText), htmlComment);
+    const opener = fenceAfter(prose, undefined);
+    if (opener !== undefined) {
+      fence = opener;
+      continue;
+    }
     proseLines.push(prose);
     if (bcp14DeclarationLine(prose)) continue;
     KEYWORD_PATTERN.lastIndex = 0;
