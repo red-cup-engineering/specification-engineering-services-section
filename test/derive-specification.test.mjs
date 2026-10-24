@@ -160,7 +160,7 @@ test("unknown, duplicate, dropped or unreviewed original Work conditions refuse 
   duplicate["met-when"].push({...duplicate["met-when"][0]});
   denial(duplicate);
   const multiline=structuredClone(source);
-  multiline["met-when"][0].says="one original clause\\n## Fake approval";
+  multiline["met-when"][0].says="one original clause\n## Fake approval";
   assert.throws(()=>deriveSpecificationFromRequirementReview(multiline,review),
     /unadmitted or malformed original source condition/u);
   for (const target of ["denied","contested",null]) {
