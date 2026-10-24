@@ -82,37 +82,72 @@ jobs:
             if(schema?.$schema!=="https://json-schema.org/draft/2020-12/schema"
                || schema?.title?.includes("NOT a 42010:2022 conformance certificate")!==true) process.exit(2);
           '
-          # The independent installed consumer must also exercise the actual
-          # Specification renderer, not only the Architecture Description export.
-          node --input-type=module -e '
-            import {renderSpecificationMarkdown, validateSpecificationRecord} from "@red-cup-engineering/specification-engineering-services-section/specification";
-            const record = {
-              identity: {
-                id: "received-specification", title: "Received original",
-                seat: "Red Cup: Engineering", carrier: "received.md",
-                "date-created": "2026-10-24", authors: ["First, Author"],
-                version: "0.1.0", stability: "draft", status: "on"
-              },
-              provenance: {
-                derivedFrom: ["installed source consumer assay"],
-                derivedAt: "2026-10-24T00:00:00Z", derivedBy: "package-consumer"
-              },
-              whatThisIs: "Source-only packed module receiving.",
-              topics: [], implementations: [], openQuestions: [], laws: [], standards: []
-            };
-            if (!validateSpecificationRecord(record).valid)
-              throw Error("packed Specification failed source validation");
-            const output = renderSpecificationMarkdown(record);
-            if (!output.includes("authors: [\"First, Author\"]")
-               || !output.includes("status: \"on\"")
-               || !output.includes("part-of: \"Red Cup: Engineering\""))
-              throw Error("packed Specification lost authored metadata");
-            const forged = structuredClone(record);
-            forged.identity.title = "Untainted\nstatus: received";
-            if (!validateSpecificationRecord(forged).valid)
-              throw Error("source-shape validity changed without qualification");
-            let refused = false;
-            try { renderSpecificationMarkdown(forged); }
-            catch (error) { refused = error instanceof TypeError && /one control-free line/u.test(error.message); }
-            if (!refused) throw Error("installed package admitted forged YAML field");
-          '
+
+          # The actual separately installed candidate, not the repository
+          # checkout, must preserve the original customer's normative claim.
+          node --input-type=module - <<'NODE'
+          import assert from "node:assert/strict";
+          import { spawnSync } from "node:child_process";
+          import {
+            validateSpecificationRecord, renderSpecificationMarkdown,
+          } from "@red-cup-engineering/specification-engineering-services-section/specification";
+          import { renderSpecificationRfcXml } from "@red-cup-engineering/specification-engineering-services-section/specification-rfcxml";
+          const valid = {
+            identity: { id: "original-receiving", title: "Original receiving",
+              seat: "source-owner", carrier: "original-receiving.md",
+              "date-created": "2026-10-24", authors: ["original-author"],
+              version: "0.1.0", stability: "draft", status: "draft" },
+            whatThisIs: "Original receiving. {{clause:customer-acceptance}}",
+            topics: [{ heading: "Receiving",
+              body: "{{clause:customer-acceptance}}",
+              clauses: [{ id: "customer-acceptance", actor: "The original recipient",
+                keyword: "MUST", statement: "record an independent acceptance",
+                backedBy: ["original admitted customer source"] }] }],
+            implementations: [], openQuestions: [], laws: [], standards: [],
+            provenance: { derivedFrom: ["original accepted input"],
+              derivedAt: "2026-10-24T00:00:00Z", derivedBy: "source-admitted-author" },
+          };
+          assert.equal(validateSpecificationRecord(valid).valid, true);
+          assert.match(renderSpecificationMarkdown(valid),
+            /recipient MUST.*record an independent acceptance/u);
+          const conflicted = structuredClone(valid);
+          conflicted.topics.push({ heading: "External unadopted claimant",
+            body: "{{clause:customer-acceptance}}",
+            clauses: [{ id: "customer-acceptance", actor: "Unadopted claimant",
+              keyword: "MUST NOT", statement: "retain original acceptance evidence",
+              backedBy: ["not authorized by customer"] }] });
+          assert.equal(validateSpecificationRecord(conflicted).valid, false);
+          assert.throws(() => renderSpecificationMarkdown(conflicted), /declared twice/u);
+          assert.throws(() => renderSpecificationRfcXml(conflicted), /declared twice/u);
+          for (const name of ["render-specification", "render-specification-rfcxml"]) {
+            const cmd = "node_modules/@red-cup-engineering/specification-engineering-services-section/scripts/" + name + ".mjs";
+            const result = spawnSync(process.execPath, [cmd], {
+              input: JSON.stringify(conflicted), encoding: "utf8", timeout: 15_000,
+            });
+            assert.equal(result.status, 1, result.stderr);
+            assert.equal(result.stdout, "");
+            assert.match(result.stderr, /unique-source-id/u);
+          }
+          // Reuse the original actual packed-consumer scenario for a second
+          // source-trust boundary: typed metadata must not become carrier keys.
+          const special = structuredClone(valid);
+          special.identity.title = "An \"original\" receipt";
+          special.identity.authors = ["First, Author"];
+          special.identity.status = "on";
+          special.identity.seat = "Red Cup: Engineering";
+          const specialLines = renderSpecificationMarkdown(special).split("\n");
+          assert.ok(specialLines.includes("title: " + JSON.stringify(special.identity.title)));
+          assert.ok(specialLines.includes("authors: [\"First, Author\"]"));
+          assert.ok(specialLines.includes("status: \"on\""));
+          assert.ok(specialLines.includes("part-of: \"Red Cup: Engineering\""));
+          const forgedMetadata = structuredClone(valid);
+          forgedMetadata.identity.title = "Original\nstatus: accepted";
+          assert.equal(validateSpecificationRecord(forgedMetadata).valid, true);
+          assert.throws(() => renderSpecificationMarkdown(forgedMetadata),
+            /identity.title must be one control-free line/u);
+          const forgedSection = structuredClone(valid);
+          forgedSection.topics[0].heading = "Original\n## Customer accepted";
+          assert.throws(() => renderSpecificationMarkdown(forgedSection),
+            /topics.heading must be one control-free line/u);
+          console.log("Independently installed Specification consumer: valid original preserved; conflicting source refuses in both renderers and both CLIs");
+          NODE
