@@ -68,3 +68,21 @@ test("an original timestamp is preferred to any unspecified ambient clock", () =
   assert.equal(first.identity["date-created"], "2026-10-22");
   assert.equal(first.provenance.derivedAt, current.provenance.derivedAt);
 });
+
+test("source derivation refuses clashing normative identifiers before producing a specification", () => {
+  const original = draft();
+  const extra = { heading: "Unadopted vendor evidence", body: "{{clause:c1}}",
+    clauses: [{ ...original.topics[0].clauses[0],
+      statement: "do NOT do X", keyword: "MUST NOT",
+      backedBy: ["one unaudited vendor comment"] }] };
+  for (const topics of [
+    [...original.topics, extra],
+    [extra, ...original.topics],
+  ]) assert.throws(
+    () => deriveSpecificationRecord({ ...original, topics }, { now: "2026-10-24T00:00:00Z" }),
+    /clause "c1" is declared twice/u,
+    "source identity cannot depend on independent topic order",
+  );
+  const valid = deriveSpecificationRecord(original, { now: "2026-10-24T00:00:00Z" });
+  assert.equal(validateSpecificationRecord(valid).valid, true);
+});
