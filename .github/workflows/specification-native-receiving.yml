@@ -53,6 +53,13 @@ jobs:
           test "$(git hash-object baseline-original/src/architecture-description.mjs)" = "a0dbe86c7f42b7b3cf4ce4f9af533e2ac1fc188d"
           SPEC_ARCHITECTURE_BASELINE_MODULE="$GITHUB_WORKSPACE/baseline-original/src/architecture-description.mjs" \
             node --test test/architecture-description.test.mjs
+      - name: Receive original normative identity counterexample against exact historical source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object baseline-original/src/specification.mjs)" = "d848988d885b1387bf0d2c98aecfd2a793ee5c8b"
+          SPEC_NORMATIVE_BASELINE_MODULE="$GITHUB_WORKSPACE/baseline-original/src/specification.mjs" \
+            node --test test/specification.test.mjs
       - name: Qualify packed source and both runtime schemas
         shell: bash
         run: |
@@ -75,3 +82,144 @@ jobs:
             if(schema?.$schema!=="https://json-schema.org/draft/2020-12/schema"
                || schema?.title?.includes("NOT a 42010:2022 conformance certificate")!==true) process.exit(2);
           '
+
+          # The actual separately installed candidate, not the repository
+          # checkout, must preserve the original customer's normative claim.
+          node --input-type=module - <<'NODE'
+          import assert from "node:assert/strict";
+          import { spawnSync } from "node:child_process";
+          import {
+            validateSpecificationRecord, renderSpecificationMarkdown,
+            deriveSpecificationFromRequirementReview,
+          } from "@red-cup-engineering/specification-engineering-services-section/specification";
+          import { renderSpecificationRfcXml } from "@red-cup-engineering/specification-engineering-services-section/specification-rfcxml";
+          const valid = {
+            identity: { id: "original-receiving", title: "Original receiving",
+              seat: "source-owner", carrier: "original-receiving.md",
+              "date-created": "2026-10-24", authors: ["original-author"],
+              version: "0.1.0", stability: "draft", status: "draft" },
+            whatThisIs: "Original receiving. {{clause:customer-acceptance}}",
+            topics: [{ heading: "Receiving",
+              body: "{{clause:customer-acceptance}}",
+              clauses: [{ id: "customer-acceptance", actor: "The original recipient",
+                keyword: "MUST", statement: "record an independent acceptance",
+                backedBy: ["original admitted customer source"] }] }],
+            implementations: [], openQuestions: [], laws: [], standards: [],
+            provenance: { derivedFrom: ["original accepted input"],
+              derivedAt: "2026-10-24T00:00:00Z", derivedBy: "source-admitted-author" },
+          };
+          assert.equal(validateSpecificationRecord(valid).valid, true);
+          assert.match(renderSpecificationMarkdown(valid),
+            /recipient MUST.*record an independent acceptance/u);
+          const conflicted = structuredClone(valid);
+          conflicted.topics.push({ heading: "External unadopted claimant",
+            body: "{{clause:customer-acceptance}}",
+            clauses: [{ id: "customer-acceptance", actor: "Unadopted claimant",
+              keyword: "MUST NOT", statement: "retain original acceptance evidence",
+              backedBy: ["not authorized by customer"] }] });
+          assert.equal(validateSpecificationRecord(conflicted).valid, false);
+          assert.throws(() => renderSpecificationMarkdown(conflicted), /declared twice/u);
+          assert.throws(() => renderSpecificationRfcXml(conflicted), /declared twice/u);
+          for (const name of ["render-specification", "render-specification-rfcxml"]) {
+            const cmd = "node_modules/@red-cup-engineering/specification-engineering-services-section/scripts/" + name + ".mjs";
+            const result = spawnSync(process.execPath, [cmd], {
+              input: JSON.stringify(conflicted), encoding: "utf8", timeout: 15_000,
+            });
+            assert.equal(result.status, 1, result.stderr);
+            assert.equal(result.stdout, "");
+            assert.match(result.stderr, /unique-source-id/u);
+          }
+          // This is the exact independently INSTALLED package, not a
+          // source-import test or a fabricated customer acceptance. The
+          // original Requirement is preserved; every BCP14 reading is an
+          // explicit, separately unadmitted reviewer choice.
+          const requirement = {kind: "requirement",id: "buyer-work-continuity",
+            "met-when": [
+              {cell:"buyer-work-continuity:original-work",target:"held",
+                says:"retain the original submitted customer Work identity"},
+              {cell:"buyer-work-continuity:independent-recipient",target:"held",
+                says:"independently receive a useful buyer outcome, not a provider claim"},
+            ],
+          };
+          const review = {
+            identity:{id:"buyer-work-continuity-spec",title:"Buyer Work continuity",
+              seat:"review-only-office",carrier:"candidate/work.md",
+              authors:["attributed candidate reviewer"]},
+            reviewedBy:"attributed candidate reviewer",at:"2026-10-24T00:00:00Z",
+            interpretations:[
+              {cell:"buyer-work-continuity:original-work",clauseId:"original-work",
+                keyword:"MUST",actor:"The Group"},
+              {cell:"buyer-work-continuity:independent-recipient",
+                clauseId:"independent-recipient",keyword:"MUST",
+                actor:"The Group"},
+            ],
+          };
+          const candidate = deriveSpecificationFromRequirementReview(requirement,review);
+          assert.equal(validateSpecificationRecord(candidate).valid,true);
+          assert.equal(candidate.identity.stability,"draft");
+          assert.match(candidate.identity.status,/requires-independent/u);
+          assert.deepEqual(candidate.topics[0].clauses.map(c=>c.statement),
+            requirement["met-when"].map(c=>c.says));
+          assert.match(renderSpecificationMarkdown(candidate),/Group MUST/u);
+          assert.throws(()=>deriveSpecificationFromRequirementReview(requirement,{
+            ...review, interpretations:review.interpretations.slice(1),
+          }),/every source condition requires exactly one/u);
+          const revised=structuredClone(requirement);
+          revised["met-when"][0].says="retain one NEW source obligation";
+          const subsequent=deriveSpecificationFromRequirementReview(revised,review);
+          assert.notEqual(candidate.provenance.derivedFrom[0],
+            subsequent.provenance.derivedFrom[0]);
+          assert.equal(subsequent.identity.stability,"draft",
+            "new input does not self-authorize an approved Specification");
+          // Architecture metadata alone can pass while its referenced Work
+          // has changed. Run the original source-cut reader on the same
+          // independently INSTALLED package, not the build checkout.
+          const { artifactId } = await import("@red-cup-engineering/semiotic-eavt-services-section/identity");
+          const {
+            validateArchitectureDescriptionAgainstSourceCut,
+            renderArchitectureDescriptionFromSourceCut,
+          } = await import("@red-cup-engineering/specification-engineering-services-section/architecture-description");
+          const sourceBoundArchitecture = {
+            type:"ArchitectureDescriptionCandidate",version:1,
+            identity:{id:"source-cut-architecture",title:"Bounded audit architecture",
+              revision:"candidate-1",owner:"source-review-office",status:"candidate"},
+            standard:{designation:"ISO/IEC/IEEE 42010",edition:"2022",
+              applicability:"candidate architecture-description profile",conformance:"unassessed"},
+            system:{name:"Audited Work receiver",
+              description:"An original customer source preserved through specification",
+              sourceIds:["req","spec"]},
+            upstream:{requirementsSourceId:"req",specificationSourceId:"spec"},
+            sources:[
+              {id:"req",locator:"urn:original:requirement",revision:artifactId(requirement)},
+              {id:"spec",locator:"urn:original:specification",revision:artifactId(candidate)},
+              {id:"decision",locator:"urn:original:authored-decision",revision:"candidate"},
+            ],
+            stakeholders:[{id:"buyer",name:"Original beneficiary",concernIds:["rights"]}],
+            concerns:[{id:"rights",statement:"Preserve customer authority",
+              sourceIds:["req","spec"]}],
+            viewpoints:[{id:"boundary",name:"Source ownership",concernIds:["rights"],
+              modelKinds:["interface"],method:"Original authored interface"}],
+            views:[{id:"source-view",name:"Bounded original source",
+              viewpointId:"boundary",modelIds:["source-model"],sourceIds:["req","spec"]}],
+            models:[{id:"source-model",kind:"interface",
+              content:"Original customer source precedes every effect",
+              concernIds:["rights"],sourceIds:["spec"]}],
+            correspondences:[],
+            decisions:[{id:"decision-1",statement:"Do not self-authorize",
+              rationale:"Source citation is not original Work permission",
+              alternatives:["Self-authorize","Refuse missing authority"],
+              concernIds:["rights"],sourceIds:["decision"]}],
+            openQuestions:[],
+          };
+          const cut={requirement,specification:candidate};
+          const verified=validateArchitectureDescriptionAgainstSourceCut(sourceBoundArchitecture,cut);
+          assert.equal(verified.valid,true,JSON.stringify(verified.issues));
+          assert.match(renderArchitectureDescriptionFromSourceCut(sourceBoundArchitecture,cut),
+            /conformance unassessed/u);
+          assert.equal(validateArchitectureDescriptionAgainstSourceCut(sourceBoundArchitecture,{
+            requirement:revised,specification:subsequent,
+          }).valid,false,"an old Architecture source cut may not silently follow a changed Requirement");
+          console.log("Packed Requirement->Specification->Architecture: source-bound candidate received; stale source refused");
+          console.log("Independently installed source->Specification consumer: all original conditions retained; revision re-addressed; independent admission still required");
+          console.log("Independently installed Specification consumer: valid original preserved; conflicting source refuses in both renderers and both CLIs");
+          NODE

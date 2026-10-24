@@ -58,3 +58,43 @@ test("all four actual original producer CLIs reject oversized byte input without
     assert.match(help.stdout,new RegExp(name.slice(0,-4).replaceAll("-", "-"),"u"));
   }
 });
+
+test("original Specification/derivation commands refuse conflicting customer clauses before emitting source", () => {
+  const source = {
+    identity: { id: "customer-work-continuity", title: "Customer Work continuity",
+      seat: "professional-work", carrier: "content/customer-work.md",
+      "date-created": "2026-10-24", authors: ["source-owner"],
+      version: "0.1.0", stability: "draft", status: "draft" },
+    whatThisIs: "Source-preserving Work continuity.",
+    topics: [{ heading: "Receiving", body: "{{clause:work-received}}",
+      clauses: [{ id: "work-received", keyword: "MUST",
+        actor: "The receiver", statement: "retain the original work identity",
+        backedBy: ["source-owned customer requirement"] }] }],
+    implementations: [], openQuestions: [], laws: [], standards: [],
+    provenance: { derivedFrom: ["original-customer-need"],
+      derivedAt: "2026-10-24T00:00:00Z", derivedBy: "original-author" },
+  };
+  const execute = (name, record) => spawnSync(process.execPath,
+    [fileURLToPath(new URL("../scripts/" + name + ".mjs", import.meta.url))],
+    { input: JSON.stringify(record), encoding: "utf8",
+      maxBuffer: 2 * 1024 * 1024, timeout: 15000 });
+  const valid = execute("render-specification", source);
+  assert.equal(valid.status, 0, valid.stderr);
+  assert.match(valid.stdout, /retain the original work identity/u);
+
+  const forged = structuredClone(source);
+  forged.topics.push({ heading: "Unadopted vendor report",
+    body: "{{clause:work-received}}",
+    clauses: [{ id: "work-received", keyword: "MUST NOT",
+      actor: "Unadmitted external source", statement: "preserve customer consent",
+      backedBy: ["provider community comment does not adopt institutional law"] }] });
+  for (const name of [
+    "derive-specification", "render-specification", "render-specification-rfcxml"
+  ]) {
+    const refused = execute(name, forged);
+    assert.equal(refused.status, 1, name + " " + refused.stderr);
+    assert.equal(refused.stdout, "", name + " must not fabricate partial accepted product");
+    assert.match(refused.stderr, /clause .*work-received.*declared twice/u);
+  }
+  assert.equal(source.topics.length, 1, "original customer source unchanged");
+});

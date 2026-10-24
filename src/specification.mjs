@@ -4,6 +4,7 @@ import { fileURLToPath as projectFileUrlFilepath } from "node:url";
 import { relativeLinkPath } from "@red-cup-engineering/markdown-engineering-services-section/relocate-markdown-tree";
 import { statPath } from "@red-cup-engineering/computer-file-engineering-services-section/stat-path";
 import { validateJsonSchema } from "@red-cup-engineering/json-schema-services-section/validation";
+import { artifactId } from "@red-cup-engineering/semiotic-eavt-services-section/identity";
 
 const SCHEMA_PATH = projectFileUrlFilepath(new URL("../data/records/schema/specification.schema.json", import.meta.url).href);
 const SPECIFICATION_SCHEMA = JSON.parse(await readFileText(SCHEMA_PATH));
@@ -29,8 +30,59 @@ export function loadSpecificationSchema() {
  * @param {unknown} record A candidate Specification record.
  * @returns {{valid: boolean, issues: readonly {kind: string, path: string, keyword: string, message: string}[]}}
  */
+/**
+ * Identity of a source-authored normative claim must survive every projection.
+ * JSON Schema can validate each clause's shape, but ordinary uniqueItems does
+ * not enforce uniqueness of one property across distinct topic arrays.
+ *
+ * A second declaration of the same ID is ambiguous even if the source text is
+ * byte-equal: it can have a different original topic, reviewer or Work owner.
+ * References may REUSE the same ID; only declarations must be unique.
+ *
+ * This is an identity/traceability assay, not proof that the source statements
+ * are true, adopted, semantically sound, authorized or independently received.
+ */
+export function specificationSourceIdentityIssues(record) {
+  const issues = [];
+  const seen = new Map();
+  const collections = [
+    ...((record?.topics ?? []).flatMap((topic, topicIndex) =>
+      (topic.clauses ?? []).map((item, itemIndex) => ({
+        kind: "clause", item,
+        path: "topics[" + topicIndex + "].clauses[" + itemIndex + "].id",
+      })))),
+    ...(record?.laws ?? []).map((item, index) => ({
+      kind: "law", item, path: "laws[" + index + "].id",
+    })),
+    ...(record?.standards ?? []).map((item, index) => ({
+      kind: "standard", item, path: "standards[" + index + "].id",
+    })),
+  ];
+  for (const { kind, item, path } of collections) {
+    if (typeof item?.id !== "string") continue; // shape belongs to JSON Schema
+    const key = kind + ":" + item.id;
+    if (seen.has(key)) issues.push({
+      kind: "specification-source-identity", path, keyword: "unique-source-id",
+      message: kind + ' "' + item.id + '" is declared twice: ' +
+        seen.get(key) + " and " + path,
+    });
+    else seen.set(key, path);
+  }
+  return issues;
+}
+
+export function assertUniqueSpecificationSourceIdentities(record) {
+  const issues = specificationSourceIdentityIssues(record);
+  if (issues.length) throw new TypeError("specification: " +
+    issues.map(issue => issue.message).join("; "));
+}
+
+/** A schema-shaped record can still contain destructive source-ID collisions. */
 export function validateSpecificationRecord(record) {
-  return validateJsonSchema(record, SPECIFICATION_SCHEMA);
+  const schema = validateJsonSchema(record, SPECIFICATION_SCHEMA);
+  if (!schema.valid) return schema;
+  const issues = specificationSourceIdentityIssues(record);
+  return issues.length ? { valid: false, issues: [...schema.issues, ...issues] } : schema;
 }
 
 /**
@@ -199,6 +251,9 @@ function renderOpenQuestions(openQuestions) {
 export function renderSpecificationMarkdown(record) {
   const profile = record.identity.profile ?? "prose";
   if (profile !== "prose") throw new TypeError(`specification: renderSpecificationMarkdown only renders the "prose" profile, got "${profile}"`);
+  // Refuse before creating Maps: Map() otherwise silently overwrites earlier
+  // independent source obligations with the same local ID.
+  assertUniqueSpecificationSourceIdentities(record);
   const carrier = record.identity.carrier;
   const clausesById = new Map(record.topics.flatMap((topic) => topic.clauses.map((clause) => [clause.id, clause])));
   const lawsById = new Map(record.laws.map((law) => [law.id, law]));
@@ -254,6 +309,9 @@ function dedupLawsOrStandards(kind, topics) {
  * @throws {TypeError} When two topics define the same law or standard id with different content.
  */
 export function deriveSpecificationRecord(draft, options = {}) {
+  // A draft cannot silently erase a source requirement before it becomes a
+  // schema-shaped Specification, even when the output would parse correctly.
+  assertUniqueSpecificationSourceIdentities({ topics: draft.topics, laws: [], standards: [] });
   // Reject conflicting original claims before any provenance/default handling.
   const laws = dedupLawsOrStandards("laws", draft.topics);
   const standards = dedupLawsOrStandards("standards", draft.topics);
@@ -290,6 +348,133 @@ export function deriveSpecificationRecord(draft, options = {}) {
       ...draft.provenance,
     },
   };
+}
+
+/**
+ * Build a SOURCE-PRESERVING, NON-ADMITTED Specification candidate from the
+ * Group's original Requirement representation. Met-when entries are desired
+ * acceptance CONDITIONS, not automatically law. An external reviewer must
+ * explicitly choose the keyword, actor and unique clause identity for EVERY
+ * condition. This pure function never appoints, verifies or impersonates that
+ * reviewer. The result is always a draft with unresolved independent
+ * admission; a reviewer signature, actual supplier Work or a real test must
+ * be received separately.
+ *
+ * Nothing infers a requirement from natural-language prose and nothing
+ * changes the original source strings. Identical source + decisions + pinned
+ * timestamp deterministically produces the same existing-schema record.
+ *
+ * @param {object} requirement Original admitted-or-proposed Group Requirement
+ * @param {object} input Caller-supplied explicit normative interpretations
+ * @returns {object} Existing house Specification record, unadmitted draft
+ */
+export function deriveSpecificationFromRequirementReview(requirement, {
+  identity, interpretations, at, reviewedBy,
+} = {}) {
+  const fail = message => { throw new TypeError("requirement-to-specification: " + message); };
+  if (!requirement || Object.getPrototypeOf(requirement) !== Object.prototype ||
+      requirement.kind !== "requirement" ||
+      typeof requirement.id !== "string" ||
+      !/^[a-z0-9]+(?:-[a-z0-9]+)*$/u.test(requirement.id) ||
+      !Array.isArray(requirement["met-when"]) ||
+      requirement["met-when"].length === 0)
+    fail("one source-owned Requirement with nonempty met-when conditions is required");
+  if (!Array.isArray(interpretations) ||
+      interpretations.length !== requirement["met-when"].length)
+    fail("every source condition requires exactly one explicit normative interpretation");
+  if (!identity || typeof identity !== "object" || Array.isArray(identity) ||
+      typeof identity.id !== "string" ||
+      !/^[a-z0-9]+(?:-[a-z0-9]+)*$/u.test(identity.id) ||
+      ["title","seat","carrier"].some(key =>
+        typeof identity[key] !== "string" || !identity[key].trim()) ||
+      !Array.isArray(identity.authors) || identity.authors.length === 0 ||
+      identity.authors.some(author=>typeof author !== "string" || !author.trim()))
+    fail("a complete original Specification author/seat/carrier identity is required");
+  // An untrusted input must not place raw newlines into a heading, carrier or
+  // metadata and escape its generated source-owning section. Rich prose
+  // belongs solely in the preserved says/statement field.
+  for (const text of [identity.title,identity.seat,identity.carrier,...identity.authors]) {
+    if (/[\r\n\u0000]/u.test(text))
+      fail("identity metadata must not insert a second line or record");
+  }
+  if (typeof reviewedBy !== "string" || !reviewedBy.trim() ||
+      /[\r\n\u0000]/u.test(reviewedBy))
+    fail("the attributed but separately unverified reviewer identity is required");
+  const source = new Map();
+  for (const [position, condition] of requirement["met-when"].entries()) {
+    if (!condition || Object.getPrototypeOf(condition) !== Object.prototype ||
+        typeof condition.cell !== "string" ||
+        !condition.cell.startsWith(requirement.id + ":") ||
+        typeof condition.says !== "string" || !condition.says.trim() ||
+        /[\r\n\u0000]/u.test(condition.says) ||
+        condition.target !== "held")
+      fail("unadmitted or malformed original source condition at index " + position);
+    if (source.has(condition.cell))
+      fail("duplicate original source condition " + condition.cell);
+    source.set(condition.cell, condition);
+  }
+  const choices = new Map(), ids = new Set();
+  for (const decision of interpretations) {
+    if (!decision || Object.getPrototypeOf(decision) !== Object.prototype ||
+        Object.keys(decision).some(key =>
+          !["cell","clauseId","keyword","actor"].includes(key)) ||
+        typeof decision.cell !== "string" || !source.has(decision.cell))
+      fail("an interpretation names an unknown source condition or an unapproved rewrite field");
+    if (choices.has(decision.cell)) fail("duplicate normative interpretation " + decision.cell);
+    if (typeof decision.clauseId !== "string" ||
+        !/^[a-z0-9]+(?:-[a-z0-9]+)*$/u.test(decision.clauseId) ||
+        ids.has(decision.clauseId))
+      fail("clause identity must be unique and schema-conformant");
+    if (!["MUST","MUST NOT","SHOULD","SHOULD NOT","MAY"].includes(decision.keyword) ||
+        typeof decision.actor !== "string" || !decision.actor.trim() ||
+        /[\r\n\u0000]/u.test(decision.actor))
+      fail("keyword and responsible actor require explicit BCP 14 interpretation");
+    ids.add(decision.clauseId);
+    choices.set(decision.cell, decision);
+  }
+  const sourceAddress = artifactId(requirement);
+  const clauses = requirement["met-when"].map(condition => {
+    const decision = choices.get(condition.cell);
+    if (!decision) fail("missing review of source condition " + condition.cell);
+    return Object.freeze({
+      id: decision.clauseId, keyword: decision.keyword,
+      actor: decision.actor,
+      statement: condition.says,
+      backedBy: [
+        "Original Requirement " + requirement.id + " (" + sourceAddress +
+          "), cell " + condition.cell,
+      ],
+    });
+  });
+  const result = deriveSpecificationRecord({
+    identity: {
+      ...identity, profile: "prose", stability: "draft",
+      status: "requires-independent-requirement-and-interpretation-admission",
+    },
+    whatThisIs: "An unadmitted candidate reading of Requirement " +
+      requirement.id + " at " + sourceAddress +
+      ". External authority and specification acceptance remain open.",
+    topics: [{
+      heading: "Source-owned requirement conditions",
+      body: clauses.map(clause => "{{clause:" + clause.id + "}}").join("\n\n"),
+      clauses,
+    }],
+    implementations: [],
+    openQuestions: [{
+      question: "Has the original source Requirement and each BCP 14 interpretation been independently admitted?",
+      blockedBy: "An original competent Office and external reviewer; no approval is inferred from this record",
+    }],
+    provenance: {
+      derivedFrom: [requirement.id + "@" + sourceAddress],
+      derivedAt: at,
+      derivedBy: reviewedBy,
+    },
+  }, { now: at });
+  const admission = validateSpecificationRecord(result);
+  if (!admission.valid)
+    fail("source mapping does not satisfy original Specification schema: " +
+      admission.issues.map(issue => issue.message).join("; "));
+  return result;
 }
 
 /**
