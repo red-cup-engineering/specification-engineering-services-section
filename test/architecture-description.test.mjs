@@ -188,3 +188,33 @@ test("untrusted model text remains literal, including Markdown links and remote-
   assert.doesNotMatch(md, /^> \[role\]/gmu);
   assert.match(md, /&lt;script&gt;/u);
 });
+
+
+test("large original source graph retains every concern and model without cardinality collapse", () => {
+  const record=candidate(), count=1200;
+  for(let i=0;i<count;i++){
+    const cid="capacity-concern-"+i,mid="capacity-model-"+i;
+    record.concerns.push({id:cid,statement:"Keep source concern "+i,sourceIds:["spec"]});
+    record.stakeholders[0].concernIds.push(cid);
+    record.viewpoints[0].concernIds.push(cid);
+    record.models.push({id:mid,kind:"interface",
+      content:"Source-model "+i+" keeps the original concern",
+      concernIds:[cid],sourceIds:["spec"]});
+    record.views[0].modelIds.push(mid);
+  }
+  const started=performance.now();
+  const reading=validateArchitectureDescriptionRecord(record);
+  assert.equal(reading.valid,true,JSON.stringify(reading.issues?.slice(0,3)));
+  const output=renderArchitectureDescriptionMarkdown(record);
+  const elapsed=performance.now()-started;
+  console.log("Architecture description source graph: "
+    +(count+2)+" concerns, "+(count+1)+" models, "
+    +Math.round(elapsed)+" ms native full validation+render.");
+  assert.match(output,/capacity-model-1199/u);
+  assert.match(output,/capacity-concern-1199/u);
+  assert.equal((output.match(/source-authored coverage only/gu)??[]).length,count+1);
+  const missing=structuredClone(record);
+  missing.models.pop();
+  assert.equal(validateArchitectureDescriptionRecord(missing).valid,false,
+    "one lost source model cannot silently satisfy the large original viewpoint");
+});
