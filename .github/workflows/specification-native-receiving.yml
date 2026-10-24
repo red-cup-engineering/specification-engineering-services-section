@@ -36,6 +36,21 @@ jobs:
         run: npm install --ignore-scripts --no-audit --no-fund --no-package-lock --registry=https://registry.561.group/
       - name: Run every original native Node test
         run: npm test
+      - name: Read exact original pre-index source without reauthoring a benchmark provider
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: red-cup-engineering/specification-engineering-services-section
+          ref: 7ef4ddb74880d4d28a80996a87583471fedbc911
+          path: baseline-original
+          persist-credentials: false
+      - name: Measure same-job original versus indexed native source and preserve refusals
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C baseline-original rev-parse HEAD)" = "7ef4ddb74880d4d28a80996a87583471fedbc911"
+          test "$(git hash-object baseline-original/src/architecture-description.mjs)" = "a0dbe86c7f42b7b3cf4ce4f9af533e2ac1fc188d"
+          SPEC_ARCHITECTURE_BASELINE_MODULE="$GITHUB_WORKSPACE/baseline-original/src/architecture-description.mjs" \
+            node --test test/architecture-description.test.mjs
       - name: Qualify packed source and both runtime schemas
         shell: bash
         run: |
