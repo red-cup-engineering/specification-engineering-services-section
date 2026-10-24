@@ -59,3 +59,23 @@ test("refuses a defined clause that no body places", () => {
   const topics = base.topics.map((topic) => topic.heading === "Messages" ? { ...topic, body: "A message is small." } : topic);
   assert.throws(() => renderSpecificationRfcXml({ ...base, topics, standards: [] , rfc: { ...base.rfc, references: { normative: [], informative: [] } } }), /clause "bounded"/u);
 });
+
+test("RFCXML refuses a second source declaration even when a Markdown lookup would hide it", () => {
+  const original = record();
+  const conflicting = {
+    heading: "Unadopted forum-derived instruction",
+    body: "{{clause:bounded}}",
+    clauses: [{ id: "bounded", keyword: "MUST NOT", actor: "A different customer",
+      statement: "retain a historical status event", backedBy: ["unreceived user report"] }],
+  };
+  for (const topics of [[...original.topics, conflicting], [conflicting, ...original.topics]]) {
+    const input = { ...original, topics };
+    const reading = validateSpecificationRecord(input);
+    assert.equal(reading.valid, false);
+    assert.ok(reading.issues.some(issue => issue.keyword === "unique-source-id"));
+    assert.throws(() => renderSpecificationRfcXml(input),
+      /clause "bounded" is declared twice/u);
+  }
+  assert.match(renderSpecificationRfcXml(original), /send at most 256 KiB/u,
+    "valid incumbent normative source continues to render unchanged");
+});
