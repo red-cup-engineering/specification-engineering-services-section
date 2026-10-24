@@ -1,11 +1,6 @@
 #!/usr/bin/env node
 import { deriveSpecificationRecord, validateSpecificationRecord } from "../src/specification.mjs";
-
-async function readStdin() {
-  let text = "";
-  for await (const chunk of process.stdin) text += chunk;
-  return text;
-}
+import { readSourceJsonStdin } from "./read-source-json-stdin.mjs";
 
 if (import.meta.main) {
   if (process.argv.includes("--help")) {
@@ -13,7 +8,7 @@ if (import.meta.main) {
   } else {
     const nowFlagIndex = process.argv.indexOf("--now");
     const now = nowFlagIndex === -1 ? undefined : process.argv[nowFlagIndex + 1];
-    const draft = JSON.parse(await readStdin());
+    const draft = await readSourceJsonStdin(process.stdin);
     const record = deriveSpecificationRecord(draft, now === undefined ? {} : { now });
     const { valid, issues } = validateSpecificationRecord(record);
     if (!valid) {
