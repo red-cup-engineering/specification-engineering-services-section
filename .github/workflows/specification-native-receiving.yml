@@ -75,3 +75,37 @@ jobs:
             if(schema?.$schema!=="https://json-schema.org/draft/2020-12/schema"
                || schema?.title?.includes("NOT a 42010:2022 conformance certificate")!==true) process.exit(2);
           '
+          # The independent installed consumer must also exercise the actual
+          # Specification renderer, not only the Architecture Description export.
+          node --input-type=module -e '
+            import {renderSpecificationMarkdown, validateSpecificationRecord} from "@red-cup-engineering/specification-engineering-services-section/specification";
+            const record = {
+              identity: {
+                id: "received-specification", title: "Received original",
+                seat: "Red Cup: Engineering", carrier: "received.md",
+                "date-created": "2026-10-24", authors: ["First, Author"],
+                version: "0.1.0", stability: "draft", status: "on"
+              },
+              provenance: {
+                derivedFrom: ["installed source consumer assay"],
+                derivedAt: "2026-10-24T00:00:00Z", derivedBy: "package-consumer"
+              },
+              whatThisIs: "Source-only packed module receiving.",
+              topics: [], implementations: [], openQuestions: [], laws: [], standards: []
+            };
+            if (!validateSpecificationRecord(record).valid)
+              throw Error("packed Specification failed source validation");
+            const output = renderSpecificationMarkdown(record);
+            if (!output.includes("authors: [\"First, Author\"]")
+               || !output.includes("status: \"on\"")
+               || !output.includes("part-of: \"Red Cup: Engineering\""))
+              throw Error("packed Specification lost authored metadata");
+            const forged = structuredClone(record);
+            forged.identity.title = "Untainted\nstatus: received";
+            if (!validateSpecificationRecord(forged).valid)
+              throw Error("source-shape validity changed without qualification");
+            let refused = false;
+            try { renderSpecificationMarkdown(forged); }
+            catch (error) { refused = error instanceof TypeError && /one control-free line/u.test(error.message); }
+            if (!refused) throw Error("installed package admitted forged YAML field");
+          '
