@@ -217,14 +217,47 @@ function requireEveryEntryReferenced(kind, byId, seen) {
   }
 }
 
+// Source-authored metadata is data, never an opportunity to inject YAML keys,
+// Markdown sections or a second purported author. This conservatively refuses
+// control and Unicode line separators in structural, single-line fields.
+const CARRIER_CONTROL = /[\u0000-\u001f\u007f-\u009f\u2028\u2029]/u;
+function carrierLine(value, field) {
+  if (typeof value !== "string" || CARRIER_CONTROL.test(value))
+    throw new TypeError("specification: " + field + " must be one control-free line");
+  return value;
+}
+
+// YAML flow scalars can use JSON quoted strings. Preserve prior source bytes
+// for ordinary bare atoms; quote YAML booleans/null, punctuation and names
+// requiring delimiters, rather than silently changing their authored meaning.
+function yamlFlowAtom(value, field) {
+  const str = carrierLine(value, field);
+  return /^[A-Za-z][A-Za-z0-9_./-]*$/u.test(str) &&
+    !/^(?:null|true|false|yes|no|on|off|nan|inf)$/iu.test(str)
+    ? str : JSON.stringify(str);
+}
+
 function renderFrontmatter(identity) {
-  const lines = ["---", `title: "${identity.title}"`, `date-created: ${identity["date-created"]}`, `authors: [${identity.authors.join(", ")}]`, `status: ${identity.status}`, `part-of: ${identity.seat}`, `version: ${identity.version}`, `stability: ${identity.stability}`, "---"];
+  const created = carrierLine(identity["date-created"], "identity.date-created");
+  const version = carrierLine(identity.version, "identity.version");
+  const lines = [
+    "---",
+    "title: " + JSON.stringify(carrierLine(identity.title, "identity.title")),
+    "date-created: " + created,
+    "authors: [" + identity.authors.map((author, index) =>
+      yamlFlowAtom(author, "identity.authors[" + index + "]")).join(", ") + "]",
+    "status: " + yamlFlowAtom(identity.status, "identity.status"),
+    "part-of: " + yamlFlowAtom(identity.seat, "identity.seat"),
+    "version: " + version,
+    "stability: " + yamlFlowAtom(identity.stability, "identity.stability"),
+    "---",
+  ];
   return lines.join("\n");
 }
 
 function renderImplementations(implementations) {
   if (implementations.length === 0) return "";
-  const sections = implementations.map((implementation) => `### ${implementation.context}\n\n${implementation.body}`);
+  const sections = implementations.map((implementation) => `### ${carrierLine(implementation.context, "implementations.context")}\n\n${implementation.body}`);
   return `\n\n## Implementations\n\n${sections.join("\n\n")}`;
 }
 
@@ -262,10 +295,10 @@ export function renderSpecificationMarkdown(record) {
   const seenLaws = new Set();
   const seenStandards = new Set();
 
-  const sections = [renderFrontmatter(record.identity), `# ${record.identity.title}`, `## What this is\n\n${renderBody(record.whatThisIs, clausesById, lawsById, standardsById, seenClauses, seenLaws, seenStandards, carrier)}`];
+  const sections = [renderFrontmatter(record.identity), `# ${carrierLine(record.identity.title, "identity.title")}`, `## What this is\n\n${renderBody(record.whatThisIs, clausesById, lawsById, standardsById, seenClauses, seenLaws, seenStandards, carrier)}`];
 
   for (const topic of record.topics) {
-    sections.push(`## ${topic.heading}\n\n${renderBody(topic.body, clausesById, lawsById, standardsById, seenClauses, seenLaws, seenStandards, carrier)}`);
+    sections.push(`## ${carrierLine(topic.heading, "topics.heading")}\n\n${renderBody(topic.body, clausesById, lawsById, standardsById, seenClauses, seenLaws, seenStandards, carrier)}`);
   }
 
   requireEveryEntryReferenced("clause", clausesById, seenClauses);
