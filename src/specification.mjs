@@ -29,8 +29,59 @@ export function loadSpecificationSchema() {
  * @param {unknown} record A candidate Specification record.
  * @returns {{valid: boolean, issues: readonly {kind: string, path: string, keyword: string, message: string}[]}}
  */
+/**
+ * Identity of a source-authored normative claim must survive every projection.
+ * JSON Schema can validate each clause's shape, but ordinary uniqueItems does
+ * not enforce uniqueness of one property across distinct topic arrays.
+ *
+ * A second declaration of the same ID is ambiguous even if the source text is
+ * byte-equal: it can have a different original topic, reviewer or Work owner.
+ * References may REUSE the same ID; only declarations must be unique.
+ *
+ * This is an identity/traceability assay, not proof that the source statements
+ * are true, adopted, semantically sound, authorized or independently received.
+ */
+export function specificationSourceIdentityIssues(record) {
+  const issues = [];
+  const seen = new Map();
+  const collections = [
+    ...((record?.topics ?? []).flatMap((topic, topicIndex) =>
+      (topic.clauses ?? []).map((item, itemIndex) => ({
+        kind: "clause", item,
+        path: "topics[" + topicIndex + "].clauses[" + itemIndex + "].id",
+      })))),
+    ...(record?.laws ?? []).map((item, index) => ({
+      kind: "law", item, path: "laws[" + index + "].id",
+    })),
+    ...(record?.standards ?? []).map((item, index) => ({
+      kind: "standard", item, path: "standards[" + index + "].id",
+    })),
+  ];
+  for (const { kind, item, path } of collections) {
+    if (typeof item?.id !== "string") continue; // shape belongs to JSON Schema
+    const key = kind + ":" + item.id;
+    if (seen.has(key)) issues.push({
+      kind: "specification-source-identity", path, keyword: "unique-source-id",
+      message: kind + ' "' + item.id + '" is declared twice: ' +
+        seen.get(key) + " and " + path,
+    });
+    else seen.set(key, path);
+  }
+  return issues;
+}
+
+export function assertUniqueSpecificationSourceIdentities(record) {
+  const issues = specificationSourceIdentityIssues(record);
+  if (issues.length) throw new TypeError("specification: " +
+    issues.map(issue => issue.message).join("; "));
+}
+
+/** A schema-shaped record can still contain destructive source-ID collisions. */
 export function validateSpecificationRecord(record) {
-  return validateJsonSchema(record, SPECIFICATION_SCHEMA);
+  const schema = validateJsonSchema(record, SPECIFICATION_SCHEMA);
+  if (!schema.valid) return schema;
+  const issues = specificationSourceIdentityIssues(record);
+  return issues.length ? { valid: false, issues: [...schema.issues, ...issues] } : schema;
 }
 
 /**
@@ -199,6 +250,9 @@ function renderOpenQuestions(openQuestions) {
 export function renderSpecificationMarkdown(record) {
   const profile = record.identity.profile ?? "prose";
   if (profile !== "prose") throw new TypeError(`specification: renderSpecificationMarkdown only renders the "prose" profile, got "${profile}"`);
+  // Refuse before creating Maps: Map() otherwise silently overwrites earlier
+  // independent source obligations with the same local ID.
+  assertUniqueSpecificationSourceIdentities(record);
   const carrier = record.identity.carrier;
   const clausesById = new Map(record.topics.flatMap((topic) => topic.clauses.map((clause) => [clause.id, clause])));
   const lawsById = new Map(record.laws.map((law) => [law.id, law]));
@@ -254,6 +308,9 @@ function dedupLawsOrStandards(kind, topics) {
  * @throws {TypeError} When two topics define the same law or standard id with different content.
  */
 export function deriveSpecificationRecord(draft, options = {}) {
+  // A draft cannot silently erase a source requirement before it becomes a
+  // schema-shaped Specification, even when the output would parse correctly.
+  assertUniqueSpecificationSourceIdentities({ topics: draft.topics, laws: [], standards: [] });
   // Reject conflicting original claims before any provenance/default handling.
   const laws = dedupLawsOrStandards("laws", draft.topics);
   const standards = dedupLawsOrStandards("standards", draft.topics);
