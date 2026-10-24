@@ -24,7 +24,7 @@ node scripts/render-architecture-description.mjs < admitted-architecture-candida
 node --test test/architecture-description.test.mjs
 ```
 
-**Packaging correction:** Both `specification.schema.json` (already read by the existing specification renderer) and `architecture-description.schema.json` are now included in the package's `files` whitelist. Packaging/install and a real consuming application still require separate native receiving.
+**Packaging correction:** Both `specification.schema.json` (already read by the existing specification renderer) and `architecture-description.schema.json` are now included in the package's `files` whitelist. Original independent Node 24 checks now exercise the full source suite, a real packed archive, both schemas and a separately installed consumer's architecture-description import; the resulting candidate is still not a deployed Engineering closure or standards certificate. Four source JSON stdin commands share one byte-preserving, fatal UTF-8, **8 MiB maximum input** reader and refuse invalid/oversized requests before writing any product. No accepted customer or native release is inferred.
 
 ## Renderings
 
