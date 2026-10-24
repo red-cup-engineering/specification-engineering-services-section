@@ -190,8 +190,8 @@ test("untrusted model text remains literal, including Markdown links and remote-
 });
 
 
-test("large original source graph retains every concern and model without cardinality collapse", () => {
-  const record=candidate(), count=1200;
+function largeOriginalSourceGraph(count=1200) {
+  const record=candidate();
   for(let i=0;i<count;i++){
     const cid="capacity-concern-"+i,mid="capacity-model-"+i;
     record.concerns.push({id:cid,statement:"Keep source concern "+i,sourceIds:["spec"]});
@@ -202,6 +202,11 @@ test("large original source graph retains every concern and model without cardin
       concernIds:[cid],sourceIds:["spec"]});
     record.views[0].modelIds.push(mid);
   }
+  return record;
+}
+
+test("large original source graph retains every concern and model without cardinality collapse", () => {
+  const count=1200,record=largeOriginalSourceGraph(count);
   const started=performance.now();
   const reading=validateArchitectureDescriptionRecord(record);
   assert.equal(reading.valid,true,JSON.stringify(reading.issues?.slice(0,3)));
@@ -218,3 +223,47 @@ test("large original source graph retains every concern and model without cardin
   assert.equal(validateArchitectureDescriptionRecord(missing).valid,false,
     "one lost source model cannot silently satisfy the large original viewpoint");
 });
+
+if (process.env.SPEC_ARCHITECTURE_BASELINE_MODULE) {
+  test("same-job native baseline and indexed source preserve exact output, refusals and measure resource cost",async()=>{
+    const {pathToFileURL}=await import("node:url");
+    const baseline=await import(pathToFileURL(process.env.SPEC_ARCHITECTURE_BASELINE_MODULE).href);
+    const original=largeOriginalSourceGraph();
+    const broken=structuredClone(original);
+    broken.models.pop();
+    const beforeRefusal=baseline.validateArchitectureDescriptionRecord(broken);
+    const afterRefusal=validateArchitectureDescriptionRecord(broken);
+    assert.deepEqual(afterRefusal,beforeRefusal,
+      "same source must refuse an absent model with identical original issues");
+    const sample=(validate,render)=>{
+      const start=performance.now();
+      const result=validate(original);
+      assert.equal(result.valid,true,JSON.stringify(result.issues?.slice(0,2)));
+      const bytes=render(original);
+      return {elapsed:performance.now()-start,bytes};
+    };
+    // Separate ordinary assertions from the timed comparable useful job.
+    for(let i=0;i<2;i++){
+      const b=sample(baseline.validateArchitectureDescriptionRecord,baseline.renderArchitectureDescriptionMarkdown);
+      const n=sample(validateArchitectureDescriptionRecord,renderArchitectureDescriptionMarkdown);
+      assert.equal(b.bytes,n.bytes,"input, rendering and original source identity are comparable");
+    }
+    const before=[],after=[];
+    for(let i=0;i<5;i++){
+      const first=i%2===0
+        ?sample(baseline.validateArchitectureDescriptionRecord,baseline.renderArchitectureDescriptionMarkdown)
+        :sample(validateArchitectureDescriptionRecord,renderArchitectureDescriptionMarkdown);
+      const second=i%2===0
+        ?sample(validateArchitectureDescriptionRecord,renderArchitectureDescriptionMarkdown)
+        :sample(baseline.validateArchitectureDescriptionRecord,baseline.renderArchitectureDescriptionMarkdown);
+      const b=i%2===0?first:second,n=i%2===0?second:first;
+      assert.equal(b.bytes,n.bytes,"no performance gain through content loss");
+      before.push(b.elapsed);after.push(n.elapsed);
+    }
+    const median=(values)=>[...values].sort((a,b)=>a-b)[2];
+    console.log("Architecture description native paired receiving; 1202 concerns, 1201 models; "
+      +"baseline median "+median(before).toFixed(2)+"ms, indexed median "
+      +median(after).toFixed(2)+"ms, ratio "+(median(after)/median(before)).toFixed(3)
+      +"; original full output byte-equal; adverse refusal equal.");
+  });
+}
