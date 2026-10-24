@@ -82,3 +82,51 @@ jobs:
             if(schema?.$schema!=="https://json-schema.org/draft/2020-12/schema"
                || schema?.title?.includes("NOT a 42010:2022 conformance certificate")!==true) process.exit(2);
           '
+
+          # The actual separately installed candidate, not the repository
+          # checkout, must preserve the original customer's normative claim.
+          node --input-type=module - <<'NODE'
+          import assert from "node:assert/strict";
+          import { spawnSync } from "node:child_process";
+          import {
+            validateSpecificationRecord, renderSpecificationMarkdown,
+          } from "@red-cup-engineering/specification-engineering-services-section/specification";
+          import { renderSpecificationRfcXml } from "@red-cup-engineering/specification-engineering-services-section/specification-rfcxml";
+          const valid = {
+            identity: { id: "original-receiving", title: "Original receiving",
+              seat: "source-owner", carrier: "original-receiving.md",
+              "date-created": "2026-10-24", authors: ["original-author"],
+              version: "0.1.0", stability: "draft", status: "draft" },
+            whatThisIs: "Original receiving. {{clause:customer-acceptance}}",
+            topics: [{ heading: "Receiving",
+              body: "{{clause:customer-acceptance}}",
+              clauses: [{ id: "customer-acceptance", actor: "The original recipient",
+                keyword: "MUST", statement: "record an independent acceptance",
+                backedBy: ["original admitted customer source"] }] }],
+            implementations: [], openQuestions: [], laws: [], standards: [],
+            provenance: { derivedFrom: ["original accepted input"],
+              derivedAt: "2026-10-24T00:00:00Z", derivedBy: "source-admitted-author" },
+          };
+          assert.equal(validateSpecificationRecord(valid).valid, true);
+          assert.match(renderSpecificationMarkdown(valid),
+            /recipient MUST.*record an independent acceptance/u);
+          const conflicted = structuredClone(valid);
+          conflicted.topics.push({ heading: "External unadopted claimant",
+            body: "{{clause:customer-acceptance}}",
+            clauses: [{ id: "customer-acceptance", actor: "Unadopted claimant",
+              keyword: "MUST NOT", statement: "retain original acceptance evidence",
+              backedBy: ["not authorized by customer"] }] });
+          assert.equal(validateSpecificationRecord(conflicted).valid, false);
+          assert.throws(() => renderSpecificationMarkdown(conflicted), /declared twice/u);
+          assert.throws(() => renderSpecificationRfcXml(conflicted), /declared twice/u);
+          for (const name of ["render-specification", "render-specification-rfcxml"]) {
+            const cmd = "node_modules/@red-cup-engineering/specification-engineering-services-section/scripts/" + name + ".mjs";
+            const result = spawnSync(process.execPath, [cmd], {
+              input: JSON.stringify(conflicted), encoding: "utf8", timeout: 15_000,
+            });
+            assert.equal(result.status, 1, result.stderr);
+            assert.equal(result.stdout, "");
+            assert.match(result.stderr, /unique-source-id/u);
+          }
+          console.log("Independently installed Specification consumer: valid original preserved; conflicting source refuses in both renderers and both CLIs");
+          NODE
