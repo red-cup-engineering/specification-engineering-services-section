@@ -53,6 +53,13 @@ jobs:
           test "$(git hash-object baseline-original/src/architecture-description.mjs)" = "a0dbe86c7f42b7b3cf4ce4f9af533e2ac1fc188d"
           SPEC_ARCHITECTURE_BASELINE_MODULE="$GITHUB_WORKSPACE/baseline-original/src/architecture-description.mjs" \
             node --test test/architecture-description.test.mjs
+      - name: Receive original normative identity counterexample against exact historical source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object baseline-original/src/specification.mjs)" = "d848988d885b1387bf0d2c98aecfd2a793ee5c8b"
+          SPEC_NORMATIVE_BASELINE_MODULE="$GITHUB_WORKSPACE/baseline-original/src/specification.mjs" \
+            node --test test/specification.test.mjs
       - name: Qualify packed source and both runtime schemas
         shell: bash
         run: |
