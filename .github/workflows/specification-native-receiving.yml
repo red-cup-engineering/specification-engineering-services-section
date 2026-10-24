@@ -10,6 +10,8 @@ on:
       - "scripts/**"
       - "test/**"
       - "data/records/schema/**"
+  merge_group:
+    types: [checks_requested]
   workflow_dispatch:
 
 permissions:
@@ -60,11 +62,13 @@ jobs:
           tar -tzf "$RUNNER_TEMP/$tarball" > "$RUNNER_TEMP/specification-members.txt"
           grep -Fx 'package/data/records/schema/specification.schema.json' "$RUNNER_TEMP/specification-members.txt"
           grep -Fx 'package/data/records/schema/architecture-description.schema.json' "$RUNNER_TEMP/specification-members.txt"
+          grep -Fx 'package/scripts/read-source-json-stdin.mjs' "$RUNNER_TEMP/specification-members.txt"
           test "$(grep -Fc 'package/data/records/schema/' "$RUNNER_TEMP/specification-members.txt")" -ge 2
           mkdir -p "$RUNNER_TEMP/consumer"
           cd "$RUNNER_TEMP/consumer"
           npm init -y >/dev/null
           npm install --ignore-scripts --no-audit --no-fund --no-package-lock --registry=https://registry.561.group/ "$RUNNER_TEMP/$tarball"
+          node node_modules/@red-cup-engineering/specification-engineering-services-section/scripts/render-architecture-description.mjs --help >/dev/null
           node --input-type=module -e '
             import {loadArchitectureDescriptionSchema} from "@red-cup-engineering/specification-engineering-services-section/architecture-description";
             const schema=loadArchitectureDescriptionSchema();
