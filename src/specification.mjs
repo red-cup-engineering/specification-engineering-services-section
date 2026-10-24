@@ -406,6 +406,7 @@ export function deriveSpecificationFromRequirementReview(requirement, {
         typeof condition.cell !== "string" ||
         !condition.cell.startsWith(requirement.id + ":") ||
         typeof condition.says !== "string" || !condition.says.trim() ||
+        /[\r\n\u0000]/u.test(condition.says) ||
         condition.target !== "held")
       fail("unadmitted or malformed original source condition at index " + position);
     if (source.has(condition.cell))
