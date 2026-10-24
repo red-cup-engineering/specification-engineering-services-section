@@ -244,3 +244,28 @@ jobs:
             /topics.heading must be one control-free line/u);
           console.log("Independently installed Specification consumer: valid original preserved; conflicting source refuses in both renderers and both CLIs");
           NODE
+
+          # Execute the newly corrected readout through the genuinely packed
+          # clean consumer, not only through the source checkout's node_modules.
+          node --input-type=module -e '
+            import {specificationReadout,specificationRequirementsXml}
+              from "@red-cup-engineering/specification-engineering-services-section/specification-readout";
+            const authored=[
+              "# Work acceptance",
+              "The buyer MUST accept the delivered source.",
+              "~~~md",
+              "Example: RFC2119 RFC8174. Fake MUST NOT create Work.",
+              "~~~not-a-closing-fence",
+              "Still inert SHOULD NOT be normative.",
+              "~~~",
+            ].join("\n");
+            const reading=specificationReadout(authored);
+            if(reading.bcp14.requirements.length!==1
+               ||reading.bcp14.requirements[0].keyword!=="MUST"
+               ||reading.bcp14.requirements[0].line!==2
+               ||reading.bcp14.rfc2119
+               ||reading.bcp14.rfc8174) process.exit(2);
+            const xml=specificationRequirementsXml(reading);
+            if(!xml.includes("buyer MUST accept")
+               ||xml.includes("Still inert SHOULD NOT")) process.exit(2);
+          '

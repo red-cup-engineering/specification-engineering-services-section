@@ -32,17 +32,65 @@ function sectionAtLine(structure, line) {
 }
 
 function fenceAfter(line, fence) {
+  // Within a fence a line with an info string is content, NOT a closer.
+  // The closing run must match the opener's marker, be at least as long,
+  // and be followed only by horizontal whitespace.
+  if (fence !== undefined) {
+    const match = fence.marker === "`"
+      ? line.match(/^[ \t]*(`{3,})[ \t]*$/u)
+      : line.match(/^[ \t]*(~{3,})[ \t]*$/u);
+    return match !== null && match[1].length >= fence.length ? undefined : fence;
+  }
   const match = line.match(/^[ \t]*(`{3,}|~{3,})/u);
-  if (match === null) return fence;
-  const marker = match[1][0];
-  const length = match[1].length;
-  if (fence === undefined) return Object.freeze({ marker, length });
-  if (fence.marker === marker && length >= fence.length) return undefined;
-  return fence;
+  if (match === null) return undefined;
+  return Object.freeze({ marker: match[1][0], length: match[1].length });
 }
 
 function proseForRequirementScan(line) {
-  return line.replace(/`[^`\n]*`/gu, "");
+  // CommonMark code spans can use one or more backticks, with equal-length
+  // opening and closing delimiter runs. Build their next-match index once,
+  // so a long line with many unmatched delimiters is not rescanned per run.
+  const runs = [...line.matchAll(/`+/gu)].map(match => ({
+    at: match.index, size: match[0].length,
+  }));
+  const nextSame = new Array(runs.length).fill(-1);
+  const nearest = new Map();
+  for (let i = runs.length - 1; i >= 0; i--) {
+    nextSame[i] = nearest.get(runs[i].size) ?? -1;
+    nearest.set(runs[i].size, i);
+  }
+  let visible = "";
+  let cursor = 0;
+  for (let i = 0; i < runs.length;) {
+    const closing = nextSame[i];
+    if (closing < 0) { i++; continue; }
+    visible += line.slice(cursor, runs[i].at);
+    cursor = runs[closing].at + runs[closing].size;
+    i = closing + 1;
+  }
+  return visible + line.slice(cursor);
+}
+
+// Markdown HTML comments may span lines. Do not treat hidden notes, copied
+// vendor documentation or examples as accepted normative requirements.
+function outsideHtmlComments(line, state) {
+  let offset = 0;
+  let visible = "";
+  while (offset < line.length) {
+    if (state.open) {
+      const end = line.indexOf("-->", offset);
+      if (end < 0) return visible;
+      offset = end + 3;
+      state.open = false;
+    } else {
+      const start = line.indexOf("<!--", offset);
+      if (start < 0) return visible + line.slice(offset);
+      visible += line.slice(offset, start);
+      state.open = true;
+      offset = start + 4;
+    }
+  }
+  return visible;
 }
 
 function bcp14DeclarationLine(line) {
@@ -54,15 +102,26 @@ export function specificationReadout(text) {
   const structure = readMarkdownStructure(text);
   const requirements = [];
   const lines = text.replace(/\r\n?/gu, "\n").split("\n");
+  const proseLines = [];
+  const htmlComment = { open: false };
   let fence;
   for (const [offset, lineText] of lines.entries()) {
-    const nextFence = fenceAfter(lineText, fence);
-    if (fence !== undefined || nextFence !== undefined) {
-      fence = nextFence;
+    if (fence !== undefined) {
+      // Fenced code is inert even when it contains HTML comment delimiters.
+      fence = fenceAfter(lineText, fence);
       continue;
     }
-    if (bcp14DeclarationLine(lineText)) continue;
-    const prose = proseForRequirementScan(lineText);
+    // Strip true inline code before parsing comments, then identify fences
+    // only in content that is actually visible outside those comments.
+    // A pseudo-fence hidden inside an HTML comment must not mask later Work.
+    const prose = outsideHtmlComments(proseForRequirementScan(lineText), htmlComment);
+    const opener = fenceAfter(prose, undefined);
+    if (opener !== undefined) {
+      fence = opener;
+      continue;
+    }
+    proseLines.push(prose);
+    if (bcp14DeclarationLine(prose)) continue;
     KEYWORD_PATTERN.lastIndex = 0;
     for (const match of prose.matchAll(KEYWORD_PATTERN)) {
       const keyword = match[1];
@@ -78,8 +137,12 @@ export function specificationReadout(text) {
       }));
     }
   }
-  const rfc2119 = /\bRFC\s*2119\b/iu.test(text);
-  const rfc8174 = /\bRFC\s*8174\b/iu.test(text);
+  // A citation inside a skipped code fence/comment cannot qualify a
+  // standards reference. These booleans record visible citation mentions,
+  // not official standard adoption or independent conformance.
+  const visibleProse = proseLines.join("\n");
+  const rfc2119 = /\bRFC\s*2119\b/iu.test(visibleProse);
+  const rfc8174 = /\bRFC\s*8174\b/iu.test(visibleProse);
   const issues = [];
   if (requirements.length > 0 && !rfc2119) issues.push(Object.freeze({
     rule: "bcp14-boilerplate-missing-rfc2119",
