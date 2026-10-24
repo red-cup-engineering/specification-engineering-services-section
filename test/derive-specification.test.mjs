@@ -207,3 +207,34 @@ test("source revision, unpinned time and untrusted identity cannot forge an acce
   assert.equal(refusedPromotion.identity.version,"4.0.0",
     "version identity may be supplied but is not acceptance evidence");
 });
+
+test("1,024 distinct original Work conditions survive deterministic specification at portfolio scale",()=>{
+  const length=1024;
+  const requirement={id:"multi-project-work-receiving",kind:"requirement",
+    "met-when":Array.from({length},(_,i)=>({
+      cell:"multi-project-work-receiving:condition-"+i,
+      target:"held",says:"preserve actual accepted Work obligation "+i,
+    }))};
+  const review={
+    identity:{id:"multi-project-work-specification",title:"Multiple original Work cases",
+      seat:"source-review",carrier:"candidate/multi-work.md",authors:["authored test reviewer"]},
+    at:"2026-10-24T19:00:00Z",reviewedBy:"nonbinding diagnostic source",
+    interpretations:requirement["met-when"].map((source,i)=>({
+      cell:source.cell,clauseId:"source-obligation-"+i,
+      keyword:"MUST",actor:"The original Work executor",
+    })),
+  };
+  const began=performance.now();
+  const record=deriveSpecificationFromRequirementReview(requirement,review);
+  const totalMs=performance.now()-began;
+  assert.equal(record.topics[0].clauses.length,length);
+  assert.equal(new Set(record.topics[0].clauses.map(x=>x.id)).size,length);
+  assert.deepEqual(record.topics[0].clauses.map(x=>x.statement),
+    requirement["met-when"].map(x=>x.says));
+  assert.equal(record.topics[0].clauses.at(-1).id,"source-obligation-1023");
+  assert.equal(validateSpecificationRecord(record).valid,true);
+  assert.match(renderSpecificationMarkdown(record),/obligation 1023/u);
+  assert.equal(record.identity.stability,"draft");
+  console.log("Original requirement to Specification candidate: "+
+    length+" preserved source conditions, "+Math.round(totalMs)+" ms native local measure; no Work/host/competitor throughput claim");
+});
