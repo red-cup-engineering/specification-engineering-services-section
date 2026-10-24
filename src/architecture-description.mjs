@@ -31,6 +31,13 @@ function semanticIssues(record) {
     ["sources", "stakeholders", "concerns", "viewpoints", "views", "models", "correspondences", "decisions", "openQuestions"]
       .map((kind) => [kind, byId(record[kind])])
   );
+  // Source-qualified inverse edges are computed once; each concern/model must
+  // retain precisely its original identity, multiplicity and refusal behavior.
+  // Repeated existential scans made large architecture graphs quadratic.
+  const stakeholderConcerns = new Set(record.stakeholders.flatMap((item) => item.concernIds));
+  const viewpointConcerns = new Set(record.viewpoints.flatMap((item) => item.concernIds));
+  const renderedViewpoints = new Set(record.views.map((item) => item.viewpointId));
+  const referencedModels = new Set(record.views.flatMap((item) => item.modelIds));
   const issue = (path, message) => issues.push({
     kind: "architecture-description", path, keyword: "reference", message,
   });
@@ -57,14 +64,14 @@ function semanticIssues(record) {
   }
   for (const concern of record.concerns) {
     sourceRefs(concern, "concerns." + concern.id);
-    if (!record.stakeholders.some((item) => item.concernIds.includes(concern.id)))
+    if (!stakeholderConcerns.has(concern.id))
       issue("concerns." + concern.id, "no admitted stakeholder owns this concern");
-    if (!record.viewpoints.some((item) => item.concernIds.includes(concern.id)))
+    if (!viewpointConcerns.has(concern.id))
       issue("concerns." + concern.id, "no viewpoint addresses this concern");
   }
   for (const viewpoint of record.viewpoints) {
     viewpoint.concernIds.forEach((id) => has("concerns", id, "viewpoints." + viewpoint.id + ".concernIds"));
-    if (!record.views.some((item) => item.viewpointId === viewpoint.id))
+    if (!renderedViewpoints.has(viewpoint.id))
       issue("viewpoints." + viewpoint.id, "viewpoint has no rendered view");
   }
   for (const view of record.views) {
@@ -98,7 +105,7 @@ function semanticIssues(record) {
   for (const model of record.models) {
     sourceRefs(model, "models." + model.id);
     model.concernIds.forEach((id) => has("concerns", id, "models." + model.id + ".concernIds"));
-    if (!record.views.some((item) => item.modelIds.includes(model.id)))
+    if (!referencedModels.has(model.id))
       issue("models." + model.id, "model has no governing view");
   }
   for (const correspondence of record.correspondences) {
@@ -128,6 +135,7 @@ export function renderArchitectureDescriptionMarkdown(record) {
   const check = validateArchitectureDescriptionRecord(record);
   if (!check.valid) throw new TypeError("architecture-description: " + JSON.stringify(check.issues));
 
+  const modelById = byId(record.models);
   const sections = [
     heading(1, record.identity.title),
     "**Status:** " + text(record.identity.status) + ". ISO/IEC/IEEE 42010:2022-informed candidate profile; **conformance unassessed**. No independent architecture or refinement proof is implied.",
@@ -157,7 +165,7 @@ export function renderArchitectureDescriptionMarkdown(record) {
     sections.push(heading(3, view.name + " [" + view.id + "]"));
     sections.push("Governing viewpoint: " + text(view.viewpointId) + ". Source IDs: " + refs(view.sourceIds) + ".");
     for (const modelId of [...view.modelIds].sort()) {
-      const model = record.models.find((item) => item.id === modelId);
+      const model = modelById.get(modelId);
       sections.push(heading(4, model.kind + " model [" + model.id + "]"));
       sections.push("Source IDs: " + refs(model.sourceIds) + ". Addressed concern IDs (source-authored coverage only): " + refs(model.concernIds) + ".");
       sections.push(quote(model.content));
