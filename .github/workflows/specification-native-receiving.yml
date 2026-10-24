@@ -90,6 +90,7 @@ jobs:
           import { spawnSync } from "node:child_process";
           import {
             validateSpecificationRecord, renderSpecificationMarkdown,
+            deriveSpecificationFromRequirementReview,
           } from "@red-cup-engineering/specification-engineering-services-section/specification";
           import { renderSpecificationRfcXml } from "@red-cup-engineering/specification-engineering-services-section/specification-rfcxml";
           const valid = {
@@ -128,5 +129,48 @@ jobs:
             assert.equal(result.stdout, "");
             assert.match(result.stderr, /unique-source-id/u);
           }
+          // This is the exact independently INSTALLED package, not a
+          // source-import test or a fabricated customer acceptance. The
+          // original Requirement is preserved; every BCP14 reading is an
+          // explicit, separately unadmitted reviewer choice.
+          const requirement = {kind: "requirement",id: "buyer-work-continuity",
+            "met-when": [
+              {cell:"buyer-work-continuity:original-work",target:"held",
+                says:"retain the original submitted customer Work identity"},
+              {cell:"buyer-work-continuity:independent-recipient",target:"held",
+                says:"independently receive a useful buyer outcome, not a provider claim"},
+            ],
+          };
+          const review = {
+            identity:{id:"buyer-work-continuity-spec",title:"Buyer Work continuity",
+              seat:"review-only-office",carrier:"candidate/work.md",
+              authors:["attributed candidate reviewer"]},
+            reviewedBy:"attributed candidate reviewer",at:"2026-10-24T00:00:00Z",
+            interpretations:[
+              {cell:"buyer-work-continuity:original-work",clauseId:"original-work",
+                keyword:"MUST",actor:"The Group"},
+              {cell:"buyer-work-continuity:independent-recipient",
+                clauseId:"independent-recipient",keyword:"MUST",
+                actor:"The Group"},
+            ],
+          };
+          const candidate = deriveSpecificationFromRequirementReview(requirement,review);
+          assert.equal(validateSpecificationRecord(candidate).valid,true);
+          assert.equal(candidate.identity.stability,"draft");
+          assert.match(candidate.identity.status,/requires-independent/u);
+          assert.deepEqual(candidate.topics[0].clauses.map(c=>c.statement),
+            requirement["met-when"].map(c=>c.says));
+          assert.match(renderSpecificationMarkdown(candidate),/Group MUST/u);
+          assert.throws(()=>deriveSpecificationFromRequirementReview(requirement,{
+            ...review, interpretations:review.interpretations.slice(1),
+          }),/every source condition requires exactly one/u);
+          const revised=structuredClone(requirement);
+          revised["met-when"][0].says="retain one NEW source obligation";
+          const subsequent=deriveSpecificationFromRequirementReview(revised,review);
+          assert.notEqual(candidate.provenance.derivedFrom[0],
+            subsequent.provenance.derivedFrom[0]);
+          assert.equal(subsequent.identity.stability,"draft",
+            "new input does not self-authorize an approved Specification");
+          console.log("Independently installed source->Specification consumer: all original conditions retained; revision re-addressed; independent admission still required");
           console.log("Independently installed Specification consumer: valid original preserved; conflicting source refuses in both renderers and both CLIs");
           NODE
