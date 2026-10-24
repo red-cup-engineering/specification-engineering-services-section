@@ -86,3 +86,41 @@ test("legitimate outside-fence BCP 14 clauses retain original line identities an
   assert.match(xml, /keyword="MUST NOT"/u);
   assert.doesNotMatch(xml, /claim a sale/u);
 });
+
+test("multiple-backtick inline code does not make requirements or standards mentions", () => {
+  const input = [
+    "# Buyer consent",
+    "The buyer MUST approve the proposal.",
+    "An illustrative ``MUST NOT`` and ``RFC2119 RFC8174`` are only source examples.",
+  ].join("\n");
+  const readout=specificationReadout(input);
+  assert.deepEqual(readout.bcp14.requirements.map(x=>({keyword:x.keyword,line:x.line})),[
+    {keyword:"MUST",line:2},
+  ]);
+  assert.equal(readout.bcp14.rfc2119,false);
+  assert.equal(readout.bcp14.rfc8174,false);
+});
+
+test("a fenced-code opener inside a multiline HTML comment cannot hide real requirements", () => {
+  const input = [
+    "# Qualified fabrication",
+    "<!--",
+    "```js",
+    "-->",
+    "The fabricator MUST prove its source and permissions.",
+  ].join("\n");
+  assert.deepEqual(specificationReadout(input).bcp14.requirements.map(x=>({keyword:x.keyword,line:x.line})),[
+    {keyword:"MUST",line:5},
+  ]);
+});
+
+test("an HTML comment opener inside a real fenced example cannot conceal later real obligations", () => {
+  const input = [
+    "# Worker isolation",
+    "~~~md",
+    "<!-- source example only",
+    "~~~",
+    "The worker MUST refuse an unauthorized execution.",
+  ].join("\n");
+  assert.deepEqual(words(input),["MUST"]);
+});
