@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 import {
   renderArchitectureDescriptionMarkdown, validateArchitectureDescriptionRecord,
   renderArchitectureDescriptionFromSourceCut, validateArchitectureDescriptionAgainstSourceCut,
+  readRequirementArchitectureTrace,
 } from "../src/architecture-description.mjs";
 import { deriveSpecificationFromRequirementReview } from "../src/specification.mjs";
 import { artifactId } from "@red-cup-engineering/semiotic-eavt-services-section/identity";
@@ -390,4 +391,147 @@ test("matching architecture revision labels cannot counterfeit original Requirem
  const absent=validateArchitectureDescriptionAgainstSourceCut(architecture,{});
  assert.equal(absent.valid,false);
  assert.ok(absent.issues.length>=2);
+});
+
+
+/**
+ * A real buyer expressed its enterprise-KM needs in the NYPA
+ * Q26-7821RJM RFP, Attachment 1 §§2.1–2.2 (October 2026):
+ * permission-filtered cited answers, governed ontology vocabulary and
+ * SharePoint model publication. These are our ORIGINAL UNADMITTED
+ * source-to-Engineering clauses, not a fictional NYPA order or adoption.
+ */
+function publishedUtilityBuyerTrace() {
+  const requirement={
+    id:"nypa-knowledge-management",kind:"requirement",
+    "met-when":[
+      {cell:"nypa-knowledge-management:permission-filtered-answers",target:"held",
+        says:"Provide source-cited question answering while enforcing original reader permissions."},
+      {cell:"nypa-knowledge-management:governed-vocabulary",target:"held",
+        says:"Govern and version enterprise taxonomy and ontology term definitions."},
+      {cell:"nypa-knowledge-management:sharepoint-model-publication",target:"held",
+        says:"Publish and synchronize controlled vocabulary models to SharePoint Online term stores."},
+    ],
+  };
+  const review={
+    identity:{id:"utility-knowledge-source-spec",title:"NYPA source-only knowledge workshare",
+      seat:"review-with-original-contracting-office",
+      carrier:"candidate/utility-knowledge.md",authors:["unadmitted-source-review"]},
+    at:"2026-10-24T21:00:00Z",reviewedBy:"unadmitted-technical-evidence-review",
+    interpretations:[
+      {cell:requirement["met-when"][0].cell,
+        clauseId:"nypa-permissioned-answers",keyword:"MUST",actor:"The scoped solution"},
+      {cell:requirement["met-when"][1].cell,
+        clauseId:"nypa-governed-vocabulary",keyword:"MUST",actor:"The scoped solution"},
+      {cell:requirement["met-when"][2].cell,
+        clauseId:"nypa-sharepoint-model-publishing",keyword:"MUST",actor:"The scoped solution"},
+    ],
+  };
+  const specification=deriveSpecificationFromRequirementReview(requirement,review);
+  const architecture=candidate();
+  architecture.identity.title="Scoped NYPA knowledge candidate (not a bid)";
+  const req=architecture.sources.find(row=>row.id==="req");
+  const spec=architecture.sources.find(row=>row.id==="spec");
+  const buyerPdf="https://api.nypa.gov/rfq/v1/api/public/rfq/File?fileName=Q26-7821RJM+-+Instructions+%2B+Scope+of+Services.pdf&rfqNumber=Q26-7821RJM";
+  req.locator=buyerPdf+"#page=9";
+  req.revision=artifactId(requirement);
+  spec.revision=artifactId(specification);
+  const concern=architecture.concerns.find(row=>row.id==="rights");
+  concern.sourceIds=["req","spec"];
+  concern.requirementCellIds=[requirement["met-when"][0].cell];
+  concern.specificationClauseIds=["nypa-permissioned-answers"];
+  return {requirement,specification,architecture};
+}
+
+test("a real published utility buyer's three source conditions trace only the one actually mapped to an authored model",()=>{
+  const sources=publishedUtilityBuyerTrace();
+  assert.equal(validateArchitectureDescriptionAgainstSourceCut(sources.architecture,sources).valid,true);
+  const trace=readRequirementArchitectureTrace(sources.architecture,sources);
+  assert.equal(trace.kind,"specification.requirement-architecture-trace.v1");
+  assert.equal(trace.counts.sourceCells,3);
+  assert.equal(trace.counts.authoredModelMapped,1);
+  assert.equal(trace.counts.untraced,2);
+  const first=trace.rows.find(row=>row.cell.endsWith(":permission-filtered-answers"));
+  assert.deepEqual(first.normativeClauseIds,["nypa-permissioned-answers"]);
+  assert.equal(first.authoredPaths[0].concernId,"rights");
+  assert.equal(first.authoredPaths[0].modelId,"auth-model");
+  assert.equal(first.authoredPaths[0].viewId,"boundary-view");
+  assert.equal(first.standing,"source-to-authored-model-only-not-proved");
+  for(const suffix of [":governed-vocabulary",":sharepoint-model-publication"]){
+    const row=trace.rows.find(x=>x.cell.endsWith(suffix));
+    assert.equal(row.authoredPaths.length,0,"one generic Requirement source citation cannot certify every source cell");
+    assert.equal(row.standing,"normative-but-architecture-untraced");
+  }
+  assert.equal(trace.independentProof,false);
+  assert.equal(trace.independentlyAcceptedCustomerWork,false);
+  assert.equal(trace.standardsConformance,"unassessed");
+  const md=renderArchitectureDescriptionFromSourceCut(sources.architecture,sources);
+  assert.match(md,/Exact original Requirement-to-model traceability/u);
+  assert.match(md,/permission-filtered-answers/u);
+  assert.match(md,/sharepoint-model-publication/u);
+  assert.match(md,/2 remain without an authored model trace/u);
+  assert.equal(md,renderArchitectureDescriptionFromSourceCut(
+    structuredClone(sources.architecture),
+    {requirement:structuredClone(sources.requirement),
+      specification:structuredClone(sources.specification)}),
+    "source identity, explicit maps and rendering must be byte-stable");
+});
+
+test("cross-work and wrong-clause mappings cannot counterfeit buyer requirement coverage",()=>{
+  const sources=publishedUtilityBuyerTrace();
+  const original=structuredClone(sources.architecture);
+  const wrong=structuredClone(original);
+  wrong.concerns[0].specificationClauseIds=["nypa-governed-vocabulary"];
+  let result=validateArchitectureDescriptionAgainstSourceCut(wrong,sources);
+  assert.equal(result.valid,false);
+  assert.ok(result.issues.some(row=>/belongs to another source cell|no selected normative clause/u.test(row.message)));
+  const foreign=structuredClone(original);
+  foreign.concerns[0].requirementCellIds=["other-buyer:invented"];
+  result=validateArchitectureDescriptionAgainstSourceCut(foreign,sources);
+  assert.equal(result.valid,false);
+  assert.ok(result.issues.some(row=>/unknown original Requirement condition/u.test(row.message)));
+  const missingStage=structuredClone(original);
+  delete missingStage.concerns[0].specificationClauseIds;
+  result=validateArchitectureDescriptionAgainstSourceCut(missingStage,sources);
+  assert.equal(result.valid,false);
+  assert.ok(result.issues.some(row=>/must be paired/u.test(row.message)));
+  const noQualifiedSource=structuredClone(original);
+  noQualifiedSource.concerns[0].sourceIds=["req"];
+  result=validateArchitectureDescriptionAgainstSourceCut(noQualifiedSource,sources);
+  assert.equal(result.valid,false);
+  assert.ok(result.issues.some(row=>/cite both original source stages/u.test(row.message)));
+  const forgedNorms=structuredClone(sources.specification);
+  forgedNorms.topics[0].clauses[0].backedBy=["another-buyer-decision"];
+  const changedArchitecture=structuredClone(original);
+  changedArchitecture.sources.find(row=>row.id==="spec").revision=artifactId(forgedNorms);
+  result=validateArchitectureDescriptionAgainstSourceCut(changedArchitecture,{
+    ...sources,specification:forgedNorms,
+  });
+  assert.equal(result.valid,false);
+  assert.ok(result.issues.some(row=>/no selected normative clause actually backs/u.test(row.message)));
+  const changedRequirement=structuredClone(sources.requirement);
+  changedRequirement["met-when"][0].says="new client revision of same original cell";
+  assert.throws(()=>readRequirementArchitectureTrace(original,{
+    ...sources,requirement:changedRequirement,
+  }),/selected source cut/u);
+});
+
+test("the original architecture CLI emits the real verified three-source trace rather than a free-form approval claim",()=>{
+  const sources=publishedUtilityBuyerTrace();
+  const runner=fileURLToPath(new URL("../scripts/render-architecture-description.mjs",import.meta.url));
+  const packed=JSON.stringify({architecture:sources.architecture,
+    requirement:sources.requirement,specification:sources.specification});
+  const result=spawnSync(process.execPath,[runner,"--source-cut"],{
+    input:packed,encoding:"utf8",timeout:20000,
+  });
+  assert.equal(result.status,0,result.stderr);
+  assert.match(result.stdout,/Exact original Requirement-to-model traceability/u);
+  assert.match(result.stdout,/nypa-knowledge-management:governed-vocabulary/u);
+  assert.match(result.stdout,/normative-but-architecture-untraced/u);
+  const ordinary=spawnSync(process.execPath,[runner],{
+    input:JSON.stringify(sources.architecture),encoding:"utf8",timeout:20000,
+  });
+  assert.equal(ordinary.status,0,ordinary.stderr);
+  assert.doesNotMatch(ordinary.stdout,/Exact original Requirement-to-model traceability/u,
+    "unauthenticated single-document preview cannot claim source-cut traceability");
 });
