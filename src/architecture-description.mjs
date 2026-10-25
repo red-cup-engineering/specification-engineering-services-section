@@ -185,18 +185,173 @@ export function validateArchitectureDescriptionAgainstSourceCut(record, {
   if (!specification.provenance.derivedFrom.includes(expectedRelation))
     refuse("sourceCut.specification.provenance",
       "Specification does not retain this exact original Requirement source");
+
+  // A document-level Requirement/Specification citation does NOT entail
+  // that any individual original customer obligation has an architecture
+  // implementation. Explicit source-cell/Specification-clause correspondence
+  // is independently declared on a concern and checked against the original
+  // two complete source objects. Ambiguous cross-products are refused.
+  const sourceCells = new Map(requirement["met-when"].map(row=>[row.cell,row]));
+  if(sourceCells.size!==requirement["met-when"].length ||
+     !requirement["met-when"].every(row=>typeof row?.cell==="string" &&
+       row.cell.startsWith(requirement.id+":")))
+    refuse("sourceCut.requirement.met-when",
+      "original Requirement source cells must be distinct and belong to this Requirement");
+  if(!Array.isArray(specification.topics) ||
+     specification.topics.some(topic=>!Array.isArray(topic?.clauses)))
+    refuse("sourceCut.specification.topics",
+      "the original source Specification has no complete normative clause catalog");
+  if(issues.length>0)return Object.freeze({valid:false,issues:Object.freeze(issues)});
+  const clauses=specification.topics.flatMap(topic=>topic.clauses);
+  const clauseMap=new Map(clauses.map(row=>[row.id,row]));
+  if(clauseMap.size!==clauses.length)
+    refuse("sourceCut.specification.topics","duplicate normative clause IDs are not a valid correspondence");
+  const backref=cell=>"Original Requirement "+requirement.id+" ("+
+    expectedRequirement+"), cell "+cell;
+  for(const concern of record.concerns) {
+    const r=concern.requirementCellIds,s=concern.specificationClauseIds;
+    if((r===undefined)!==(s===undefined)) {
+      refuse("concerns."+concern.id,"exact original Work cells and normative clauses must be paired");
+      continue;
+    }
+    if(r===undefined)continue; // Truly untraced; never silently covered.
+    if(!concern.sourceIds.includes(record.upstream.requirementsSourceId) ||
+       !concern.sourceIds.includes(record.upstream.specificationSourceId))
+      refuse("concerns."+concern.id+".sourceIds",
+        "a clause-traced concern must cite both original source stages");
+    for(const cell of r) {
+      if(!sourceCells.has(cell))
+        refuse("concerns."+concern.id+".requirementCellIds",
+          "unknown original Requirement condition "+cell);
+      if(!s.some(id=>clauseMap.get(id)?.backedBy?.includes(backref(cell))))
+        refuse("concerns."+concern.id+".requirementCellIds",
+          "no selected normative clause actually backs source condition "+cell);
+    }
+    for(const id of s) {
+      const clause=clauseMap.get(id);
+      if(!clause)
+        refuse("concerns."+concern.id+".specificationClauseIds",
+          "unknown normative Specification clause "+id);
+      else if(!r.some(cell=>clause.backedBy?.includes(backref(cell))))
+        refuse("concerns."+concern.id+".specificationClauseIds",
+          "normative Specification clause "+id+" belongs to another source cell");
+    }
+  }
   return Object.freeze({
     valid:issues.length===0,issues:Object.freeze(issues),
   });
 }
 
-/** Source-bound render; unlike the unqualified preview, it refuses stale cuts. */
+/**
+ * The real Requirement-cell → normative Specification clause → architecture
+ * concern/model/view trace, using precisely the original source cut. An
+ * architecture-level citation without a source-cell pair is explicitly
+ * UNTRACED. A rendered model is a documentary promise, never an executed
+ * proof or an independently accepted customer requirement.
+ *
+ * The caller must separately authenticate provenance and read rights before
+ * presenting customer-private source statements; this pure source reader
+ * grants no additional document/tenant visibility.
+ */
+export function readRequirementArchitectureTrace(record,sources) {
+  const checked=validateArchitectureDescriptionAgainstSourceCut(record,sources);
+  if(!checked.valid)
+    throw new TypeError("architecture-description: selected source cut: "+
+      JSON.stringify(checked.issues));
+  const {requirement,specification}=sources;
+  const sourceRevision=artifactId(requirement);
+  const refsOf=cell=>"Original Requirement "+requirement.id+" ("+
+    sourceRevision+"), cell "+cell;
+  const normative=new Map();
+  for(const topic of specification.topics)for(const clause of topic.clauses)
+    for(const source of requirement["met-when"])
+      if(clause.backedBy?.includes(refsOf(source.cell))){
+        const list=normative.get(source.cell)??[];
+        list.push(clause.id);normative.set(source.cell,list);
+      }
+  const modelViews=new Map();
+  const models=byId(record.models);
+  const viewpoints=byId(record.viewpoints);
+  for(const view of record.views){
+    const vp=viewpoints.get(view.viewpointId);
+    for(const modelId of view.modelIds){
+      const model=models.get(modelId);
+      for(const concernId of model?.concernIds??[]){
+        if(!vp?.concernIds.includes(concernId))continue;
+        const list=modelViews.get(concernId)??[];
+        list.push(Object.freeze({modelId,viewId:view.id,viewpointId:view.viewpointId}));
+        modelViews.set(concernId,list);
+      }
+    }
+  }
+  const traced=new Map();
+  for(const concern of record.concerns){
+    if(concern.requirementCellIds===undefined)continue;
+    for(const cell of concern.requirementCellIds){
+      const clauseIds=new Set(normative.get(cell)??[]);
+      const selected=concern.specificationClauseIds.filter(id=>clauseIds.has(id));
+      const list=traced.get(cell)??[];
+      for(const relation of modelViews.get(concern.id)??[])
+        list.push(Object.freeze({
+          clauseIds:Object.freeze([...selected].sort()),
+          concernId:concern.id,...relation,
+        }));
+      traced.set(cell,list);
+    }
+  }
+  const rows=requirement["met-when"].map(row=>{
+    const originalClauses=Object.freeze([...(normative.get(row.cell)??[])].sort());
+    const paths=Object.freeze([...(traced.get(row.cell)??[])].sort((a,b)=>
+      a.concernId.localeCompare(b.concernId) ||
+      a.modelId.localeCompare(b.modelId) || a.viewId.localeCompare(b.viewId)));
+    return Object.freeze({
+      cell:row.cell,originalStatement:row.says,
+      sourceTarget:row.target,
+      normativeClauseIds:originalClauses,
+      authoredPaths:paths,
+      standing:originalClauses.length===0?"source-not-normatively-interpreted":
+        paths.length===0?"normative-but-architecture-untraced":
+        "source-to-authored-model-only-not-proved",
+    });
+  }).sort((a,b)=>a.cell.localeCompare(b.cell));
+  const mapped=rows.filter(row=>row.authoredPaths.length>0).length;
+  const frozenRows=Object.freeze(rows);
+  return Object.freeze({
+    kind:"specification.requirement-architecture-trace.v1",
+    originalRequirementId:requirement.id,
+    originalRequirementSource:sourceRevision,
+    originalSpecificationSource:artifactId(specification),
+    originalArchitectureId:record.identity.id,
+    counts:Object.freeze({
+      sourceCells:rows.length,
+      authoredModelMapped:mapped,
+      untraced:rows.length-mapped,
+    }),
+    rows:frozenRows,
+    standardsConformance:"unassessed",
+    independentProof:false,
+    independentlyAcceptedCustomerWork:false,
+    rightsAndSourceAuthentication:"required-from-original-custodian",
+  });
+}
+
+/** Source-bound render includes the complete honest buyer-clause trace. */
 export function renderArchitectureDescriptionFromSourceCut(record,sources) {
-  const sourceRead=validateArchitectureDescriptionAgainstSourceCut(record,sources);
-  if (!sourceRead.valid)
-    throw new TypeError("architecture-description: selected source cut: " +
-      JSON.stringify(sourceRead.issues));
-  return renderArchitectureDescriptionMarkdown(record);
+  const trace=readRequirementArchitectureTrace(record,sources);
+  const rows=trace.rows.map(row=>[
+    row.cell,row.normativeClauseIds.join(", ")||"UNREVIEWED",
+    row.authoredPaths.map(p=>p.concernId+" / "+p.modelId+" / "+p.viewId).join("; ")||"UNTRACED",
+    row.standing,
+  ]);
+  return renderArchitectureDescriptionMarkdown(record)+
+    "\n"+heading(2,"Exact original Requirement-to-model traceability")+
+    "\n\n"+table(["Original buyer condition","Specification clauses",
+      "Concern / model / view","Standing"],rows)+
+    "\n\n"+text("Authored mapping "+trace.counts.authoredModelMapped+
+      " of "+trace.counts.sourceCells+" original source conditions; "+
+      trace.counts.untraced+" remain without an authored model trace. "+
+      "No verified source rights, semantic proof, executed check, standards "+
+      "certificate or independent customer acceptance is implied.")+"\n";
 }
 
 /** Reproducible Markdown projection, not a conformance audit or proof of the architecture. */
