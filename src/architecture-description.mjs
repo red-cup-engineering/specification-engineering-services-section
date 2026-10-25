@@ -262,13 +262,18 @@ export function readRequirementArchitectureTrace(record,sources) {
   const sourceRevision=artifactId(requirement);
   const refsOf=cell=>"Original Requirement "+requirement.id+" ("+
     sourceRevision+"), cell "+cell;
+  // Index exact generated source references once. Do NOT scan every
+  // 1,024+ original buyer condition for every Spec clause.
+  const cellBySourceRef=new Map(requirement["met-when"].map(row=>
+    [refsOf(row.cell),row.cell]));
   const normative=new Map();
   for(const topic of specification.topics)for(const clause of topic.clauses)
-    for(const source of requirement["met-when"])
-      if(clause.backedBy?.includes(refsOf(source.cell))){
-        const list=normative.get(source.cell)??[];
-        list.push(clause.id);normative.set(source.cell,list);
-      }
+    for(const originalRef of clause.backedBy??[]){
+      const cell=cellBySourceRef.get(originalRef);
+      if(cell===undefined)continue;
+      const list=normative.get(cell)??[];
+      list.push(clause.id);normative.set(cell,list);
+    }
   const modelViews=new Map();
   const models=byId(record.models);
   const viewpoints=byId(record.viewpoints);
