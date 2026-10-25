@@ -188,6 +188,15 @@
           },
           "sourceIds": {
             "$ref": "#/$defs/refs"
+          },
+          "requirementCellIds": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "specificationClauseIds": {
+            "$ref": "#/$defs/refs"
           }
         }
       }
