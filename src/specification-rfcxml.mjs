@@ -22,6 +22,7 @@
 import { comment, document, element, text } from "@red-cup-engineering/xml-document-rendering-service/core";
 import { projectMarkdownBlocks } from "@red-cup-engineering/markdown-engineering-services-section/project-markdown-blocks";
 import { projectMarkdownInline } from "@red-cup-engineering/markdown-engineering-services-section/project-markdown-inline";
+import { assertUniqueSpecificationSourceIdentities } from "./specification.mjs";
 
 const PLACEHOLDER = /\{\{(clause|law|standard):([a-z0-9-]+)\}\}/gu;
 const SENTINEL = /(clause|law|standard):([a-z0-9-]+)/gu;
@@ -205,6 +206,9 @@ function requireEveryEntryReferenced(kind, byId, seen) {
  *   40 characters, references an undefined clause/law/standard, or defines one it never places
  */
 export function renderSpecificationRfcXml(record) {
+  // RFCXML must not be an escape route around the same authored source-ID
+  // guarantees applied to the canonical house Markdown projection.
+  assertUniqueSpecificationSourceIdentities(record);
   const profile = record.identity.profile ?? "prose";
   if (profile !== "prose") throw new TypeError(`specification: renderSpecificationRfcXml only renders the "prose" profile, got "${profile}"`);
   const rfc = record.rfc;
