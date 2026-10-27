@@ -375,3 +375,81 @@ jobs:
           path: ${{ runner.temp }}/specification-candidate/
           if-no-files-found: error
           retention-days: 30
+
+  # Signing is deliberately isolated from dependency installation and native
+  # tests. Only the least-privileged read-only original job may build and run
+  # source, and only its successful, exact-SHA artifact can reach this job.
+  attest-qualified-candidate:
+    needs: original-source-and-package
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+      attestations: write
+      artifact-metadata: write
+    steps:
+      - name: Receive the exact original consumer-qualified npm archive
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: specification-design-qualified-source-${{ github.sha }}
+          path: ${{ runner.temp }}/qualified-candidate/
+      - name: Require a unique checksum-bound original package
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/qualified-candidate"
+          shopt -s nullglob
+          archives=( ./*.tgz )
+          test "${#archives[@]}" -eq 1
+          test -f SHA256SUMS
+          test "$(wc -l < SHA256SUMS)" -eq 1
+          sha256sum --check --strict SHA256SUMS
+          test "$(sed -E 's/^[a-f0-9]{64}  //' SHA256SUMS)" = "${archives[0]#./}"
+          tar -tzf "${archives[0]}" | grep -Fx 'package/src/engineering-design.mjs'
+          tar -tzf "${archives[0]}" | grep -Fx 'package/LICENSE'
+      - name: Sign source-qualified SLSA v1 provenance for the tested tarball
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6
+        with:
+          subject-path: ${{ runner.temp }}/qualified-candidate/*.tgz
+      - name: Independently verify Sigstore certificate, original workflow, SHA and subject
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          archives=( "$RUNNER_TEMP"/qualified-candidate/*.tgz )
+          test "${#archives[@]}" -eq 1
+          gh attestation verify "${archives[0]}" \
+            --repo "$GITHUB_REPOSITORY" \
+            --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/specification-native-receiving.yml" \
+            --source-digest "$GITHUB_SHA" \
+            --deny-self-hosted-runners \
+            --format json > "$RUNNER_TEMP/verified-provenance.json"
+          node --input-type=module - "${archives[0]}" "$RUNNER_TEMP/verified-provenance.json" <<'NODE'
+          import assert from 'node:assert/strict';
+          import { createHash } from 'node:crypto';
+          import { readFileSync } from 'node:fs';
+          const [, , tarball, verified] = process.argv;
+          const digest = createHash('sha256').update(readFileSync(tarball)).digest('hex');
+          const records = JSON.parse(readFileSync(verified, 'utf8'));
+          assert.ok(Array.isArray(records) && records.length > 0);
+          assert.ok(records.some(record => {
+            const statement = record?.verificationResult?.statement;
+            return statement?.predicateType === 'https://slsa.dev/provenance/v1' &&
+              statement.subject?.some(subject => subject.digest?.sha256 === digest);
+          }), 'a cryptographically verified SLSA statement must name these exact tested archive bytes');
+          console.log('Independent Sigstore/SLSA verification: actual source-bound npm tarball received.');
+          NODE
+          cp "${archives[0]}" "$RUNNER_TEMP/tampered-candidate.tgz"
+          printf 'x' >> "$RUNNER_TEMP/tampered-candidate.tgz"
+          if gh attestation verify "$RUNNER_TEMP/tampered-candidate.tgz" \
+            --repo "$GITHUB_REPOSITORY" \
+            --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/specification-native-receiving.yml" \
+            --source-digest "$GITHUB_SHA" > "$RUNNER_TEMP/unexpected-tamper-acceptance.txt" 2>&1; then
+            echo "::error::Modified candidate passed provenance authentication"
+            exit 1
+          fi
+          echo "Original passed; a one-byte changed candidate was refused by the independent verifier"

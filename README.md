@@ -68,9 +68,36 @@ To run the source checks in a qualified Node 24 checkout, resolve the declared
 dependencies from the original approved registry and run `npm test`. The
 CI-installed consumer uses `npm pack --ignore-scripts`, an independent
 `npm install` of that archive, and the package's actual exported APIs.
-The SHA-256 checksum proves local archive integrity; it is **not** a SLSA
-attestation, immutable published release, independently accepted Design proof,
-successful Bare Cedar Fog host installation, or beneficiary receipt.
+The SHA-256 checksum by itself proves only local archive integrity.
+The original qualification workflow additionally sends that **same** tested
+archive, after all native and independently installed consumer checks pass, to
+a separate least-privileged attestation job. The second job verifies the
+downloaded SHA256SUMS and expected installed Design module, asks GitHub's
+Sigstore-backed `actions/attest` for a signed SLSA v1 provenance statement
+and independently checks the artifact's **real bytes**, repository,
+specific signer workflow, exact commit and GitHub-hosted runner using
+`gh attestation verify`. An independently modified tarball is the negative
+control and must refuse. Both jobs must pass for source qualification.
+
+After retrieving the original GitHub Actions tarball, its independent consumer
+can verify the signed provenance without trusting our text record:
+
+```sh
+gh attestation verify ./red-cup-engineering-specification-engineering-services-section-0.1.2.tgz \\
+  --repo red-cup-engineering/specification-engineering-services-section \\
+  --signer-workflow red-cup-engineering/specification-engineering-services-section/.github/workflows/specification-native-receiving.yml
+```
+
+The unsigned checksum file is still provided for offline integrity comparison;
+the signed attestation is held by GitHub, and the verification command checks
+GitHub's trusted signing certificate and authenticated subject digest. Check
+the source commit/ref in the resulting statement before adoption. A signed
+source/build claim is **not** an independently accepted Design proof, a SLSA
+Build Level 3 assessment, immutable npm registry publication, a successful
+Bare Cedar Fog host installation or recipient benefit. The owner of SignChain
+retains institutional evidence-chain integration rather than treating this
+external attestation as a replacement for source-owned Work.
+
 
 
 ## Deterministic architecture-description projection (source proposal)
