@@ -168,16 +168,81 @@ function sourceContext(stage, supplied) {
     }
   }
   requireThat(clauseIds.size > 0 && [...cells.values()].every(v => v.length > 0));
+
   const architecture = parsed.get('architecture');
   requireThat(architecture.type === 'ArchitectureDescriptionCandidate' && object(architecture.identity));
   requireThat(nonblank(architecture.identity.id) && nonblank(architecture.identity.revision));
+  requireThat(object(architecture.upstream) && Array.isArray(architecture.sources));
+  const upstream = architecture.upstream;
+  requireThat(nonblank(upstream.requirementsSourceId) && nonblank(upstream.specificationSourceId)
+    && upstream.requirementsSourceId !== upstream.specificationSourceId);
+  const recordedSources = new Map();
+  for (const source of architecture.sources) {
+    requireThat(object(source) && nonblank(source.id) && nonblank(source.revision) && !recordedSources.has(source.id));
+    recordedSources.set(source.id, source.revision);
+  }
+  // Source identity is computed from the actual supplied Requirement and Spec,
+  // not trusted from the Architecture's self-declaration. It is NOT authority.
+  requireThat(recordedSources.get(upstream.requirementsSourceId) === address);
+  requireThat(recordedSources.get(upstream.specificationSourceId)
+    === semanticIdOf('metroplat.artifact')(specification));
+
   requireThat(Array.isArray(architecture.models) && architecture.models.length > 0);
-  const models = new Set();
+  const models = new Set(), modelById = new Map();
   for (const model of architecture.models) {
     requireThat(object(model) && nonblank(model.id) && !models.has(model.id) && nonblank(model.content));
+    requireThat(strings(model.concernIds, 1, true));
     models.add(model.id);
+    modelById.set(model.id, model);
   }
-  const context = { sources, cells, models, hld: null };
+  requireThat(Array.isArray(architecture.concerns) && Array.isArray(architecture.views)
+    && Array.isArray(architecture.viewpoints));
+  const concerns = new Map();
+  for (const concern of architecture.concerns) {
+    requireThat(object(concern) && nonblank(concern.id) && !concerns.has(concern.id));
+    const hasCells = Object.hasOwn(concern, 'requirementCellIds');
+    const hasClauses = Object.hasOwn(concern, 'specificationClauseIds');
+    requireThat(hasCells === hasClauses);
+    if (hasCells) {
+      requireThat(strings(concern.requirementCellIds, 1, true)
+        && strings(concern.specificationClauseIds, 1, true));
+      for (const cell of concern.requirementCellIds) {
+        requireThat(cells.has(cell)
+          && concern.specificationClauseIds.some(id => cells.get(cell).includes(id)));
+      }
+      for (const id of concern.specificationClauseIds) {
+        requireThat(clauseIds.has(id)
+          && concern.requirementCellIds.some(cell => cells.get(cell).includes(id)));
+      }
+    }
+    concerns.set(concern.id, concern);
+  }
+  const viewpoints = new Map();
+  for (const viewpoint of architecture.viewpoints) {
+    requireThat(object(viewpoint) && nonblank(viewpoint.id) && !viewpoints.has(viewpoint.id)
+      && strings(viewpoint.concernIds, 1, true));
+    viewpoints.set(viewpoint.id, viewpoint);
+  }
+  // Follow authored concern → view/viewpoint → model edges. A globally named
+  // model is not automatically a model of every original Requirement cell.
+  const authoredModels = new Map([...cells.keys()].map(cell => [cell, new Set()]));
+  for (const view of architecture.views) {
+    requireThat(object(view) && viewpoints.has(view.viewpointId) && strings(view.modelIds, 1, true));
+    const viewpoint = viewpoints.get(view.viewpointId);
+    for (const modelId of view.modelIds) {
+      const model = modelById.get(modelId);
+      requireThat(model);
+      for (const concernId of model.concernIds) {
+        if (!viewpoint.concernIds.includes(concernId)) continue;
+        const concern = concerns.get(concernId);
+        requireThat(concern);
+        for (const cell of concern.requirementCellIds ?? []) authoredModels.get(cell).add(modelId);
+      }
+    }
+  }
+  // An architecturally untraced condition cannot be promoted as HLD/LLD.
+  requireThat([...authoredModels.values()].every(ids => ids.size > 0));
+  const context = { sources, cells, models, authoredModels, hld: null };
   if (stage === 'low-level') {
     const upstream = parsed.get('high-level');
     requireThat(exact(upstream, ['type', 'stage', 'sources', 'design', 'admitted', 'proof']));
@@ -193,15 +258,19 @@ function traceValid(rows, elements, context, lowLevel) {
   if (!Array.isArray(rows) || rows.length !== context.cells.size) return false;
   const seen = new Set(), covered = new Set();
   const upstreamRows = lowLevel ? new Map(context.hld.traceability.map(r => [r.requirementCellId, r.designElementIds])) : null;
+  const upstreamModels = lowLevel ? new Map(context.hld.traceability.map(r => [r.requirementCellId, r.architectureModelIds])) : null;
   for (const row of rows) {
     if (!exact(row, ['requirementCellId', 'specificationClauseIds', 'architectureModelIds', 'designElementIds']) || !nonblank(row.requirementCellId)) return false;
     if (seen.has(row.requirementCellId) || !context.cells.has(row.requirementCellId)) return false;
     seen.add(row.requirementCellId);
     if (!strings(row.specificationClauseIds, 1, true) || !strings(row.architectureModelIds, 1, true) || !strings(row.designElementIds, 1, true)) return false;
     if (!sameSet(row.specificationClauseIds, context.cells.get(row.requirementCellId))) return false;
-    if (!row.architectureModelIds.every(id => context.models.has(id)) || !row.designElementIds.every(id => elements.has(id))) return false;
+    if (!row.architectureModelIds.every(id => context.models.has(id)
+      && context.authoredModels.get(row.requirementCellId).has(id))
+      || !row.designElementIds.every(id => elements.has(id))) return false;
     for (const id of row.designElementIds) covered.add(id);
     if (lowLevel && !sameSet(row.designElementIds.map(id => elements.get(id).componentId), upstreamRows.get(row.requirementCellId))) return false;
+    if (lowLevel && !sameSet(row.architectureModelIds, upstreamModels.get(row.requirementCellId))) return false;
   }
   return covered.size === elements.size;
 }
