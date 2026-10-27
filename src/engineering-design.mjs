@@ -377,13 +377,20 @@ export function receiveEngineeringDesign(input) {
  * machine-addressable Code/test Work INTENTS; it never fabricates, imports,
  * executes, installs, adopts or independently proves a program.
  *
+ * Only the originally supplied plan and provider-delivered Design JSON can
+ * authorize this READOUT of a received candidate. The original CIE/Work
+ * receiver still must authenticate the provider task, original Work and
+ * external authority; this is NOT a self-attested source certificate.
+ *
  * A provided source view is only the selected custodian's declared bytes:
  * even a matching sha256 proves byte correspondence, NOT Git authority or
  * runtime behavior. An absent view is "unobserved", NOT proof the file is
  * absent from an uninspected repository. The original Code and Work owners
  * separately issue effect grants, implementation assays and receipts.
  */
-export function readEngineeringCodeWork({ designCandidate, sourceViews } = {}) {
+export function readEngineeringCodeWork({
+  designCandidate, originalPlan, originalDeliveryText, sourceViews,
+} = {}) {
   requireThat(exact(designCandidate,
     ['type', 'stage', 'sources', 'design', 'admitted', 'proof']));
   requireThat(designCandidate.type === 'EngineeringDesignCandidate' &&
@@ -397,8 +404,17 @@ export function readEngineeringCodeWork({ designCandidate, sourceViews } = {}) {
       row.digest === 'sha256:' + createHash('sha256').update(row.text, 'utf8').digest('hex'));
     return { kind: row.kind, text: row.text };
   });
-  const context = sourceContext('low-level', sources);
-  requireThat(validDesign('low-level', designCandidate.design, context));
+  // The original LLD producer is the only local structural admission
+  // authority. Re-receive the exact original provider-delivered JSON against
+  // the original source-bound derivation plan, then compare the COMPLETE
+  // returned candidate; a caller-mutated candidate cannot rewrite the
+  // subsequently derived Code targets while preserving an old receipt.
+  requireThat(typeof originalDeliveryText === 'string');
+  const received = receiveEngineeringDesign({
+    stage: 'low-level', sources, plan: originalPlan,
+    deliveryText: originalDeliveryText,
+  });
+  requireThat(equal(received, designCandidate));
 
   // The Code source custodian must supply an explicitly scoped array of
   // exact module views. Do not confuse unprovided files with repository
