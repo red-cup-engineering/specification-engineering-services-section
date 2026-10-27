@@ -232,6 +232,61 @@ jobs:
             requirement:revised,specification:subsequent,
           }).valid,false,"an old Architecture source cut may not silently follow a changed Requirement");
           console.log("Packed Requirement->Specification->Architecture: source-bound candidate received; stale source refused");
+          // The ACTUAL installed consumer receives the generator, not a
+          // synthetic source-only assertion that an exported function exists.
+          const {deriveArchitectureDescriptionFromSpecificationReview}=await import(
+            "@red-cup-engineering/specification-engineering-services-section/architecture-description");
+          const originalReview={
+            identity:{
+              id:sourceBoundArchitecture.identity.id,
+              title:sourceBoundArchitecture.identity.title,
+              owner:sourceBoundArchitecture.identity.owner,
+            },
+            applicability:sourceBoundArchitecture.standard.applicability,
+            system:{name:sourceBoundArchitecture.system.name,
+              description:sourceBoundArchitecture.system.description},
+            supportingSources:sourceBoundArchitecture.sources.filter(row=>
+              !["req","spec"].includes(row.id)),
+            stakeholders:sourceBoundArchitecture.stakeholders,
+            concerns:sourceBoundArchitecture.concerns,
+            viewpoints:sourceBoundArchitecture.viewpoints,
+            views:sourceBoundArchitecture.views,
+            models:sourceBoundArchitecture.models,
+            correspondences:sourceBoundArchitecture.correspondences,
+            decisions:sourceBoundArchitecture.decisions,
+            openQuestions:sourceBoundArchitecture.openQuestions,
+          };
+          const generated=deriveArchitectureDescriptionFromSpecificationReview({
+            requirement,specification:candidate,review:originalReview,
+          });
+          assert.equal(validateArchitectureDescriptionAgainstSourceCut(generated,cut).valid,true);
+          assert.deepEqual(readRequirementArchitectureTrace(generated,cut).counts,
+            {sourceCells:2,authoredModelMapped:1,untraced:1});
+          assert.equal(generated.standard.conformance,"unassessed");
+          assert.equal(generated.identity.status,"candidate");
+          const actualCmd=spawnSync(process.execPath,[
+            "node_modules/@red-cup-engineering/specification-engineering-services-section/scripts/render-architecture-description.mjs",
+            "--reviewed-source-cut"],{
+              input:JSON.stringify({requirement,specification:candidate,review:originalReview}),
+              encoding:"utf8",timeout:15000,maxBuffer:1024*1024,
+            });
+          assert.equal(actualCmd.status,0,actualCmd.stderr);
+          assert.equal(actualCmd.stdout,renderArchitectureDescriptionFromSourceCut(generated,cut));
+          const invalidOriginalReview=structuredClone(originalReview);
+          invalidOriginalReview.decisions[0].sourceIds=["req"];
+          assert.throws(()=>deriveArchitectureDescriptionFromSpecificationReview({
+            requirement,specification:candidate,review:invalidOriginalReview,
+          }),/every authored decision needs its own source/u);
+          const invalidCmd=spawnSync(process.execPath,[
+            "node_modules/@red-cup-engineering/specification-engineering-services-section/scripts/render-architecture-description.mjs",
+            "--reviewed-source-cut"],{
+              input:JSON.stringify({requirement,specification:candidate,review:invalidOriginalReview}),
+              encoding:"utf8",timeout:15000,maxBuffer:1024*1024,
+            });
+          assert.equal(invalidCmd.status,1);
+          assert.equal(invalidCmd.stdout,"","no partial design on an invalid review");
+          console.log("Packed source-reviewed Specification to generated Architecture: source-cut qualified, CLI received; unauthored choice refused, Proof and buyer acceptance open.");
+
           console.log("Independently installed source->Specification consumer: all original conditions retained; revision re-addressed; independent admission still required");
           // Reuse the original actual packed-consumer scenario for a second
           // source-trust boundary: typed metadata must not become carrier keys.
