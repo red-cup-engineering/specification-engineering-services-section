@@ -2,9 +2,11 @@
 // candidate package archive. It imports only the PUBLIC published design
 // export, never ../src, and preserves source/Proof/admission boundaries.
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import {
   planEngineeringDesign,
   receiveEngineeringDesign,
+  readEngineeringCodeWork,
 } from '@red-cup-engineering/specification-engineering-services-section/engineering-design';
 import { sourcesFixture, clausesSplitAcrossModels } from './engineering-design-source-cut.fixture.mjs';
 
@@ -58,6 +60,50 @@ const low = receiveEngineeringDesign({
 assert.equal(low.type, 'EngineeringDesignCandidate');
 assert.equal(low.admitted, false);
 assert.equal(low.proof, 'unreceived');
+
+// Independently installed consumer of the ORIGINAL Design→Code readout.
+// This source snapshot is a byte-addressed selected target, not an authentic
+// GitHub checkout or a permitted Code effect.
+const codeSourceText='export const retainSourceValue = x => x;' + '\n';
+const codeSourceSha256='sha256:' + createHash('sha256')
+  .update(codeSourceText,'utf8').digest('hex');
+const sourceCut=[{
+  path:'src/source-operation.mjs',text:codeSourceText,
+  expectedSha256:codeSourceSha256,
+}];
+const work=readEngineeringCodeWork({
+  designCandidate:low,originalPlan:lowPlan,
+  originalDeliveryText:JSON.stringify(low.design),sourceViews:sourceCut,
+});
+assert.equal(work.type,'EngineeringDesignCodeWorkReadout');
+assert.equal(work.status,'source-present-unassayed');
+assert.equal(work.targets.length,1);
+assert.equal(work.targets[0].operationId,'source-operation');
+assert.equal(work.targets[0].module,'src/source-operation.mjs');
+assert.equal(work.targets[0].exportName,'retainSourceValue');
+assert.equal(work.targets[0].observedSha256,codeSourceSha256);
+assert.deepEqual(work.targets[0].originalTrace.map(x=>x.requirementCellId),
+  ['source-req:a','source-req:b']);
+assert.equal(work.targets[0].testObligations.status,'unreceived');
+assert.equal(work.originalDesignAdmitted,false);
+assert.equal(work.independentProof,'unreceived');
+assert.equal(work.executableWork,false);
+assert.equal(work.codeApplied,false);
+assert.ok(Object.isFrozen(work.targets[0].testObligations));
+const changedWork=structuredClone(low);
+changedWork.design.operations[0].module='src/a-different-maker.mjs';
+assert.throws(()=>readEngineeringCodeWork({
+  designCandidate:changedWork,originalPlan:lowPlan,
+  originalDeliveryText:JSON.stringify(low.design),sourceViews:sourceCut,
+}),TypeError);
+const staleCodeCut=readEngineeringCodeWork({
+  designCandidate:low,originalPlan:lowPlan,
+  originalDeliveryText:JSON.stringify(low.design),
+  sourceViews:[{...sourceCut[0],expectedSha256:'sha256:'+'0'.repeat(64)}],
+});
+assert.equal(staleCodeCut.status,'source-disagreement');
+assert.equal(staleCodeCut.discrepancies[0].code,'SOURCE_DIGEST_DISAGREEMENT');
+assert.equal(staleCodeCut.executableWork,false);
 
 const changed = structuredClone(hld);
 changed.traceability[0].architectureModelIds = ['model-b'];
@@ -141,4 +187,5 @@ assert.equal(unicodeReceived.type, 'EngineeringDesignCandidate');
 assert.equal(unicodeReceived.admitted, false);
 assert.equal(unicodeReceived.proof, 'unreceived');
 
+console.log('Packed original Design consumer: original LLD-to-Code work and test obligations source-read; no effect, proof or implementation conformance granted.');
 console.log('Packed original Design consumer: HLD+LLD source-bound and per-clause model-covered candidates received; stale, cross-cell, unmodeled-clause and partial-model sources refused; proof, adoption and installation still unreceived.');
