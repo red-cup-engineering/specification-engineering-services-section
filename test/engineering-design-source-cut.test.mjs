@@ -161,7 +161,7 @@ test('refuse LLD module paths that cannot preserve their own POSIX UTF-8 file id
     'src/invalid\u0000name.mjs',
     'src/invalid\ud800name.mjs',
     'src/invalid\udc00name.mjs',
-  ].map(spelling => JSON.parse('"' + spelling + '"'));
+  ];
   for (const module of invalid) {
     const design = lldFixture();
     design.operations[0].module = module;
