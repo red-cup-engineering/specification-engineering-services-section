@@ -544,6 +544,8 @@ function reviewedArchitectureCut() {
   selected.concerns[0].specificationClauseIds=["source-work"];
   return { ...sources, review:{
     identity:{id:selected.identity.id,title:selected.identity.title,owner:selected.identity.owner},
+    sourceCut:{requirementRevision:artifactId(sources.requirement),
+      specificationRevision:artifactId(sources.specification)},
     applicability:selected.standard.applicability,
     system:{name:selected.system.name,description:selected.system.description},
     supportingSources:selected.sources.filter(source=>!["req","spec"].includes(source.id)),
