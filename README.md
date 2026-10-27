@@ -83,7 +83,7 @@ After retrieving the original GitHub Actions tarball, its independent consumer
 can verify the signed provenance without trusting our text record:
 
 ```sh
-gh attestation verify ./red-cup-engineering-specification-engineering-services-section-0.1.2.tgz \\
+gh attestation verify ./red-cup-engineering-specification-engineering-services-section-0.1.3-dev.0.tgz \\
   --repo red-cup-engineering/specification-engineering-services-section \\
   --signer-workflow red-cup-engineering/specification-engineering-services-section/.github/workflows/specification-native-receiving.yml
 ```
@@ -258,6 +258,14 @@ Topic bodies are read through the Markdown section's
 `projectMarkdownBlocks` and `projectMarkdownInline`, the same projections its
 HTML renderer uses.
 ## Requirement-first revision pressure, before renewed Specification or Architecture
+
+The additive public interface is carried as the **unpublished**
+`0.1.3-dev.0` source candidate, distinct from previously signed
+`0.1.2` archives. An archive being independently installable and
+source-attested does not prove that the same SemVer has been accepted by
+the house registry; dependent services must not select this prerelease
+without original supplier release receiving.
+
 
 The public `./architecture-description` interface exports
 `readRequirementRevisionPressure(before, after)` for **two complete original
