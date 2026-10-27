@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { readRequirementArchitectureTrace } from './architecture-description.mjs';
 import { semanticIdOf } from '@red-cup-engineering/computer-data-engineering-services-section/semiotic-expression-notation/semantic-content-identity';
 
 /*
@@ -171,13 +172,24 @@ function sourceContext(stage, supplied) {
   const architecture = parsed.get('architecture');
   requireThat(architecture.type === 'ArchitectureDescriptionCandidate' && object(architecture.identity));
   requireThat(nonblank(architecture.identity.id) && nonblank(architecture.identity.revision));
+  // Reuse the incumbent Architecture reader's *exact source-cut* admission,
+  // not just model-ID existence. Otherwise an old/different Architecture can
+  // mint fresh HLD/LLD candidates merely by copying an unrelated model label.
+  const architectureTrace = readRequirementArchitectureTrace(architecture, {
+    requirement: r, specification
+  });
+  const authoredModelsByCell = new Map(architectureTrace.rows.map(row => [
+    row.cell, new Set(row.authoredPaths.map(path => path.modelId))
+  ]));
+  requireThat(authoredModelsByCell.size === cells.size &&
+    [...cells.keys()].every(cell => (authoredModelsByCell.get(cell)?.size ?? 0) > 0));
   requireThat(Array.isArray(architecture.models) && architecture.models.length > 0);
   const models = new Set();
   for (const model of architecture.models) {
     requireThat(object(model) && nonblank(model.id) && !models.has(model.id) && nonblank(model.content));
     models.add(model.id);
   }
-  const context = { sources, cells, models, hld: null };
+  const context = { sources, cells, models, authoredModelsByCell, hld: null };
   if (stage === 'low-level') {
     const upstream = parsed.get('high-level');
     requireThat(exact(upstream, ['type', 'stage', 'sources', 'design', 'admitted', 'proof']));
@@ -192,16 +204,17 @@ function sourceContext(stage, supplied) {
 function traceValid(rows, elements, context, lowLevel) {
   if (!Array.isArray(rows) || rows.length !== context.cells.size) return false;
   const seen = new Set(), covered = new Set();
-  const upstreamRows = lowLevel ? new Map(context.hld.traceability.map(r => [r.requirementCellId, r.designElementIds])) : null;
+  const upstreamRows = lowLevel ? new Map(context.hld.traceability.map(r => [r.requirementCellId, r])) : null;
   for (const row of rows) {
     if (!exact(row, ['requirementCellId', 'specificationClauseIds', 'architectureModelIds', 'designElementIds']) || !nonblank(row.requirementCellId)) return false;
     if (seen.has(row.requirementCellId) || !context.cells.has(row.requirementCellId)) return false;
     seen.add(row.requirementCellId);
     if (!strings(row.specificationClauseIds, 1, true) || !strings(row.architectureModelIds, 1, true) || !strings(row.designElementIds, 1, true)) return false;
     if (!sameSet(row.specificationClauseIds, context.cells.get(row.requirementCellId))) return false;
-    if (!row.architectureModelIds.every(id => context.models.has(id)) || !row.designElementIds.every(id => elements.has(id))) return false;
+    if (!row.architectureModelIds.every(id => context.models.has(id) && context.authoredModelsByCell.get(row.requirementCellId)?.has(id)) || !row.designElementIds.every(id => elements.has(id))) return false;
     for (const id of row.designElementIds) covered.add(id);
-    if (lowLevel && !sameSet(row.designElementIds.map(id => elements.get(id).componentId), upstreamRows.get(row.requirementCellId))) return false;
+    if (lowLevel && (!sameSet(row.designElementIds.map(id => elements.get(id).componentId), upstreamRows.get(row.requirementCellId)?.designElementIds ?? []) ||
+      !sameSet(row.architectureModelIds, upstreamRows.get(row.requirementCellId)?.architectureModelIds ?? []))) return false;
   }
   return covered.size === elements.size;
 }
