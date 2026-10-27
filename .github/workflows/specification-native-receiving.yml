@@ -242,6 +242,8 @@ jobs:
               title:sourceBoundArchitecture.identity.title,
               owner:sourceBoundArchitecture.identity.owner,
             },
+            sourceCut:{requirementRevision:artifactId(requirement),
+              specificationRevision:artifactId(candidate)},
             applicability:sourceBoundArchitecture.standard.applicability,
             system:{name:sourceBoundArchitecture.system.name,
               description:sourceBoundArchitecture.system.description},
