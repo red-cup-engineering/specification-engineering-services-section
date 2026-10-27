@@ -178,6 +178,7 @@ jobs:
           const {
             validateArchitectureDescriptionAgainstSourceCut,
             renderArchitectureDescriptionFromSourceCut,
+            readRequirementArchitectureTrace,
           } = await import("@red-cup-engineering/specification-engineering-services-section/architecture-description");
           const sourceBoundArchitecture = {
             type:"ArchitectureDescriptionCandidate",version:1,
@@ -196,7 +197,9 @@ jobs:
             ],
             stakeholders:[{id:"buyer",name:"Original beneficiary",concernIds:["rights"]}],
             concerns:[{id:"rights",statement:"Preserve customer authority",
-              sourceIds:["req","spec"]}],
+              sourceIds:["req","spec"],
+              requirementCellIds:["buyer-work-continuity:original-work"],
+              specificationClauseIds:["original-work"]}],
             viewpoints:[{id:"boundary",name:"Source ownership",concernIds:["rights"],
               modelKinds:["interface"],method:"Original authored interface"}],
             views:[{id:"source-view",name:"Bounded original source",
@@ -216,6 +219,15 @@ jobs:
           assert.equal(verified.valid,true,JSON.stringify(verified.issues));
           assert.match(renderArchitectureDescriptionFromSourceCut(sourceBoundArchitecture,cut),
             /conformance unassessed/u);
+          const traced=readRequirementArchitectureTrace(sourceBoundArchitecture,cut);
+          assert.equal(traced.counts.sourceCells,2);
+          assert.equal(traced.counts.authoredModelMapped,1);
+          assert.equal(traced.counts.untraced,1);
+          assert.equal(traced.rows.find(row=>row.cell.endsWith(":independent-recipient")).standing,
+            "normative-but-architecture-untraced");
+          assert.match(renderArchitectureDescriptionFromSourceCut(sourceBoundArchitecture,cut),
+            /Exact original Requirement-to-model traceability/u);
+          console.log("Packed buyer condition->Specification clause->architecture model: 1 mapped, 1 untraced; no fabricated proof");
           assert.equal(validateArchitectureDescriptionAgainstSourceCut(sourceBoundArchitecture,{
             requirement:revised,specification:subsequent,
           }).valid,false,"an old Architecture source cut may not silently follow a changed Requirement");
