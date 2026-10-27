@@ -257,6 +257,49 @@ topic.
 Topic bodies are read through the Markdown section's
 `projectMarkdownBlocks` and `projectMarkdownInline`, the same projections its
 HTML renderer uses.
+## Requirement-first revision pressure, before renewed Specification or Architecture
+
+The public `./architecture-description` interface exports
+`readRequirementRevisionPressure(before, after)` for **two complete original
+Requirement records with the same source-owned ID**. It compares the original
+native EAVT `artifactId` content identities and each exact source condition,
+not a reimplemented JSON-to-hash format. It records added, removed and
+changed acceptance-cell **addresses**, changed original speaker/request
+counts, target/content/metadata changes, and condition ordering. It emits no
+customer-private `asks` or `says` text.
+
+Use this original tool **before** a new, separately interpreted Specification
+and Architecture exists. A changed source with 3 original requests becoming
+4 and all 8 acceptance cells extended reports `firstOpenStage:
+"requirement-admission"`, 8 revised conditions and
+`downstreamRegenerationRequired:true`. A source-provenance-only change
+requires source requalification without falsely claiming that an unchanged
+code operation needs rebuilding.
+
+The existing public source reader also exposes the same operation through
+`scripts/render-architecture-description.mjs --requirement-pressure`, with
+a bounded, fatal-UTF8 JSON stdin carrier shaped exactly like this:
+
+```json
+{"before":{"kind":"requirement","id":"original-work","met-when":[{"cell":"original-work:source","target":"held","says":"Preserve source."}]},"after":{"kind":"requirement","id":"original-work","met-when":[{"cell":"original-work:source","target":"held","says":"Preserve source and independently receive the change."}]}}
+```
+
+This does **not** change the separate, strictly source-qualified
+`readRequirementArchitectureImpact(before,after)` API. That later operation
+still requires **both** Requirement/Specification/Architecture triples to
+validate; the new Requirement-first reading does not misrepresent an obsolete
+Specification as current.
+
+The outcome always declares `originalEffect:"none-read-only"`,
+`independentProof:false` and
+`independentlyAcceptedCustomerWork:false`. The original Requirements
+Office must authenticate, adopt and interpret the revised source;
+Specifying/Architecting/Designing/Code fabrication must receive separate
+independent evidence and budgets before operating. A green test or a signed
+package is not an authority grant. The Moneyday CDE owner retains its
+actual eight conditions and source-change hold; this software does not
+modify or publish that private consumer's records.
+
 ## Detect revision drift without manufacturing accepted Work
 
 Original \`readRequirementArchitectureImpact(before,after)\` consumes two already
