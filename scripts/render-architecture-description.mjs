@@ -2,18 +2,20 @@
 import {
   renderArchitectureDescriptionMarkdown,validateArchitectureDescriptionRecord,
   renderArchitectureDescriptionFromSourceCut, readRequirementArchitectureImpact,
+  deriveArchitectureDescriptionFromSpecificationReview,
 } from "../src/architecture-description.mjs";
 import { readSourceJsonStdin } from "./read-source-json-stdin.mjs";
 
 if (import.meta.main) {
   if (process.argv.includes("--help")) {
-    process.stdout.write("render-architecture-description [--source-cut | --source-impact] — Normal render reads one ArchitectureDescriptionCandidate. --source-cut renders a source-verified {requirement,specification,architecture}. --source-impact accepts {before:{requirement,specification,architecture},after:{requirement,specification,architecture}} and returns deterministic JSON for stage requalification (no execution, proof, permission or customer acceptance).\n");
+    process.stdout.write("render-architecture-description [--source-cut | --source-impact | --reviewed-source-cut] — Normal mode renders one typed Architecture candidate. --source-cut renders a complete verified source-cut trace; --source-impact emits read-only before/after Work impact; --reviewed-source-cut creates a candidate from {requirement,specification,review} and renders its buyer-cell trace. No command grants rights, proof, Work completion or customer acceptance.\n");
   } else {
     const flags=process.argv.slice(2);
     const sourceCut=flags.includes("--source-cut");
     const sourceImpact=flags.includes("--source-impact");
+    const reviewedSourceCut=flags.includes("--reviewed-source-cut");
     const invalid=flags.length>1 || flags.some(arg=>
-      !["--source-cut","--source-impact"].includes(arg)) ||
+      !["--source-cut","--source-impact","--reviewed-source-cut"].includes(arg)) ||
       (sourceCut && sourceImpact);
     if(invalid) {
       process.stderr.write("render-architecture-description: unsupported argument\n");
@@ -26,7 +28,14 @@ if (import.meta.main) {
       const isExactCut=value=>value && typeof value==="object" &&
         !Array.isArray(value) &&
         Object.keys(value).sort().join(",")==="architecture,requirement,specification";
-      if(sourceImpact){
+      if(reviewedSourceCut){
+        if(!input || typeof input!=="object" || Array.isArray(input) ||
+           Object.keys(input).sort().join(",")!=="requirement,review,specification")
+          throw new TypeError("architecture-review: exact Requirement, Specification and authored review required");
+        const candidate=deriveArchitectureDescriptionFromSpecificationReview(input);
+        process.stdout.write(renderArchitectureDescriptionFromSourceCut(candidate,
+          {requirement:input.requirement,specification:input.specification}));
+      }else if(sourceImpact){
         if(!input || typeof input!=="object" || Array.isArray(input) ||
            Object.keys(input).sort().join(",")!=="after,before" ||
            !isExactCut(input.before) || !isExactCut(input.after))

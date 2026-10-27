@@ -1,4 +1,5 @@
 import { fileURLToPath } from "node:url";
+import { validateSpecificationRecord } from "./specification.mjs";
 import { readFileText } from "@red-cup-engineering/computer-file-engineering-services-section/read-file";
 import { validateJsonSchema } from "@red-cup-engineering/json-schema-services-section/validation";
 import { artifactId } from "@red-cup-engineering/semiotic-eavt-services-section/identity";
@@ -547,4 +548,102 @@ export function renderArchitectureDescriptionMarkdown(record) {
     [item.id, item.locator, item.revision])));
   sections.push("**Receiving boundary:** document bytes are a deterministic projection only. Independent standards audit, semantic proof, right to fabricate, native production and downstream receiving remain separate.");
   return sections.join("\n\n") + "\n";
+}
+
+/**
+ * Derive the existing ArchitectureDescriptionCandidate from an independently
+ * authored *review of a source-cut Specification*. The original source and
+ * normative-stage identities come from the actual complete Requirement and
+ * Specification objects, never the reviewer's copied hash assertions.
+ *
+ * The reviewer still must author architectural choices, models and their
+ * correspondence to the original obligations. Deterministic projection does
+ * not choose those designs, grant reviewer authority, close the engineering
+ * stage, prove refinement, or establish ISO/IEC/IEEE 42010 conformance.
+ *
+ * This is intentionally an extension of the incumbent architecture-description
+ * maker and source-cut validator, not a parallel architecture/Work database.
+ */
+export function deriveArchitectureDescriptionFromSpecificationReview({
+  requirement, specification, review,
+} = {}) {
+  const isRecord = value => value !== null && typeof value === "object" &&
+    !Array.isArray(value) && Object.getPrototypeOf(value) === Object.prototype;
+  const exactly = (value, required, optional, name) => {
+    if (!isRecord(value) || required.some(key => !Object.hasOwn(value, key)) ||
+        Object.keys(value).some(key => !required.includes(key) && !optional.includes(key)))
+      throw new TypeError("architecture-review: invalid or unauthored " + name + " fields");
+  };
+  // Source authority remains a separate operation. This is only a typed
+  // authoring surface, so status, proof or conformance claims cannot be
+  // smuggled in as alternate ArchitectureDescriptionCandidate metadata.
+  exactly(review, [
+    "identity", "sourceCut", "applicability", "system", "supportingSources", "stakeholders",
+    "concerns", "viewpoints", "views", "models", "correspondences",
+    "decisions", "openQuestions",
+  ], [], "review");
+  exactly(review.identity, ["id", "title", "owner"], [], "review.identity");
+  exactly(review.sourceCut, ["requirementRevision", "specificationRevision"], [], "review.sourceCut");
+  exactly(review.system, ["name", "description"], ["supportingSourceIds"], "review.system");
+  const checkedSpecification = validateSpecificationRecord(specification);
+  if (!checkedSpecification.valid)
+    throw new TypeError("architecture-review: original Specification invalid: " +
+      JSON.stringify(checkedSpecification.issues));
+  if (!isRecord(requirement) || requirement.kind !== "requirement" ||
+      typeof requirement.id !== "string" ||
+      !Array.isArray(requirement["met-when"]) || requirement["met-when"].length === 0)
+    throw new TypeError("architecture-review: complete original Requirement required");
+  if (!Array.isArray(review.supportingSources) ||
+      review.supportingSources.length === 0 ||
+      review.supportingSources.some(s => !isRecord(s) || ["req", "spec"].includes(s.id)))
+    throw new TypeError("architecture-review: independently attributed decision source required");
+  if (!Array.isArray(review.decisions) ||
+      review.decisions.length === 0 ||
+      review.decisions.some(d => !Array.isArray(d?.sourceIds) ||
+        !d.sourceIds.some(id => review.supportingSources.some(s => s.id === id))))
+    throw new TypeError("architecture-review: every authored decision needs its own source");
+  if (review.system.supportingSourceIds !== undefined &&
+      (!Array.isArray(review.system.supportingSourceIds) ||
+        review.system.supportingSourceIds.some(id => typeof id !== "string")))
+    throw new TypeError("architecture-review: supporting system source IDs must be explicit strings");
+  // The architectural author must have actually selected the precise
+  // Requirement and Specification cuts they designed against. Recomputing
+  // output digests alone would otherwise silently rebind an OLD design review
+  // to newly revised normative requirements. Original source bytes win.
+  const requirementsRevision = artifactId(requirement);
+  const specificationRevision = artifactId(specification);
+  if (review.sourceCut.requirementRevision !== requirementsRevision ||
+      review.sourceCut.specificationRevision !== specificationRevision)
+    throw new TypeError("architecture-review: original source cut refused: review is stale or foreign");
+  // Clone before hashing and projecting. A caller's later mutation cannot
+  // silently alter the selected candidate or its source-revision identity.
+  const authored = structuredClone(review);
+  const candidate = {
+    type: "ArchitectureDescriptionCandidate", version: 1,
+    identity: { ...authored.identity,
+      revision: artifactId({ review: authored, requirementsRevision, specificationRevision }),
+      status: "candidate" },
+    standard: {
+      designation: "ISO/IEC/IEEE 42010", edition: "2022",
+      applicability: authored.applicability, conformance: "unassessed",
+    },
+    system: { name: authored.system.name, description: authored.system.description,
+      sourceIds: ["req", "spec", ...(authored.system.supportingSourceIds ?? [])] },
+    upstream: { requirementsSourceId: "req", specificationSourceId: "spec" },
+    sources: [
+      { id: "req", locator: requirementsRevision, revision: requirementsRevision },
+      { id: "spec", locator: specificationRevision, revision: specificationRevision },
+      ...authored.supportingSources,
+    ],
+    stakeholders: authored.stakeholders, concerns: authored.concerns,
+    viewpoints: authored.viewpoints, views: authored.views, models: authored.models,
+    correspondences: authored.correspondences, decisions: authored.decisions,
+    openQuestions: authored.openQuestions,
+  };
+  const checked = validateArchitectureDescriptionAgainstSourceCut(candidate,
+    { requirement, specification });
+  if (!checked.valid)
+    throw new TypeError("architecture-review: exact original source cut refused: " +
+      JSON.stringify(checked.issues));
+  return candidate;
 }
