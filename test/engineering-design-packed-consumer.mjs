@@ -120,4 +120,25 @@ assert.equal(clauseLow.type, 'EngineeringDesignCandidate');
 assert.equal(clauseLow.admitted, false);
 assert.equal(clauseLow.proof, 'unreceived');
 
+// The actual separately installed public Design export must refuse module
+// strings that cannot denote a stable POSIX UTF-8 pathname. This is not
+// emulated by a test-only helper and never writes generated code.
+for (const module of ['src/bad\u0000name.mjs', 'src/bad\ud800name.mjs', 'src/bad\udc00name.mjs']) {
+  const candidate = structuredClone(low.design);
+  candidate.operations[0].module = module;
+  assert.deepEqual(receiveEngineeringDesign({
+    stage: 'low-level', sources: lowSources, plan: lowPlan,
+    deliveryText: JSON.stringify(candidate),
+  }), { type: 'EngineeringDesignDerivationRefusal', reason: 'invalid-design' });
+}
+const unicodeCandidate = structuredClone(low.design);
+unicodeCandidate.operations[0].module = 'src/\ud83e\uddea.mjs';
+const unicodeReceived = receiveEngineeringDesign({
+  stage: 'low-level', sources: lowSources, plan: lowPlan,
+  deliveryText: JSON.stringify(unicodeCandidate),
+});
+assert.equal(unicodeReceived.type, 'EngineeringDesignCandidate');
+assert.equal(unicodeReceived.admitted, false);
+assert.equal(unicodeReceived.proof, 'unreceived');
+
 console.log('Packed original Design consumer: HLD+LLD source-bound and per-clause model-covered candidates received; stale, cross-cell, unmodeled-clause and partial-model sources refused; proof, adoption and installation still unreceived.');

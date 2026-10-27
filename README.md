@@ -31,6 +31,20 @@ cover its claimed clauses, and an LLD that revises its HLD allocation without
 a new upstream design. No inference operation, proof authority, filesystem
 write, accepted Work or release is granted by this exported module.
 
+The LLD `operations[].module` is a **prospective source file name**, not
+an arbitrary model label. In addition to its already required canonical POSIX
+`src/...mjs` shape, it must contain no NUL and be well-formed UTF-16
+(therefore a single stable UTF-8 spelling on materialization). The receiver
+refuses unpaired high/low surrogates without rewriting or normalizing the
+model's proposal. Valid paired Unicode characters remain permitted. This
+source-format gate makes no assertion that a target file or export exists.
+
+**Migration:** Older unadmitted Design candidates containing a NUL or
+unpaired surrogate module path cannot be grandfathered into Code fabrication.
+Reissue an LLD with a usable original-source-bound module spelling and
+repeat independent Design receiving and Proof. Do not silently replace its
+path while preserving an old source/revision identity.
+
 The original generation Work is recorded in
 `data/records/service-records/fabrication-work-order-service-records/moneyday-design-generators.work-order.md`;
 the original receiving candidate is in the neighboring
