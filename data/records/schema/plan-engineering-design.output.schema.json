@@ -1,0 +1,104 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "type",
+    "stage",
+    "sources",
+    "request"
+  ],
+  "properties": {
+    "type": {
+      "const": "EngineeringDesignDerivationPlan"
+    },
+    "stage": {
+      "enum": [
+        "high-level",
+        "low-level"
+      ]
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "text",
+          "digest"
+        ],
+        "properties": {
+          "kind": {
+            "enum": [
+              "requirement",
+              "specification",
+              "architecture",
+              "high-level"
+            ]
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1
+          },
+          "digest": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "taskClass",
+        "objective",
+        "messages",
+        "schema",
+        "requiredCapabilities"
+      ],
+      "properties": {
+        "taskClass": {
+          "const": "code-fabrication"
+        },
+        "objective": {
+          "type": "string",
+          "minLength": 1
+        },
+        "messages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "role",
+              "content"
+            ],
+            "properties": {
+              "role": {
+                "enum": [
+                  "system",
+                  "user"
+                ]
+              },
+              "content": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "minItems": 1
+        },
+        "schema": {
+          "type": "object"
+        },
+        "requiredCapabilities": {
+          "const": [
+            "text-output"
+          ]
+        }
+      }
+    }
+  }
+}

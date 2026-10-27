@@ -1,0 +1,396 @@
+{
+  "anyOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "stage",
+        "sources",
+        "design",
+        "admitted",
+        "proof"
+      ],
+      "properties": {
+        "type": {
+          "const": "EngineeringDesignCandidate"
+        },
+        "stage": {
+          "enum": [
+            "high-level",
+            "low-level"
+          ]
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "text",
+              "digest"
+            ],
+            "properties": {
+              "kind": {
+                "enum": [
+                  "requirement",
+                  "specification",
+                  "architecture",
+                  "high-level"
+                ]
+              },
+              "text": {
+                "type": "string",
+                "minLength": 1
+              },
+              "digest": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "minItems": 1
+        },
+        "design": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "components",
+                "connections",
+                "traceability",
+                "openQuestions"
+              ],
+              "properties": {
+                "components": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "id",
+                      "owner",
+                      "layer",
+                      "responsibility",
+                      "dependencyIds",
+                      "providedPorts",
+                      "requiredPorts"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "owner": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "layer": {
+                        "enum": [
+                          "data",
+                          "code",
+                          "networking",
+                          "systems"
+                        ]
+                      },
+                      "responsibility": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "dependencyIds": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "providedPorts": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "requiredPorts": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      }
+                    }
+                  },
+                  "minItems": 1
+                },
+                "connections": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "fromComponentId",
+                      "toComponentId",
+                      "port"
+                    ],
+                    "properties": {
+                      "fromComponentId": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "toComponentId": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "port": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    }
+                  }
+                },
+                "traceability": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "requirementCellId",
+                      "specificationClauseIds",
+                      "architectureModelIds",
+                      "designElementIds"
+                    ],
+                    "properties": {
+                      "requirementCellId": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "specificationClauseIds": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "minItems": 1
+                      },
+                      "architectureModelIds": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "minItems": 1
+                      },
+                      "designElementIds": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "minItems": 1
+                      }
+                    }
+                  },
+                  "minItems": 1
+                },
+                "openQuestions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "operations",
+                "traceability",
+                "openQuestions"
+              ],
+              "properties": {
+                "operations": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "id",
+                      "componentId",
+                      "module",
+                      "exportName",
+                      "inputSchemaJson",
+                      "outputSchemaJson",
+                      "behavior",
+                      "preconditions",
+                      "postconditions",
+                      "failureCases",
+                      "resourceBounds",
+                      "effectBoundaries",
+                      "acceptanceObligations"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "componentId": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "module": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "exportName": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "inputSchemaJson": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "outputSchemaJson": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "behavior": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "preconditions": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "postconditions": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "minItems": 1
+                      },
+                      "failureCases": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "minItems": 1
+                      },
+                      "resourceBounds": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "minItems": 1
+                      },
+                      "effectBoundaries": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "minItems": 1
+                      },
+                      "acceptanceObligations": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "minItems": 1
+                      }
+                    }
+                  },
+                  "minItems": 1
+                },
+                "traceability": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "requirementCellId",
+                      "specificationClauseIds",
+                      "architectureModelIds",
+                      "designElementIds"
+                    ],
+                    "properties": {
+                      "requirementCellId": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "specificationClauseIds": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "minItems": 1
+                      },
+                      "architectureModelIds": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "minItems": 1
+                      },
+                      "designElementIds": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "minItems": 1
+                      }
+                    }
+                  },
+                  "minItems": 1
+                },
+                "openQuestions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "admitted": {
+          "const": false
+        },
+        "proof": {
+          "const": "unreceived"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "reason"
+      ],
+      "properties": {
+        "type": {
+          "const": "EngineeringDesignDerivationRefusal"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  ]
+}
