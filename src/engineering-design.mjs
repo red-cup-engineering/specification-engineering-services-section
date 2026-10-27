@@ -312,7 +312,7 @@ function validLld(design, context) {
     // materialize as replacement-character bytes, so they can alias another
     // prospectively named module while the Design IDs still appear distinct.
     // Keep valid scalar Unicode paths; do not silently normalize source.
-    if (path.includes('\\u0000') || !path.isWellFormed()) return false;
+    if (path.includes(String.fromCharCode(0)) || !path.isWellFormed()) return false;
     if (!path.startsWith('src/') || !path.endsWith('.mjs') || path.includes('\\') || path.split('/').some(part => part === '' || part === '.' || part === '..')) return false;
     // Whole ASCII membership, including exclusion of every trailing terminator.
     if (!/^[A-Za-z_$]/.test(operation.exportName) || /[^A-Za-z0-9_$]/.test(operation.exportName)) return false;
