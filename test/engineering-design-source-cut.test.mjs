@@ -150,3 +150,33 @@ test('refuse a Design row whose selected models cover only part of original clau
   assert.equal(received.proof, 'unreceived');
   assert.deepEqual(received.design, design);
 });
+
+
+test('refuse LLD module paths that cannot preserve their own POSIX UTF-8 file identity', () => {
+  const sources = sourcesFixture();
+  const highLevel = hldReceipt(sources);
+  const lowSources = [...sources, { kind: 'high-level', text: JSON.stringify(highLevel) }];
+  const plan = planEngineeringDesign({ stage: 'low-level', sources: lowSources });
+  const invalid = [
+    'src/invalid\u0000name.mjs',
+    'src/invalid\ud800name.mjs',
+    'src/invalid\udc00name.mjs',
+  ].map(spelling => JSON.parse('"' + spelling + '"'));
+  for (const module of invalid) {
+    const design = lldFixture();
+    design.operations[0].module = module;
+    assert.deepEqual(receiveEngineeringDesign({
+      stage: 'low-level', sources: lowSources, plan, deliveryText: JSON.stringify(design),
+    }), { type: 'EngineeringDesignDerivationRefusal', reason: 'invalid-design' },
+    'an unusable module path must not acquire a candidate receiving: ' + JSON.stringify(module));
+  }
+  // Valid Unicode scalar paths must remain available for real UTF-8 source.
+  const valid = lldFixture();
+  valid.operations[0].module = 'src/\ud83e\uddea.mjs';
+  const received = receiveEngineeringDesign({
+    stage: 'low-level', sources: lowSources, plan, deliveryText: JSON.stringify(valid),
+  });
+  assert.equal(received.type, 'EngineeringDesignCandidate');
+  assert.equal(received.admitted, false);
+  assert.equal(received.proof, 'unreceived');
+});
