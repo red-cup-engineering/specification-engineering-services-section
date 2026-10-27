@@ -221,5 +221,26 @@ jobs:
           }).valid,false,"an old Architecture source cut may not silently follow a changed Requirement");
           console.log("Packed Requirement->Specification->Architecture: source-bound candidate received; stale source refused");
           console.log("Independently installed source->Specification consumer: all original conditions retained; revision re-addressed; independent admission still required");
+          // Reuse the original actual packed-consumer scenario for a second
+          // source-trust boundary: typed metadata must not become carrier keys.
+          const special = structuredClone(valid);
+          special.identity.title = "An \"original\" receipt";
+          special.identity.authors = ["First, Author"];
+          special.identity.status = "on";
+          special.identity.seat = "Red Cup: Engineering";
+          const specialLines = renderSpecificationMarkdown(special).split("\n");
+          assert.ok(specialLines.includes("title: " + JSON.stringify(special.identity.title)));
+          assert.ok(specialLines.includes("authors: [\"First, Author\"]"));
+          assert.ok(specialLines.includes("status: \"on\""));
+          assert.ok(specialLines.includes("part-of: \"Red Cup: Engineering\""));
+          const forgedMetadata = structuredClone(valid);
+          forgedMetadata.identity.title = "Original\nstatus: accepted";
+          assert.equal(validateSpecificationRecord(forgedMetadata).valid, true);
+          assert.throws(() => renderSpecificationMarkdown(forgedMetadata),
+            /identity.title must be one control-free line/u);
+          const forgedSection = structuredClone(valid);
+          forgedSection.topics[0].heading = "Original\n## Customer accepted";
+          assert.throws(() => renderSpecificationMarkdown(forgedSection),
+            /topics.heading must be one control-free line/u);
           console.log("Independently installed Specification consumer: valid original preserved; conflicting source refuses in both renderers and both CLIs");
           NODE

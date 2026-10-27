@@ -18,11 +18,15 @@ export function loadArchitectureDescriptionSchema() {
 const byId = (items) => new Map(items.map((item) => [item.id, item]));
 const ordered = (items) => [...items].sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
 const refs = (ids) => [...ids].sort().join(", ");
-const text = (value) => value.replace(/\r?\n/gu, " ").replace(/\\/gu, "\\\\").replace(/([|*_{}\[\]()#+!<>])/gu, "\\$1").replaceAll(String.fromCharCode(96), String.fromCharCode(92, 96));
+// A source value is never allowed to introduce an unauthored Markdown line.
+// Retain all original ordinary-LF and CRLF rendering while flattening the
+// alternate line separators accepted by the existing source JSON schema.
+// Multiline model prose remains line-authored inside the original blockquote.
+const text = (value) => value.replace(/\r\n|[\r\n\u000b\u000c\u0085\u2028\u2029]/gu, " ").replace(/\\/gu, "\\\\").replace(/([|*_{}\[\]()#+!<>])/gu, "\\$1").replaceAll(String.fromCharCode(96), String.fromCharCode(92, 96));
 const row = (cells) => "| " + cells.map(text).join(" | ") + " |";
 const table = (headers, rows) => [row(headers), row(headers.map(() => "---")), ...rows.map(row)].join("\n");
 const heading = (level, value) => "#".repeat(level) + " " + text(value);
-const quote = (value) => value.replace(/\r\n?/gu, "\n").split("\n").map((line) =>
+const quote = (value) => value.replace(/\r\n?|[\u000b\u000c\u0085\u2028\u2029]/gu, "\n").split("\n").map((line) =>
   "> " + line.replace(/\\/gu, "\\\\").replace(/([`*_{}\[\]()#!])/gu, "\\$1")
     .replace(/</gu, "&lt;").replace(/>/gu, "&gt;")).join("\n");
 
