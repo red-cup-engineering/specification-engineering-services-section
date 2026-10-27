@@ -369,3 +369,154 @@ export function receiveEngineeringDesign(input) {
   if (!validDesign(input.stage, design, context)) return { type: 'EngineeringDesignDerivationRefusal', reason: 'invalid-design' };
   return { type: 'EngineeringDesignCandidate', stage: input.stage, sources: plan.sources, design, admitted: false, proof: 'unreceived' };
 }
+
+
+/**
+ * Read the exact Code-source cut against an ORIGINAL source-traced LLD
+ * candidate. This turns the existing Design operation allocations into
+ * machine-addressable Code/test Work INTENTS; it never fabricates, imports,
+ * executes, installs, adopts or independently proves a program.
+ *
+ * Only the originally supplied plan and provider-delivered Design JSON can
+ * authorize this READOUT of a received candidate. The original CIE/Work
+ * receiver still must authenticate the provider task, original Work and
+ * external authority; this is NOT a self-attested source certificate.
+ *
+ * A provided source view is only the selected custodian's declared bytes:
+ * even a matching sha256 proves byte correspondence, NOT Git authority or
+ * runtime behavior. An absent view is "unobserved", NOT proof the file is
+ * absent from an uninspected repository. The original Code and Work owners
+ * separately issue effect grants, implementation assays and receipts.
+ */
+export function readEngineeringCodeWork({
+  designCandidate, originalPlan, originalDeliveryText, sourceViews,
+} = {}) {
+  requireThat(exact(designCandidate,
+    ['type', 'stage', 'sources', 'design', 'admitted', 'proof']));
+  requireThat(designCandidate.type === 'EngineeringDesignCandidate' &&
+    designCandidate.stage === 'low-level' &&
+    designCandidate.admitted === false && designCandidate.proof === 'unreceived');
+  requireThat(Array.isArray(designCandidate.sources) &&
+    designCandidate.sources.length === 4);
+  const sources = designCandidate.sources.map(row => {
+    requireThat(exact(row, ['kind', 'text', 'digest']) &&
+      typeof row.text === 'string' &&
+      row.digest === 'sha256:' + createHash('sha256').update(row.text, 'utf8').digest('hex'));
+    return { kind: row.kind, text: row.text };
+  });
+  // The original LLD producer is the only local structural admission
+  // authority. Re-receive the exact original provider-delivered JSON against
+  // the original source-bound derivation plan, then compare the COMPLETE
+  // returned candidate; a caller-mutated candidate cannot rewrite the
+  // subsequently derived Code targets while preserving an old receipt.
+  requireThat(typeof originalDeliveryText === 'string');
+  const received = receiveEngineeringDesign({
+    stage: 'low-level', sources, plan: originalPlan,
+    deliveryText: originalDeliveryText,
+  });
+  requireThat(equal(received, designCandidate));
+
+  // The Code source custodian must supply an explicitly scoped array of
+  // exact module views. Do not confuse unprovided files with repository
+  // absence, and never consume a source path outside the admitted LLD.
+  requireThat(Array.isArray(sourceViews) && sourceViews.length <= 64);
+  requireThat(designCandidate.design.operations.length <= 64);
+  const plannedPaths = new Set(designCandidate.design.operations.map(x => x.module));
+  const views = new Map();
+  let bytes = 0;
+  for (const view of sourceViews) {
+    requireThat(exact(view, ['path', 'text', 'expectedSha256']) &&
+      typeof view.path === 'string' && plannedPaths.has(view.path) &&
+      !views.has(view.path) && typeof view.text === 'string' &&
+      view.text.isWellFormed() && /^sha256:[a-f0-9]{64}$/u.test(view.expectedSha256));
+    bytes += Buffer.byteLength(view.text, 'utf8');
+    requireThat(Number.isSafeInteger(bytes) && bytes <= 2_097_152);
+    const actualSha256 =
+      'sha256:' + createHash('sha256').update(view.text, 'utf8').digest('hex');
+    views.set(view.path, {
+      actualSha256, expectedSha256: view.expectedSha256,
+      matchesExpectedSource: actualSha256 === view.expectedSha256,
+    });
+  }
+
+  // The supplier's original trace carries the exact Requirement-cell,
+  // normative Specification clauses and authored Architecture models.
+  // Each proposed Code operation inherits all of its ORIGINAL trace rows;
+  // no model-generated refines edge, new Requirement or proof is invented.
+  const traced = new Map(designCandidate.design.operations.map(x => [x.id, []]));
+  for (const row of designCandidate.design.traceability) {
+    for (const operationId of row.designElementIds) {
+      traced.get(operationId).push({
+        requirementCellId: row.requirementCellId,
+        specificationClauseIds: [...row.specificationClauseIds],
+        architectureModelIds: [...row.architectureModelIds],
+      });
+    }
+  }
+  const gap = (code, operationId, module, detail) =>
+    ({ code, operationId, module, detail });
+  const discrepancies = [];
+  const targets = [...designCandidate.design.operations]
+    .sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0)
+    .map(operation => {
+      const source = views.get(operation.module);
+      const status = source === undefined ? 'source-not-observed'
+        : !source.matchesExpectedSource ? 'source-cut-disagreement'
+          : 'source-present-unassayed';
+      if (status === 'source-not-observed')
+        discrepancies.push(gap('SOURCE_VIEW_NOT_RECEIVED', operation.id,
+          operation.module, 'No source bytes were provided for the intended module'));
+      if (status === 'source-cut-disagreement')
+        discrepancies.push(gap('SOURCE_DIGEST_DISAGREEMENT', operation.id,
+          operation.module, 'Source bytes differ from the custodian-addressed digest'));
+      // This is a ready-to-route *plan*, not an executable WorkCell. Treat
+      // qualitative test obligations as independently unreceived, never
+      // automatically generated behavioral assertions or passing tests.
+      return {
+        operationId: operation.id, componentId: operation.componentId,
+        module: operation.module, exportName: operation.exportName,
+        sourceStatus: status,
+        observedSha256: source?.actualSha256 ?? null,
+        expectedSha256: source?.expectedSha256 ?? null,
+        originalTrace: traced.get(operation.id)
+          .sort((a,b) => a.requirementCellId < b.requirementCellId ? -1 :
+            a.requirementCellId > b.requirementCellId ? 1 : 0),
+        interface: {
+          inputSchema: JSON.parse(operation.inputSchemaJson),
+          outputSchema: JSON.parse(operation.outputSchemaJson),
+        },
+        testObligations: {
+          behavior: operation.behavior,
+          preconditions: [...operation.preconditions],
+          postconditions: [...operation.postconditions],
+          failureCases: [...operation.failureCases],
+          resourceBounds: [...operation.resourceBounds],
+          effectBoundaries: [...operation.effectBoundaries],
+          acceptance: [...operation.acceptanceObligations],
+          status: 'unreceived',
+        },
+      };
+    });
+  const designSource = 'sha256:' + createHash('sha256')
+    .update(JSON.stringify(designCandidate), 'utf8').digest('hex');
+  const readout = {
+    type: 'EngineeringDesignCodeWorkReadout', version: 1,
+    designCarrierSha256: designSource,
+    sourceCut: designCandidate.sources.map(({ kind, digest }) => ({ kind, digest })),
+    codeSnapshotScope: 'supplied-target-views-only',
+    status: discrepancies.length ? 'source-disagreement' : 'source-present-unassayed',
+    targets, discrepancies,
+    originalDesignAdmitted: false, independentProof: 'unreceived',
+    executableWork: false, codeApplied: false, beneficiaryReceived: false,
+  };
+  // Deeply immutable so later worker mutations cannot silently rewrite a
+  // source-target's diagnostics or original normative trace after readout.
+  const freeze = value => {
+    if (value !== null && typeof value === 'object') {
+      for (const child of Object.values(value)) freeze(child);
+      Object.freeze(value);
+    }
+    return value;
+  };
+  return freeze(readout);
+}
