@@ -622,13 +622,25 @@ test("original source-impact CLI performs a bounded JSON read and returns source
   assert.equal(result.status,0,result.stderr);
   const impact=JSON.parse(result.stdout);
   assert.equal(impact.kind,"specification.requirement-architecture-impact.v1");
-  assert.equal(impact.summary.regenerationCells,0,
-    "a change to an unused clause's plain words still requalifies source but does not invent a new model mapping");
-  assert.equal(impact.summary.requalificationOnlyCells,3);
-  assert.ok(impact.changes.every(row=>row.kind==="requalify-source-only"));
+  assert.equal(impact.summary.regenerationCells,1,
+    "changed normative clause content requires regenerating affected implementation even when the clause ID remains stable");
+  assert.equal(impact.summary.requalificationOnlyCells,2);
+  assert.ok(impact.changes.find(row=>row.cell.endsWith(":permission-filtered-answers"))
+    .reasons.includes("normative-clause-content-changed"));
   const denied=spawnSync(process.execPath,[runner,"--source-impact"],{
     input:JSON.stringify({before:prior,after:next,accepted:true}),encoding:"utf8",timeout:20000,
   });
   assert.notEqual(denied.status,0);
   assert.equal(denied.stdout,"","foreign acceptance words never become rendered instructions");
+});
+test("changing the code-facing model body under an unchanged ID is a genuine regeneration obligation",()=>{
+  const prior=publishedUtilityBuyerTrace();
+  const next=structuredClone(prior);
+  next.architecture.models[0].content="The revised original model fails closed on an expired permission witness.";
+  const impact=readRequirementArchitectureImpact(prior,next);
+  assert.equal(impact.summary.regenerationCells,1);
+  assert.equal(impact.summary.requalificationOnlyCells,2);
+  assert.ok(impact.changes.find(row=>row.cell.endsWith(":permission-filtered-answers"))
+    .reasons.includes("architecture-model-content-changed"));
+  assert.deepEqual(impact.affectedModels,["auth-model"]);
 });
