@@ -93,6 +93,49 @@ be promoted to full sheaf mathematics, Gotham-equivalent authorization,
 or tested Asana/Jira workflow. Native Node/package receiving and actual
 original Engineering design/proof/customer acceptance remain distinct.
 
+
+## Requirement → reviewed Specification → generated Architecture candidate
+
+The original Engineering Requirement
+[`requirements-generate-specifications-designs-and-normative-code`](https://github.com/red-cup-engineering/engineering-services-section/blob/main/data/records/service-records/requirements-management-service-records/requirements-generate-specifications-designs-and-normative-code.json)
+requires Architecture artifacts to be generated from the original admitted
+Requirement and Specification, rather than copying stage digests into an
+unattributed prose draft. The existing `./architecture-description` now
+exports `deriveArchitectureDescriptionFromSpecificationReview({requirement,
+specification,review})`. The new entry to the existing bounded CLI is:
+
+```sh
+node scripts/render-architecture-description.mjs --reviewed-source-cut \
+  < requirement-specification-authored-review.json > architecture-candidate.md
+```
+
+The single input object has exactly `requirement`, `specification`, `review`.
+The review is *authored architectural data* with exactly
+`identity: {id,title,owner}`, `applicability`,
+`system: {name,description,supportingSourceIds?}`,
+`supportingSources: [{id,locator,revision},...]`,
+`stakeholders`, `concerns`, `viewpoints`, `views`, `models`,
+`correspondences`, `decisions` and `openQuestions`—the original
+Architecture graph arrays, **not** a new stage ledger. The derived cut binds
+`req` and `spec` to the *actual* content identities, rejecting stale
+Specification lineage, unsupported review fields, unauthored architectural
+decisions, missing model references, mismatched buyer cells and foreign
+normative clauses. Reviewer status/approval, revision hashes, Proof and
+conformance fields cannot be supplied: revision identity is derived from the
+source cut and review; the existing schema fixes status at `candidate` and
+42010:2022 conformance at `unassessed`. The original exact buyer-cell trace
+still reports **untraced** obligations instead of counting them as satisfied.
+No operating rights are inferred from `identity.owner`; the original custodian
+must authenticate the reviewer separately.
+
+This changes a real source-to-stage projection, not whether architectural
+choices exist. A reviewer must still furnish appropriate stakeholder concerns,
+models, decisions and source references; a deterministic renderer cannot decide
+architecture or make a source reviewer legitimate. Neither this method nor a
+green source/package test closes Engineering #137: HLD, LLD, independent
+pre-fabrication Proof, original maker effect, installed operation and independent
+beneficiary acceptance remain separate gates.
+
 ## Renderings
 
 One record, two carriers:
