@@ -365,8 +365,29 @@ export function readRequirementArchitectureImpact(before, after) {
         specification: artifactId(cut.specification),
         architecture: artifactId(cut.architecture),
       }),
-      clauses: new Map(cut.specification.topics.flatMap(topic =>
-        topic.clauses.map(clause => [clause.id, artifactId(clause)]))),
+      // Each generated clause cites the WHOLE Requirement content address.
+      // Editing one buyer sentence changes that address in every clause's
+      // backref, even when all other clause semantics are unchanged. Keep
+      // this revision change as mandatory source requalification, but compare
+      // code-facing normative content with only that exact canonical source
+      // revision token normalized. All other citations and clause attributes
+      // remain byte-significant and can demand regeneration.
+      clauses: new Map(cut.specification.topics.flatMap(topic => {
+        const sourcePrefix = "Original Requirement " + cut.requirement.id +
+          " (" + artifactId(cut.requirement) + "), cell ";
+        return topic.clauses.map(clause => {
+          const comparable = Array.isArray(clause.backedBy) ? {
+            ...clause,
+            backedBy: clause.backedBy.map(reference =>
+              typeof reference === "string" && reference.startsWith(sourcePrefix)
+                ? "Original Requirement " + cut.requirement.id +
+                  " (<source-revision-requalified>), cell " +
+                  reference.slice(sourcePrefix.length)
+                : reference),
+          } : clause;
+          return [clause.id, artifactId(comparable)];
+        });
+      })),
       models: new Map(cut.architecture.models.map(model =>
         [model.id, artifactId(model)])),
     };
