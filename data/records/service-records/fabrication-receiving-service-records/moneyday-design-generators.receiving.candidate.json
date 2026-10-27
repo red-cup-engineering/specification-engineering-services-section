@@ -1,41 +1,41 @@
 {
   "type": "GeneratorBootstrapReceivingCandidate",
-  "at": "2026-10-27T10:14:28.474Z",
-  "specificationDigest": "ni:///sha-256;kX7HL0zVNw1DTiqFclj0osqWVa4VK0F9R_1qAj0ik8k",
-  "sourceDigest": "sha256:492e59c864a9783fa2b1b04e8f3c7013864c9da1a747e863eea2cf1c29652744",
-  "moduleDigest": "sha256:bb953ac9d0ae3e6956f43e87745ffdef22077a09655c9eb3f3bc27f1cd2a301e",
+  "at": "2026-10-27T10:48:13.792Z",
+  "specificationDigest": "ni:///sha-256;ibxfTKKv52uoJFwqXfc83Cr-UxHUFMiwJf1LHAPFGZs",
+  "sourceDigest": "sha256:e9d7b54100ae1e71897cbf454ab4b6eeee5a5c9e4b8f4452a99a917cbef21ff1",
+  "moduleDigest": "sha256:b9eb5b5309de8b1220b8629d65aafbf2dcf73fe32c28609de703ba22df36c31f",
   "fabrication": {
     "type": "JsnodeModuleProposal",
     "cases": 32,
-    "sourceLot": "urn:work-lot:inference:6LwhNscOl7QVtaRm1FHvFG3-6oUFrTTj5NGtmFzf9g0",
-    "sourceReceipt": "ni:///sha-256;DAC7O0KqfU8oZgDLqXmANVcK1TeqsaoL4cD8H3UnW8g",
-    "assayLot": "urn:work-lot:inference:vksKNsOf3bncGPIwClSfoxD4JShJRHlvO0YbzZgagYg",
-    "assayReceipt": "ni:///sha-256;nMZpym_nO5UdiRg3430ttH1kqd3EloLHgZ2gpFE5U_k",
-    "replay": "Same original deliveries through native selected-entry isolated executor; zero new inference requests"
+    "sourceLot": "urn:work-lot:inference:N76I0ScjiQvZDuM-WyBfga4vqXAenYY6N0M0xOi3JOQ",
+    "sourceReceipt": "ni:///sha-256;gFHNsxA_hmAiGJAoObIgvyaUvO6IRLSjkKVUwO-EaA0",
+    "assayLot": "urn:work-lot:inference:FUWkQceRpTPlfK3MM2FIT9-fl-2hYogBzbLdjawaXaU",
+    "assayReceipt": "ni:///sha-256;CYue4Ab9asGtedYFvE6YrR3ckYH5V7WwDGm0Gvs_XYQ",
+    "receiving": "Native selected-entry isolated executor; unchanged bounds; successful terminal cleanup"
   },
   "nativeProofing": {
     "type": "JsnodeDerivationProofing",
     "version": 1,
     "writer": {
-      "id": "ni:///sha-256;Nm-seGO4wR51bVIM696mnxOcIX-gwEf2Pl7f0StZxfQ",
+      "id": "ni:///sha-256;tCHBzosUuOj6A62ZGIjpBhMr3IQmFUYwyyzwNS8SxCQ",
       "method": "source-derivation",
       "carrier": "default",
-      "evidence": "ni:///sha-256;0Geb_AFUfVWGcv2IqJ-QMmLpkqh2Oijgs0Qc_B8M_RA"
+      "evidence": "ni:///sha-256;Jw9jKXjdiV0NMpVd1tjd8oorcfH0jcH-X722vcdXa90"
     },
     "channels": [
       {
-        "id": "ni:///sha-256;uZxdkZvFonK_FTmvfJAMQ7KrtL15TfRKERzfWWOD4LA",
+        "id": "ni:///sha-256;iG9RpVfvmnEH2irg83B9yEJwp0Qj5YUbEW47K1GXwx4",
         "method": "admitted-examples",
         "carrier": "work-order-author",
-        "evidence": "ni:///sha-256;mUxzxF_HQoiodDADUh8f1WRLIhXkHnL2eLmBXAVtHyU",
+        "evidence": "ni:///sha-256;jmMNADDWR5dQc0cFHEXOwiTGuLva7fzt85k4H18jPfQ",
         "independent": false,
         "reason": "the writer was shown these checks"
       },
       {
-        "id": "ni:///sha-256;Nm-seGO4wR51bVIM696mnxOcIX-gwEf2Pl7f0StZxfQ",
+        "id": "ni:///sha-256;tCHBzosUuOj6A62ZGIjpBhMr3IQmFUYwyyzwNS8SxCQ",
         "method": "clause-assays",
         "carrier": "default",
-        "evidence": "ni:///sha-256;0Geb_AFUfVWGcv2IqJ-QMmLpkqh2Oijgs0Qc_B8M_RA",
+        "evidence": "ni:///sha-256;Jw9jKXjdiV0NMpVd1tjd8oorcfH0jcH-X722vcdXa90",
         "independent": false,
         "reason": "same carrier on the same evidence as the writer: one channel"
       },
@@ -68,39 +68,39 @@
     "independentBehavioralChannels": 0
   },
   "sourceReview": {
-    "at": "2026-10-27T10:11:28.910Z",
+    "at": "2026-10-27T10:48:13.793Z",
     "nativeReader": "@red-cup-engineering/javascript-module-closure-service captureModuleClosure",
     "entry": "@red-cup-engineering/specification-engineering-services-section@0.1.2/src/engineering-design.mjs",
     "moduleCount": 36,
     "builtins": [
       "node:crypto"
     ],
-    "actualSource": "Unchanged original inference source delivery",
+    "actualSource": "Unchanged v27 original native inference source delivery",
     "effectReview": "Source inspected in full: createHash, original semanticIdOf and native JSON only; no filesystem/environment/network/clock/random/subprocess or credential access in either export. New source objects and parsed deliveries; no mutation of arguments.",
     "channelReview": {
       "nativeProofing": {
         "type": "JsnodeDerivationProofing",
         "version": 1,
         "writer": {
-          "id": "ni:///sha-256;Nm-seGO4wR51bVIM696mnxOcIX-gwEf2Pl7f0StZxfQ",
+          "id": "ni:///sha-256;tCHBzosUuOj6A62ZGIjpBhMr3IQmFUYwyyzwNS8SxCQ",
           "method": "source-derivation",
           "carrier": "default",
-          "evidence": "ni:///sha-256;0Geb_AFUfVWGcv2IqJ-QMmLpkqh2Oijgs0Qc_B8M_RA"
+          "evidence": "ni:///sha-256;Jw9jKXjdiV0NMpVd1tjd8oorcfH0jcH-X722vcdXa90"
         },
         "channels": [
           {
-            "id": "ni:///sha-256;uZxdkZvFonK_FTmvfJAMQ7KrtL15TfRKERzfWWOD4LA",
+            "id": "ni:///sha-256;iG9RpVfvmnEH2irg83B9yEJwp0Qj5YUbEW47K1GXwx4",
             "method": "admitted-examples",
             "carrier": "work-order-author",
-            "evidence": "ni:///sha-256;mUxzxF_HQoiodDADUh8f1WRLIhXkHnL2eLmBXAVtHyU",
+            "evidence": "ni:///sha-256;jmMNADDWR5dQc0cFHEXOwiTGuLva7fzt85k4H18jPfQ",
             "independent": false,
             "reason": "the writer was shown these checks"
           },
           {
-            "id": "ni:///sha-256;Nm-seGO4wR51bVIM696mnxOcIX-gwEf2Pl7f0StZxfQ",
+            "id": "ni:///sha-256;tCHBzosUuOj6A62ZGIjpBhMr3IQmFUYwyyzwNS8SxCQ",
             "method": "clause-assays",
             "carrier": "default",
-            "evidence": "ni:///sha-256;0Geb_AFUfVWGcv2IqJ-QMmLpkqh2Oijgs0Qc_B8M_RA",
+            "evidence": "ni:///sha-256;Jw9jKXjdiV0NMpVd1tjd8oorcfH0jcH-X722vcdXa90",
             "independent": false,
             "reason": "same carrier on the same evidence as the writer: one channel"
           },
@@ -132,13 +132,13 @@
         "catches": [],
         "independentBehavioralChannels": 0
       },
-      "verdict": "Functional receiving passed, but native proof reports zero independent behavioral channels; not independent generator Proof or operational adoption."
+      "verdict": "Zero native independent behavioral inference channels; independent generator Proof remains unreceived."
     },
     "outerEnvelopeReview": "Source exact own keys, stage enum, array/string minima and nested source/plan/delivery types checked before reconstruct; invalid JSON source and native Data supplier TypeError propagate. Outside-schema cases were not inserted into native assay carrier.",
     "originalTests": {
-      "passed": 101,
+      "passed": 135,
       "failed": 0,
-      "log": "original-specification-tests.tap"
+      "log": "v27-integrated-specification-tests.tap"
     },
     "admitted": false,
     "proof": "unreceived",
@@ -146,7 +146,8 @@
       "Independent installed consumer receiving",
       "Independent behavioral channel and source-pinned generator proof",
       "Immutable publication and original-host deployment"
-    ]
+    ],
+    "sourceInspection": "Entire new module inspected. Exact native complete-Requirement identity delegation and supplier TypeError propagation, fresh typed envelopes/schema/source hashes, current-plan comparison and structural HLD/LLD receiving retained. No host effects or input mutation in either exported operation."
   },
   "preservedIncumbentGitBlobs": [
     {
@@ -238,8 +239,22 @@
   "installedRuntime": false,
   "earningOperation": false,
   "remaining": [
-    "Actual HLD then LLD original-consumer receiving",
-    "Independent behavioral receiving and source-pinned Proof",
-    "Immutable original-producer publication and separately installed consumer receiving"
-  ]
+    "Independent installed consumer receiving and source-pinned generator Proof",
+    "Immutable producer publication and original-host deployment"
+  ],
+  "sourceVersion": 27,
+  "pinnedConsumer": {
+    "hld": "Actual native HLD receiving: 8 original cells, 4 components, unchanged deeply frozen inputs",
+    "lld": {
+      "type": "EngineeringDesignCandidate",
+      "receipt": "ni:///sha-256;v96OmiHe316Yg3Dh8gxNjlFgUSub3o87I-CQjz78wN0",
+      "traceRows": 8,
+      "operations": 4,
+      "openQuestions": 11,
+      "inputs": "Deep frozen and unchanged",
+      "admitted": false,
+      "proof": "unreceived",
+      "immutableSource": "https://github.com/red-cup-engineering/computer-deployment-engine/blob/6a097f77de14f5ef1a22cdd046b7a422152f7910/specifications/producer-artifact-retirement.low-level.candidate.json"
+    }
+  }
 }
