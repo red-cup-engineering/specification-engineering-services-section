@@ -356,6 +356,8 @@ export function readRequirementArchitectureImpact(before, after) {
     if (!cut || typeof cut !== "object" || Array.isArray(cut) ||
         !cut.architecture || !cut.requirement || !cut.specification)
       throw new TypeError("architecture impact requires both exact source-cut input triples");
+    const sourcePrefix = "Original Requirement " + cut.requirement.id +
+      " (" + artifactId(cut.requirement) + "), cell ";
     return {
       trace: readRequirementArchitectureTrace(cut.architecture, {
         requirement: cut.requirement, specification: cut.specification,
@@ -372,10 +374,8 @@ export function readRequirementArchitectureImpact(before, after) {
       // code-facing normative content with only that exact canonical source
       // revision token normalized. All other citations and clause attributes
       // remain byte-significant and can demand regeneration.
-      clauses: new Map(cut.specification.topics.flatMap(topic => {
-        const sourcePrefix = "Original Requirement " + cut.requirement.id +
-          " (" + artifactId(cut.requirement) + "), cell ";
-        return topic.clauses.map(clause => {
+      clauses: new Map(cut.specification.topics.flatMap(topic =>
+        topic.clauses.map(clause => {
           const comparable = Array.isArray(clause.backedBy) ? {
             ...clause,
             backedBy: clause.backedBy.map(reference =>
@@ -386,8 +386,7 @@ export function readRequirementArchitectureImpact(before, after) {
                 : reference),
           } : clause;
           return [clause.id, artifactId(comparable)];
-        });
-      })),
+        }))),
       models: new Map(cut.architecture.models.map(model =>
         [model.id, artifactId(model)])),
     };
