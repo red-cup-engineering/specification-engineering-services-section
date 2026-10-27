@@ -615,7 +615,8 @@ test("original source-impact CLI performs a bounded JSON read and returns source
   next.specification.topics[0].clauses[0].statement="Changed authored clause wording.";
   next.architecture.sources.find(source=>source.id==="spec").revision=artifactId(next.specification);
   const runner=fileURLToPath(new URL("../scripts/render-architecture-description.mjs",import.meta.url));
-  const request=JSON.stringify({before:prior,after:next});
+  const sourceCut=({requirement,specification,architecture})=>({requirement,specification,architecture});
+  const request=JSON.stringify({before:sourceCut(prior),after:sourceCut(next)});
   const result=spawnSync(process.execPath,[runner,"--source-impact"],{
     input:request,encoding:"utf8",timeout:20000,
   });
@@ -628,7 +629,7 @@ test("original source-impact CLI performs a bounded JSON read and returns source
   assert.ok(impact.changes.find(row=>row.cell.endsWith(":permission-filtered-answers"))
     .reasons.includes("normative-clause-content-changed"));
   const denied=spawnSync(process.execPath,[runner,"--source-impact"],{
-    input:JSON.stringify({before:prior,after:next,accepted:true}),encoding:"utf8",timeout:20000,
+    input:JSON.stringify({before:sourceCut(prior),after:sourceCut(next),accepted:true}),encoding:"utf8",timeout:20000,
   });
   assert.notEqual(denied.status,0);
   assert.equal(denied.stdout,"","foreign acceptance words never become rendered instructions");
