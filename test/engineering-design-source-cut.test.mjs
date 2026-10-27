@@ -3,8 +3,9 @@
 // passing tests do NOT qualify architecture, Proof, fabrication or an Office.
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { sourcesFixture, clausesSplitAcrossModels } from './engineering-design-source-cut.fixture.mjs';
-import { planEngineeringDesign, receiveEngineeringDesign } from '../src/engineering-design.mjs';
+import { planEngineeringDesign, receiveEngineeringDesign, readEngineeringCodeWork } from '../src/engineering-design.mjs';
 
 const copy = value => structuredClone(value);
 
@@ -179,4 +180,135 @@ test('refuse LLD module paths that cannot preserve their own POSIX UTF-8 file id
   assert.equal(received.type, 'EngineeringDesignCandidate');
   assert.equal(received.admitted, false);
   assert.equal(received.proof, 'unreceived');
+});
+
+
+const codeDigest = text => 'sha256:' + createHash('sha256').update(text, 'utf8').digest('hex');
+function lowLevelCandidateFixture() {
+  const sources = sourcesFixture();
+  const high = hldReceipt(sources);
+  const full = [...sources, { kind:'high-level', text:JSON.stringify(high) }];
+  const plan = planEngineeringDesign({stage:'low-level',sources:full});
+  const candidate = receiveEngineeringDesign({stage:'low-level',sources:full,
+    plan,deliveryText:JSON.stringify(lldFixture())});
+  assert.equal(candidate.type,'EngineeringDesignCandidate');
+  return candidate;
+}
+const exactView = (path, text) => ({path,text,expectedSha256:codeDigest(text)});
+
+test('original Design→Code reader yields actionable per-operation tests and exact Requirement-cell trace, not fabrication', () => {
+  const candidate=lowLevelCandidateFixture();
+  const sourceViews=[
+    exactView('src/op-a.mjs','export const retainA = value => value;'),
+    exactView('src/op-b.mjs','export const retainB = value => value;'),
+  ];
+  const before=structuredClone({candidate,sourceViews});
+  const first=readEngineeringCodeWork({designCandidate:candidate,sourceViews});
+  assert.equal(first.type,'EngineeringDesignCodeWorkReadout');
+  assert.equal(first.version,1);
+  assert.equal(first.status,'source-present-unassayed');
+  assert.equal(first.codeSnapshotScope,'supplied-target-views-only');
+  assert.equal(first.executableWork,false);
+  assert.equal(first.codeApplied,false);
+  assert.equal(first.originalDesignAdmitted,false);
+  assert.equal(first.independentProof,'unreceived');
+  assert.equal(first.beneficiaryReceived,false);
+  assert.equal(first.discrepancies.length,0);
+  assert.deepEqual(first.targets.map(x=>x.operationId),['op-a','op-b']);
+  assert.deepEqual(first.targets.map(x=>x.sourceStatus),
+    ['source-present-unassayed','source-present-unassayed']);
+  assert.deepEqual(first.targets[0].originalTrace,[{
+    requirementCellId:'source-req:a',
+    specificationClauseIds:['clause-a'],
+    architectureModelIds:['model-a'],
+  }]);
+  assert.deepEqual(first.targets[1].originalTrace,[{
+    requirementCellId:'source-req:b',
+    specificationClauseIds:['clause-b'],
+    architectureModelIds:['model-b'],
+  }]);
+  assert.deepEqual(first.targets[0].interface,{inputSchema:{},outputSchema:{}});
+  assert.deepEqual(first.targets[0].testObligations.acceptance,['Independent proof required']);
+  assert.deepEqual(first.targets[0].testObligations.failureCases,['Source unavailable']);
+  assert.deepEqual(first.targets[0].testObligations.effectBoundaries,['Pure candidate']);
+  assert.equal(first.targets[0].testObligations.status,'unreceived');
+  assert.equal(first.targets[0].observedSha256,codeDigest(sourceViews[0].text));
+  assert.ok(Object.isFrozen(first.targets[0].originalTrace[0].specificationClauseIds));
+  assert.ok(Object.isFrozen(first.targets[0].testObligations.acceptance));
+  assert.deepEqual(readEngineeringCodeWork({designCandidate:candidate,sourceViews:structuredClone(sourceViews)}),first);
+  assert.deepEqual({candidate,sourceViews},before);
+});
+
+test('missing Code source is an unobserved target, never a claim of absent repository file or passing implementation',()=>{
+  const candidate=lowLevelCandidateFixture();
+  const result=readEngineeringCodeWork({designCandidate:candidate,
+    sourceViews:[exactView('src/op-a.mjs','export function retainA(v){return v;}')]});
+  assert.equal(result.status,'source-disagreement');
+  assert.deepEqual(result.discrepancies,[{
+    code:'SOURCE_VIEW_NOT_RECEIVED',operationId:'op-b',module:'src/op-b.mjs',
+    detail:'No source bytes were provided for the intended module',
+  }]);
+  assert.equal(result.targets[1].sourceStatus,'source-not-observed');
+  assert.equal(result.targets[1].observedSha256,null);
+  assert.equal(result.executableWork,false);
+});
+
+test('Code material and the custodian-addressed digest must match even when LLD module spelling matches',()=>{
+  const candidate=lowLevelCandidateFixture();
+  const actual='export const retainA = () => "changed";';
+  const sourceViews=[{path:'src/op-a.mjs',text:actual,
+    expectedSha256:codeDigest('export const retainA = () => "old";')}];
+  const read=readEngineeringCodeWork({designCandidate:candidate,sourceViews});
+  assert.equal(read.status,'source-disagreement');
+  assert.equal(read.targets[0].observedSha256,codeDigest(actual));
+  assert.equal(read.targets[0].sourceStatus,'source-cut-disagreement');
+  assert.ok(read.discrepancies.some(x=>x.code==='SOURCE_DIGEST_DISAGREEMENT'&&
+    x.module==='src/op-a.mjs'));
+  assert.equal(read.executableWork,false);
+});
+
+test('forged prospective LLD, stale normative source and independently invented proof refuse before Code work',()=>{
+  const original=lowLevelCandidateFixture();
+  for(const change of [
+    d=>{d.design.operations[0].module='src/untraced-alternate.mjs';},
+    d=>{d.design.traceability[0].architectureModelIds=['model-b'];},
+    d=>{d.sources[0].text+=' ';},
+    d=>{d.sources[1].digest='sha256:'+'0'.repeat(64);},
+    d=>{d.proof='passed';},
+    d=>{d.admitted=true;},
+  ]){
+    const changed=structuredClone(original);change(changed);
+    assert.throws(()=>readEngineeringCodeWork({designCandidate:changed,sourceViews:[]}),TypeError);
+  }
+});
+
+test('unreviewed extra source path, duplicate snapshot, malformed digest and invalid scalar Code refuse',()=>{
+  const original=lowLevelCandidateFixture(),valid=exactView('src/op-a.mjs','export const retainA = x => x;');
+  for(const sourceViews of [
+    [valid,valid],
+    [exactView('src/surprise.mjs','export const x=1;')],
+    [{...valid,expectedSha256:'not-a-source-digest'}],
+    [{...valid,text:'const forbidden = "'+String.fromCharCode(0xD800)+'";'}],
+    [{path:valid.path,text:'x'.repeat(2_097_153),expectedSha256:valid.expectedSha256}],
+  ]){
+    assert.throws(()=>readEngineeringCodeWork({designCandidate:original,sourceViews}),TypeError);
+  }
+  assert.throws(()=>readEngineeringCodeWork({designCandidate:original,sourceViews:{}}),TypeError);
+});
+
+test('several Design operations on one source module retain distinct original trace and test obligations',()=>{
+  const original=lowLevelCandidateFixture();
+  const modified=structuredClone(original);
+  modified.design.operations[1].module='src/op-a.mjs';
+  modified.design.operations[1].exportName='retainB';
+  // No revised Design is silently "adopted": structural LLD must independently
+  // retain its original Requirement/Specification/Architecture correspondence.
+  const source=exactView('src/op-a.mjs','export const retainA = v => v; export const retainB = v => v;');
+  const result=readEngineeringCodeWork({designCandidate:modified,sourceViews:[source]});
+  assert.equal(result.status,'source-present-unassayed');
+  assert.equal(result.targets.length,2);
+  assert.deepEqual(result.targets.map(x=>x.observedSha256),[codeDigest(source.text),codeDigest(source.text)]);
+  assert.notEqual(result.targets[0].originalTrace[0].requirementCellId,
+    result.targets[1].originalTrace[0].requirementCellId);
+  assert.deepEqual(result.discrepancies,[]);
 });
