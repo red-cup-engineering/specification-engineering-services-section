@@ -65,19 +65,34 @@ candidate. A mutated candidate, foreign plan, changed normative clause,
 stale Architecture/HLD allocation, false adoption or forged Proof status
 refuses before any Code Work is projected.
 
-Each source view is an exact {path, text, expectedSha256} declaration from
-the original Code custodian. Its raw UTF-8 digest is independently computed
-and compared with that supplied expectation. Only module paths named in
-the LLD are allowed, no duplicates; the complete supplied view is capped
-at 2 MiB. This verifies correspondence **within the supplied source cut**.
-It does not authenticate GitHub checkout ownership, prove the file actually
-exports the named function, test runtime behavior, or establish source
-completeness. Missing from a supplied view means "not observed", not
-"does not exist in the repository."
+Code sources belong to the **original HLD component owner**. Relative
+module paths such as `src/source.mjs` are not repository identities: different
+File, Deployment, Fabrication or Group owners may select the same spelling.
+Each projected Code-work target now carries `originalComponentOwner` copied
+from the **source-verified HLD**. The original Design still owns that
+attribution; this reader does not infer, appoint or authenticate an Office.
+
+For multiple owners, provide exact source views as
+`{owner, path, text, expectedSha256}`. Their key is the pair of original
+HLD owner and relative module path, never the path alone. A legacy source
+view `{path, text, expectedSha256}` is accepted only when that path
+has **exactly one original owner** in the current LLD. Two different
+original owners claiming the same path require separate owner-qualified
+views and separate SHA-256 identities; a foreign or duplicate owner/path
+refuses before constructing Code-work readout. The total supplied source
+view remains capped at 2 MiB.
+
+The source digest only establishes equality with the supplied custodian
+address. Neither an HLD owner string nor a hash comparison authenticates
+GitHub repository rights, proves the declared export actually exists,
+checks runtime behavior, or establishes source completeness. Missing from
+a supplied view means "not observed", not "does not exist in the repository."
+
 
 The typed EngineeringDesignCodeWorkReadout provides a bounded, deterministic
-Code work target for each source-traced LLD operation: the exact prospective
-module/export pair, observed source digest, inherited original Requirement
+Code work target for each source-traced LLD operation: the original
+source component owner, exact prospective module/export pair, observed
+source digest, inherited original Requirement
 cells / Specification clauses / Architecture models, parsed input/output
 JSON Schemas, preconditions, behavior, failure and resource/effect bounds,
 and unchanged independently **unreceived** test and acceptance obligations.
