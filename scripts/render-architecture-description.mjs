@@ -2,20 +2,22 @@
 import {
   renderArchitectureDescriptionMarkdown,validateArchitectureDescriptionRecord,
   renderArchitectureDescriptionFromSourceCut, readRequirementArchitectureImpact,
+  readRequirementRevisionPressure,
   deriveArchitectureDescriptionFromSpecificationReview,
 } from "../src/architecture-description.mjs";
 import { readSourceJsonStdin } from "./read-source-json-stdin.mjs";
 
 if (import.meta.main) {
   if (process.argv.includes("--help")) {
-    process.stdout.write("render-architecture-description [--source-cut | --source-impact | --reviewed-source-cut] — Normal mode renders one typed Architecture candidate. --source-cut renders a complete verified source-cut trace; --source-impact emits read-only before/after Work impact; --reviewed-source-cut creates a candidate from {requirement,specification,review} and renders its buyer-cell trace. No command grants rights, proof, Work completion or customer acceptance.\n");
+    process.stdout.write("render-architecture-description [--source-cut | --source-impact | --requirement-pressure | --reviewed-source-cut] — Normal mode renders one typed Architecture candidate. --source-cut renders a complete verified source-cut trace; --source-impact emits read-only before/after qualified Work impact; --requirement-pressure reads changed original Requirements before new downstream stages exist; --reviewed-source-cut creates a candidate from {requirement,specification,review} and renders its buyer-cell trace. No command grants rights, proof, Work completion or customer acceptance.\n");
   } else {
     const flags=process.argv.slice(2);
     const sourceCut=flags.includes("--source-cut");
     const sourceImpact=flags.includes("--source-impact");
+    const requirementPressure=flags.includes("--requirement-pressure");
     const reviewedSourceCut=flags.includes("--reviewed-source-cut");
     const invalid=flags.length>1 || flags.some(arg=>
-      !["--source-cut","--source-impact","--reviewed-source-cut"].includes(arg)) ||
+      !["--source-cut","--source-impact","--requirement-pressure","--reviewed-source-cut"].includes(arg)) ||
       (sourceCut && sourceImpact);
     if(invalid) {
       process.stderr.write("render-architecture-description: unsupported argument\n");
@@ -35,6 +37,12 @@ if (import.meta.main) {
         const candidate=deriveArchitectureDescriptionFromSpecificationReview(input);
         process.stdout.write(renderArchitectureDescriptionFromSourceCut(candidate,
           {requirement:input.requirement,specification:input.specification}));
+      }else if(requirementPressure){
+        if(!input || typeof input!=="object" || Array.isArray(input) ||
+           Object.keys(input).sort().join(",")!=="after,before")
+          throw new TypeError("requirement-pressure requires the exact original before and after Requirement sources");
+        process.stdout.write(JSON.stringify(readRequirementRevisionPressure(
+          input.before,input.after))+"\n");
       }else if(sourceImpact){
         if(!input || typeof input!=="object" || Array.isArray(input) ||
            Object.keys(input).sort().join(",")!=="after,before" ||

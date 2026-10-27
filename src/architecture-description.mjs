@@ -343,6 +343,110 @@ export function readRequirementArchitectureTrace(record,sources) {
 
 
 /**
+ * A source-authored Requirement may change before a second, independently
+ * source-qualified Specification/Architecture exists. Observe this *first*
+ * stage pressure without fabricating a replacement Specification or treating
+ * a stale Architecture as compatible. The native EAVT identity supplier, not
+ * hand-authored JSON hashing, owns canonical source and condition identities.
+ *
+ * No Office, model, proof or Work acceptance can be conferred by comparison.
+ * Original owners retain every source, reviewer and change-control decision.
+ */
+export function readRequirementRevisionPressure(before, after) {
+  const admittedShape = requirement => {
+    if (!requirement || typeof requirement !== "object" ||
+        Array.isArray(requirement) || requirement.kind !== "requirement" ||
+        typeof requirement.id !== "string" ||
+        !/^[a-z0-9]+(?:-[a-z0-9]+)*$/u.test(requirement.id) ||
+        !Array.isArray(requirement["met-when"]) ||
+        requirement["met-when"].length === 0)
+      throw new TypeError("requirement pressure needs complete original source Requirements");
+    if (requirement.asks !== undefined &&
+        (!Array.isArray(requirement.asks) ||
+         !requirement.asks.every(text => typeof text === "string" && text.trim())))
+      throw new TypeError("original request speech acts must be complete strings");
+    const cells = new Map();
+    for (const row of requirement["met-when"]) {
+      if (!row || typeof row !== "object" || Array.isArray(row) ||
+          typeof row.cell !== "string" ||
+          !row.cell.startsWith(requirement.id + ":") ||
+          !row.cell.slice(requirement.id.length + 1).trim() ||
+          cells.has(row.cell) || !["held", "denied"].includes(row.target) ||
+          typeof row.says !== "string" || !row.says.trim() ||
+          /[\r\n\u0000]/u.test(row.says))
+        throw new TypeError("unqualified or duplicated original Requirement cell");
+      // The EAVT supplier also receives the WHOLE row: optional original
+      // metadata is neither stripped nor silently claimed as an effect.
+      cells.set(row.cell, { row, address: artifactId(row) });
+    }
+    return { cells, address: artifactId(requirement) };
+  };
+  const old = admittedShape(before), current = admittedShape(after);
+  if (before.id !== after.id)
+    throw new TypeError("cannot combine unrelated original Requirement identities");
+  const sourceRevised = old.address !== current.address;
+  const sourceContext = value => Object.fromEntries(
+    Object.entries(value).filter(([key]) =>
+      !["kind", "id", "asks", "met-when"].includes(key)));
+  const conditionContext = value => Object.fromEntries(
+    Object.entries(value).filter(([key]) =>
+      !["cell", "target", "says"].includes(key)));
+  const originalRequestsChanged =
+    artifactId({ present: Object.hasOwn(before, "asks"), values: before.asks ?? [] }) !==
+    artifactId({ present: Object.hasOwn(after, "asks"), values: after.asks ?? [] });
+  const otherSourceContextChanged =
+    artifactId(sourceContext(before)) !== artifactId(sourceContext(after));
+  const previousOrder = [...old.cells.keys()], currentOrder = [...current.cells.keys()];
+  const sourceConditionOrderChanged =
+    JSON.stringify(previousOrder) !== JSON.stringify(currentOrder);
+  const changes = [];
+  for (const cell of [...new Set([...old.cells.keys(), ...current.cells.keys()])].sort()) {
+    const a = old.cells.get(cell), b = current.cells.get(cell);
+    if (a?.address === b?.address) continue;
+    changes.push(Object.freeze({
+      cell, kind: !a ? "added" : !b ? "removed" : "revised",
+      before: a?.address ?? null, after: b?.address ?? null,
+      originalTargetChanged: a?.row.target !== b?.row.target,
+      originalStatementChanged: a?.row.says !== b?.row.says,
+      otherConditionMetadataChanged: a && b
+        ? artifactId(conditionContext(a.row)) !== artifactId(conditionContext(b.row))
+        : false,
+    }));
+  }
+  const counts = name => changes.filter(row => row.kind === name).length;
+  const downstreamRegenerationRequired = changes.length > 0 ||
+    originalRequestsChanged || sourceConditionOrderChanged;
+  return Object.freeze({
+    kind: "specification.requirement-revision-pressure.v1",
+    originalRequirementId: before.id,
+    before: old.address, after: current.address,
+    revised: sourceRevised,
+    firstOpenStage: sourceRevised ? "requirement-admission" : null,
+    summary: Object.freeze({
+      originalRequestCountBefore: before.asks?.length ?? null,
+      originalRequestCountAfter: after.asks?.length ?? null,
+      originalRequestsChanged,
+      sourceConditionOrderChanged,
+      otherSourceContextChanged,
+      sourceCellsBefore: old.cells.size,
+      sourceCellsAfter: current.cells.size,
+      changedCells: changes.length,
+      addedCells: counts("added"),
+      removedCells: counts("removed"),
+      revisedCells: counts("revised"),
+    }),
+    changes: Object.freeze(changes),
+    downstreamRegenerationRequired,
+    // Even unchanged source requires competent original authorization before
+    // a maker may act; this is a witness, never an admission token.
+    originalEffect: "none-read-only",
+    independentProof: false,
+    independentlyAcceptedCustomerWork: false,
+    rightsAndSourceAuthentication: "required-from-original-custodian",
+  });
+}
+
+/**
  * Read deterministic, source-versioned requalification pressure between TWO
  * already source-cut-validated Engineering revisions. No Work is opened or
  * discharged here. Distinguish edits requiring renewed fabrication from

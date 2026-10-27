@@ -343,6 +343,11 @@ jobs:
           cp "$GITHUB_WORKSPACE/test/engineering-design-source-cut.fixture.mjs" "$RUNNER_TEMP/consumer/"
           cp "$GITHUB_WORKSPACE/test/engineering-design-packed-consumer.mjs" "$RUNNER_TEMP/consumer/"
           node engineering-design-packed-consumer.mjs
+          # The same independently installed original package must assess a
+          # revised original Requirement *before* any current Specification or
+          # Architecture exists, without admitting fabricated Proof/Work.
+          cp "$GITHUB_WORKSPACE/test/requirement-revision-packed-consumer.mjs" "$RUNNER_TEMP/consumer/"
+          node requirement-revision-packed-consumer.mjs
 
           # Execute the newly corrected readout through the genuinely packed
           # clean consumer, not only through the source checkout's node_modules.
