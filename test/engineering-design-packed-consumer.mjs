@@ -187,5 +187,63 @@ assert.equal(unicodeReceived.type, 'EngineeringDesignCandidate');
 assert.equal(unicodeReceived.admitted, false);
 assert.equal(unicodeReceived.proof, 'unreceived');
 
+// The clean, independently installed package must keep SAME relative path
+// from two authentic HLD owners as TWO original Code source identities.
+const owners=['red-cup-engineering/computer-file-engineering-services-section',
+  'red-cup-engineering/computer-deployment-engine'];
+const splitHld=structuredClone(hld);
+splitHld.components=[
+  {...hld.components[0],id:'file-component',owner:owners[0]},
+  {...hld.components[0],id:'deployment-component',owner:owners[1]},
+];
+splitHld.traceability[0].designElementIds=['file-component'];
+splitHld.traceability[1].designElementIds=['deployment-component'];
+const splitHigh=receiveEngineeringDesign({
+  stage:'high-level',sources:original,plan,
+  deliveryText:JSON.stringify(splitHld),
+});
+assert.equal(splitHigh.type,'EngineeringDesignCandidate');
+const splitLowSources=[...original,{kind:'high-level',text:JSON.stringify(splitHigh)}];
+const splitLowPlan=planEngineeringDesign({stage:'low-level',sources:splitLowSources});
+const shared='src/same-relative-name.mjs';
+const splitDesign=structuredClone(low.design);
+splitDesign.operations=[
+  {...low.design.operations[0],id:'file-op',componentId:'file-component',
+    module:shared,exportName:'fileOp'},
+  {...low.design.operations[0],id:'deployment-op',componentId:'deployment-component',
+    module:shared,exportName:'deploymentOp'},
+];
+splitDesign.traceability[0].designElementIds=['file-op'];
+splitDesign.traceability[1].designElementIds=['deployment-op'];
+const splitDelivery=JSON.stringify(splitDesign);
+const splitLow=receiveEngineeringDesign({
+  stage:'low-level',sources:splitLowSources,plan:splitLowPlan,
+  deliveryText:splitDelivery,
+});
+assert.equal(splitLow.type,'EngineeringDesignCandidate');
+const digest=text=>'sha256:'+createHash('sha256').update(text,'utf8').digest('hex');
+const sourceViews=owners.map((owner,i)=>{
+  const text='export const '+(i?'deploymentOp':'fileOp')+' = () => '+i+';';
+  return {owner,path:shared,text,expectedSha256:digest(text)};
+});
+const splitReadout=readEngineeringCodeWork({
+  designCandidate:splitLow,originalPlan:splitLowPlan,
+  originalDeliveryText:splitDelivery,sourceViews,
+});
+assert.equal(splitReadout.status,'source-present-unassayed');
+const targets=new Map(splitReadout.targets.map(x=>[x.originalComponentOwner,x]));
+for(const view of sourceViews){
+  assert.equal(targets.get(view.owner).observedSha256,view.expectedSha256);
+  assert.equal(targets.get(view.owner).module,shared);
+}
+assert.equal(splitReadout.executableWork,false);
+assert.equal(splitReadout.independentProof,'unreceived');
+assert.throws(()=>readEngineeringCodeWork({
+  designCandidate:splitLow,originalPlan:splitLowPlan,
+  originalDeliveryText:splitDelivery,
+  sourceViews:[{path:shared,text:sourceViews[0].text,
+    expectedSha256:sourceViews[0].expectedSha256}],
+}),TypeError,'one ownerless source view cannot impersonate two original repositories');
+
 console.log('Packed original Design consumer: original LLD-to-Code work and test obligations source-read; no effect, proof or implementation conformance granted.');
 console.log('Packed original Design consumer: HLD+LLD source-bound and per-clause model-covered candidates received; stale, cross-cell, unmodeled-clause and partial-model sources refused; proof, adoption and installation still unreceived.');

@@ -351,3 +351,68 @@ test('original LLD plan and exact delivery are mandatory; tampered candidate can
     designCandidate:candidate,sourceViews:[],originalPlan:mutPlan,originalDeliveryText:deliveryText,
   }),TypeError);
 });
+
+
+test('distinct original HLD owners retain separate Code work even for identical relative module paths', () => {
+  const sources=sourcesFixture();
+  const highDesign=hldFixture();
+  highDesign.components[0].owner='red-cup-engineering/computer-file-engineering-services-section';
+  highDesign.components[1].owner='red-cup-engineering/computer-deployment-engine';
+  const highPlan=planEngineeringDesign({stage:'high-level',sources});
+  const high=receiveEngineeringDesign({stage:'high-level',sources,plan:highPlan,
+    deliveryText:JSON.stringify(highDesign)});
+  assert.equal(high.type,'EngineeringDesignCandidate');
+  const lowSources=[...sources,{kind:'high-level',text:JSON.stringify(high)}];
+  const lowPlan=planEngineeringDesign({stage:'low-level',sources:lowSources});
+  const lowDesign=lldFixture();
+  lowDesign.operations[1].module='src/shared-original.mjs';
+  lowDesign.operations[0].module='src/shared-original.mjs';
+  const deliveryText=JSON.stringify(lowDesign);
+  const low=receiveEngineeringDesign({stage:'low-level',sources:lowSources,
+    plan:lowPlan,deliveryText});
+  assert.equal(low.type,'EngineeringDesignCandidate');
+  const ownedViews=[
+    {owner:highDesign.components[0].owner,path:'src/shared-original.mjs',
+      text:'export const retainA = () => "file owner";',
+      expectedSha256:codeDigest('export const retainA = () => "file owner";')},
+    {owner:highDesign.components[1].owner,path:'src/shared-original.mjs',
+      text:'export const retainB = () => "CDE owner";',
+      expectedSha256:codeDigest('export const retainB = () => "CDE owner";')},
+  ];
+  const read=readSourceOwnedEngineeringCodeWork({
+    designCandidate:low,originalPlan:lowPlan,originalDeliveryText:deliveryText,
+    sourceViews:ownedViews,
+  });
+  assert.equal(read.status,'source-present-unassayed');
+  assert.deepEqual(read.targets.map(x=>x.originalComponentOwner),
+    [highDesign.components[0].owner,highDesign.components[1].owner]);
+  assert.equal(read.targets[0].module,read.targets[1].module);
+  assert.deepEqual(read.targets.map(x=>x.observedSha256),
+    ownedViews.map(x=>x.expectedSha256));
+  assert.equal(read.executableWork,false);
+  assert.equal(read.independentProof,'unreceived');
+});
+
+test('foreign or unowned multi-owner Code views cannot impersonate a second source repository',()=>{
+  const sources=sourcesFixture();
+  const highDesign=hldFixture();
+  highDesign.components[0].owner='red-cup-engineering/computer-file-engineering-services-section';
+  highDesign.components[1].owner='red-cup-engineering/computer-deployment-engine';
+  const high=receiveEngineeringDesign({stage:'high-level',sources,
+    plan:planEngineeringDesign({stage:'high-level',sources}),deliveryText:JSON.stringify(highDesign)});
+  const lowSources=[...sources,{kind:'high-level',text:JSON.stringify(high)}];
+  const lowPlan=planEngineeringDesign({stage:'low-level',sources:lowSources});
+  const lowDesign=lldFixture();
+  lowDesign.operations[0].module='src/shared.mjs';
+  lowDesign.operations[1].module='src/shared.mjs';
+  const originalDeliveryText=JSON.stringify(lowDesign);
+  const low=receiveEngineeringDesign({stage:'low-level',sources:lowSources,
+    plan:lowPlan,deliveryText:originalDeliveryText});
+  const view={path:'src/shared.mjs',text:'export const retainA=1;',expectedSha256:codeDigest('export const retainA=1;')};
+  for(const sourceViews of [
+    [view], [{...view,owner:'red-cup-engineering/foreign-source'}],
+    [{...view,owner:highDesign.components[0].owner},{...view,owner:highDesign.components[0].owner}],
+  ]) assert.throws(()=>readSourceOwnedEngineeringCodeWork({
+    designCandidate:low,originalPlan:lowPlan,originalDeliveryText,sourceViews,
+  }),TypeError);
+});
