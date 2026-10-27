@@ -5,7 +5,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { sourcesFixture, clausesSplitAcrossModels } from './engineering-design-source-cut.fixture.mjs';
-import { planEngineeringDesign, receiveEngineeringDesign, readEngineeringCodeWork } from '../src/engineering-design.mjs';
+import { planEngineeringDesign, receiveEngineeringDesign,
+  readEngineeringCodeWork as readSourceOwnedEngineeringCodeWork } from '../src/engineering-design.mjs';
 
 const copy = value => structuredClone(value);
 
@@ -184,6 +185,16 @@ test('refuse LLD module paths that cannot preserve their own POSIX UTF-8 file id
 
 
 const codeDigest = text => 'sha256:' + createHash('sha256').update(text, 'utf8').digest('hex');
+// Fixture binding over the EXISTING original plan and delivery, not a second
+// Code Work reader. Native packed-consumer separately calls the public API.
+const readEngineeringCodeWork = ({designCandidate,sourceViews,originalDeliveryText} = {}) => {
+  const sources=designCandidate.sources.map(({kind,text})=>({kind,text}));
+  return readSourceOwnedEngineeringCodeWork({
+    designCandidate,sourceViews,
+    originalPlan:planEngineeringDesign({stage:'low-level',sources}),
+    originalDeliveryText:originalDeliveryText ?? JSON.stringify(lldFixture()),
+  });
+};
 function lowLevelCandidateFixture() {
   const sources = sourcesFixture();
   const high = hldReceipt(sources);
@@ -304,11 +315,39 @@ test('several Design operations on one source module retain distinct original tr
   // No revised Design is silently "adopted": structural LLD must independently
   // retain its original Requirement/Specification/Architecture correspondence.
   const source=exactView('src/op-a.mjs','export const retainA = v => v; export const retainB = v => v;');
-  const result=readEngineeringCodeWork({designCandidate:modified,sourceViews:[source]});
+  const result=readEngineeringCodeWork({designCandidate:modified,sourceViews:[source],
+    originalDeliveryText:JSON.stringify(modified.design)});
   assert.equal(result.status,'source-present-unassayed');
   assert.equal(result.targets.length,2);
   assert.deepEqual(result.targets.map(x=>x.observedSha256),[codeDigest(source.text),codeDigest(source.text)]);
   assert.notEqual(result.targets[0].originalTrace[0].requirementCellId,
     result.targets[1].originalTrace[0].requirementCellId);
   assert.deepEqual(result.discrepancies,[]);
+});
+
+
+test('original LLD plan and exact delivery are mandatory; tampered candidate cannot forge Code targets',()=>{
+  const candidate=lowLevelCandidateFixture();
+  const sources=candidate.sources.map(({kind,text})=>({kind,text}));
+  const plan=planEngineeringDesign({stage:'low-level',sources});
+  const deliveryText=JSON.stringify(lldFixture());
+  assert.throws(()=>readSourceOwnedEngineeringCodeWork({designCandidate:candidate,sourceViews:[]}),TypeError);
+  assert.throws(()=>readSourceOwnedEngineeringCodeWork({
+    designCandidate:candidate,sourceViews:[],originalDeliveryText:deliveryText,
+  }),TypeError);
+  const changed=structuredClone(candidate);
+  changed.design.operations[0].module='src/unreviewed-change.mjs';
+  assert.throws(()=>readSourceOwnedEngineeringCodeWork({
+    designCandidate:changed,sourceViews:[],originalPlan:plan,originalDeliveryText:deliveryText,
+  }),TypeError);
+  const admitted=readSourceOwnedEngineeringCodeWork({
+    designCandidate:candidate,sourceViews:[],originalPlan:plan,originalDeliveryText:deliveryText,
+  });
+  assert.equal(admitted.status,'source-disagreement');
+  assert.equal(admitted.executableWork,false);
+  const mutPlan=structuredClone(plan);
+  mutPlan.request.objective='Different work intended by another author';
+  assert.throws(()=>readSourceOwnedEngineeringCodeWork({
+    designCandidate:candidate,sourceViews:[],originalPlan:mutPlan,originalDeliveryText:deliveryText,
+  }),TypeError);
 });
