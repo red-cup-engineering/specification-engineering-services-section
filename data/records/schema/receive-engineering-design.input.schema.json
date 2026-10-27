@@ -1,0 +1,50 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "plan",
+    "stage",
+    "sources",
+    "deliveryText"
+  ],
+  "properties": {
+    "plan": {
+      "type": "object"
+    },
+    "stage": {
+      "enum": [
+        "high-level",
+        "low-level"
+      ]
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "text"
+        ],
+        "properties": {
+          "kind": {
+            "enum": [
+              "requirement",
+              "specification",
+              "architecture",
+              "high-level"
+            ]
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "deliveryText": {
+      "type": "string"
+    }
+  }
+}
