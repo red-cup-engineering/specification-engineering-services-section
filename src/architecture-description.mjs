@@ -340,6 +340,129 @@ export function readRequirementArchitectureTrace(record,sources) {
   });
 }
 
+
+/**
+ * Read deterministic, source-versioned requalification pressure between TWO
+ * already source-cut-validated Engineering revisions. No Work is opened or
+ * discharged here. Distinguish edits requiring renewed fabrication from
+ * unchanged local content whose source provenance nonetheless changed.
+ *
+ * In particular a reused clause/model ID is not a reusable implementation:
+ * the original source owner's content address must also agree. Independently
+ * authorized Work planning/assay remains the Circulation owner's responsibility.
+ */
+export function readRequirementArchitectureImpact(before, after) {
+  const select = cut => {
+    if (!cut || typeof cut !== "object" || Array.isArray(cut) ||
+        !cut.architecture || !cut.requirement || !cut.specification)
+      throw new TypeError("architecture impact requires both exact source-cut input triples");
+    const sourcePrefix = "Original Requirement " + cut.requirement.id +
+      " (" + artifactId(cut.requirement) + "), cell ";
+    return {
+      trace: readRequirementArchitectureTrace(cut.architecture, {
+        requirement: cut.requirement, specification: cut.specification,
+      }),
+      revision: Object.freeze({
+        requirement: artifactId(cut.requirement),
+        specification: artifactId(cut.specification),
+        architecture: artifactId(cut.architecture),
+      }),
+      // Each generated clause cites the WHOLE Requirement content address.
+      // Editing one buyer sentence changes that address in every clause's
+      // backref, even when all other clause semantics are unchanged. Keep
+      // this revision change as mandatory source requalification, but compare
+      // code-facing normative content with only that exact canonical source
+      // revision token normalized. All other citations and clause attributes
+      // remain byte-significant and can demand regeneration.
+      clauses: new Map(cut.specification.topics.flatMap(topic =>
+        topic.clauses.map(clause => {
+          const comparable = Array.isArray(clause.backedBy) ? {
+            ...clause,
+            backedBy: clause.backedBy.map(reference =>
+              typeof reference === "string" && reference.startsWith(sourcePrefix)
+                ? "Original Requirement " + cut.requirement.id +
+                  " (<source-revision-requalified>), cell " +
+                  reference.slice(sourcePrefix.length)
+                : reference),
+          } : clause;
+          return [clause.id, artifactId(comparable)];
+        }))),
+      models: new Map(cut.architecture.models.map(model =>
+        [model.id, artifactId(model)])),
+    };
+  };
+  const older = select(before), newer = select(after);
+  if (older.trace.originalRequirementId !== newer.trace.originalRequirementId)
+    throw new TypeError("architecture impact cannot combine independent original Requirements");
+  const earlier = new Map(older.trace.rows.map(row => [row.cell, row]));
+  const later = new Map(newer.trace.rows.map(row => [row.cell, row]));
+  const sourceRevised = older.revision.requirement !== newer.revision.requirement ||
+    older.revision.specification !== newer.revision.specification;
+  const architectureRevised = older.revision.architecture !== newer.revision.architecture;
+  const equal = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+  const modelsOf = row => [...new Set((row?.authoredPaths ?? []).map(path => path.modelId))].sort();
+  const viewsOf = row => [...new Set((row?.authoredPaths ?? []).map(path => path.viewId))].sort();
+  const changedSourceBytes = (beforeIds, afterIds, oldDigests, newDigests) =>
+    [...new Set([...beforeIds, ...afterIds])].some(id => oldDigests.get(id) !== newDigests.get(id));
+  const changes = [];
+  const models = new Set(), views = new Set();
+  for (const cell of [...new Set([...earlier.keys(), ...later.keys()])].sort()) {
+    const a = earlier.get(cell), z = later.get(cell), reasons = [];
+    if (!a) reasons.push("new-source-condition");
+    if (!z) reasons.push("removed-source-condition");
+    if (a && z) {
+      if (a.originalStatement !== z.originalStatement) reasons.push("source-statement-changed");
+      if (a.sourceTarget !== z.sourceTarget) reasons.push("source-target-changed");
+      if (!equal(a.normativeClauseIds, z.normativeClauseIds)) reasons.push("normative-clause-mapping-changed");
+      if (changedSourceBytes(a.normativeClauseIds, z.normativeClauseIds, older.clauses, newer.clauses))
+        reasons.push("normative-clause-content-changed");
+      if (!equal(a.authoredPaths, z.authoredPaths)) reasons.push("architecture-model-trace-changed");
+      if (changedSourceBytes(modelsOf(a), modelsOf(z), older.models, newer.models))
+        reasons.push("architecture-model-content-changed");
+    }
+    const regeneration = reasons.length !== 0;
+    if (sourceRevised) reasons.push("original-source-cut-revised");
+    if (architectureRevised) reasons.push("architecture-source-revised");
+    if (reasons.length === 0) continue;
+    const priorModels = Object.freeze(modelsOf(a)), currentModels = Object.freeze(modelsOf(z));
+    const priorViews = Object.freeze(viewsOf(a)), currentViews = Object.freeze(viewsOf(z));
+    for (const id of [...priorModels, ...currentModels]) models.add(id);
+    for (const id of [...priorViews, ...currentViews]) views.add(id);
+    changes.push(Object.freeze({
+      cell,
+      kind: regeneration ? "regenerate-and-requalify" : "requalify-source-only",
+      reasons: Object.freeze(reasons),
+      beforeStanding: a?.standing ?? null,
+      afterStanding: z?.standing ?? null,
+      beforeClauseIds: Object.freeze([...(a?.normativeClauseIds ?? [])]),
+      afterClauseIds: Object.freeze([...(z?.normativeClauseIds ?? [])]),
+      beforeModelIds: priorModels,
+      afterModelIds: currentModels,
+    }));
+  }
+  const regeneration = changes.filter(row => row.kind === "regenerate-and-requalify").length;
+  return Object.freeze({
+    kind: "specification.requirement-architecture-impact.v1",
+    requirementId: older.trace.originalRequirementId,
+    before: older.revision,
+    after: newer.revision,
+    summary: Object.freeze({
+      sourceCellsBefore: earlier.size,
+      sourceCellsAfter: later.size,
+      affectedCells: changes.length,
+      regenerationCells: regeneration,
+      requalificationOnlyCells: changes.length - regeneration,
+      untracedAfter: newer.trace.counts.untraced,
+    }),
+    changes: Object.freeze(changes),
+    affectedModels: Object.freeze([...models].sort()),
+    affectedViews: Object.freeze([...views].sort()),
+    originalEffect: "none-read-only",
+    independentReceiving: "required-from-original-work-and-customer",
+    independentlyAcceptedCustomerWork: false,
+  });
+}
+
 /** Source-bound render includes the complete honest buyer-clause trace. */
 export function renderArchitectureDescriptionFromSourceCut(record,sources) {
   const trace=readRequirementArchitectureTrace(record,sources);

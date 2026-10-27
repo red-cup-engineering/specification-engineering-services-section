@@ -122,3 +122,30 @@ topic.
 Topic bodies are read through the Markdown section's
 `projectMarkdownBlocks` and `projectMarkdownInline`, the same projections its
 HTML renderer uses.
+## Detect revision drift without manufacturing accepted Work
+
+Original \`readRequirementArchitectureImpact(before,after)\` consumes two already
+source-verified {requirement,specification,architecture} triples. It first
+exercises the existing full Requirement→Specification→Architecture source-cut
+admission on **both** sides. It compares the exact source revisions, original
+Requirement conditions, source-owned normative clause identities **and
+contents**, authored model/view mappings, and original model contents. Reusing
+the same clause or model identifier with altered content is an explicit
+regeneration obligation, never mistaken for stable software.
+
+Its deterministic \`changes\` separate \`regenerate-and-requalify\` from
+\`requalify-source-only\`. The latter means a changed source revision invalidates
+old custody even when that particular condition's declared logic is unchanged;
+it is not an instruction to recreate an unchanged model. It reports the
+affected original model/view IDs for a competent downstream Work consumer,
+preserves untraced source conditions, and never opens Work, issues authority,
+executes code, blesses a proof, self-accepts or settles a customer benefit.
+
+The already-shipped Architecture CLI adds \`--source-impact\`: one bounded
+JSON stdin request with exactly
+\`{before:{requirement,specification,architecture},after:{requirement,specification,architecture}}\`
+yields this read-only typed JSON result. Extra purported \`accepted\` or
+\`execute\` fields refuse before output. Native tests exercise identical replay,
+changed original customer words, same-ID normative source and same-ID model
+content changes, genuinely new model mappings, stale cuts and CLI admission.
+There is no additional lifecycle journal or shadow requirement database.
