@@ -178,18 +178,33 @@ function sourceContext(stage, supplied) {
   const architectureTrace = readRequirementArchitectureTrace(architecture, {
     requirement: r, specification
   });
-  const authoredModelsByCell = new Map(architectureTrace.rows.map(row => [
-    row.cell, new Set(row.authoredPaths.map(path => path.modelId))
-  ]));
-  requireThat(authoredModelsByCell.size === cells.size &&
-    [...cells.keys()].every(cell => (authoredModelsByCell.get(cell)?.size ?? 0) > 0));
+  // Preserve the original Architecture reader's per-clause source relation.
+  // A model tied to a Requirement cell does not necessarily implement every
+  // separately authored normative clause for that cell.
+  const authoredClausesByCell = new Map(architectureTrace.rows.map(row => {
+    const modeled = new Map();
+    for (const path of row.authoredPaths) {
+      const clauses = modeled.get(path.modelId) ?? new Set();
+      for (const clause of path.clauseIds) clauses.add(clause);
+      modeled.set(path.modelId, clauses);
+    }
+    return [row.cell, modeled];
+  }));
+  // Architecture must be complete enough to plan Design: if even one
+  // normative clause lacks a model, refuse before invoking inference.
+  requireThat(authoredClausesByCell.size === cells.size &&
+    [...cells].every(([cell, clauses]) => {
+      const modeled = authoredClausesByCell.get(cell);
+      return modeled && modeled.size > 0 &&
+        clauses.every(clause => [...modeled.values()].some(set => set.has(clause)));
+    }));
   requireThat(Array.isArray(architecture.models) && architecture.models.length > 0);
   const models = new Set();
   for (const model of architecture.models) {
     requireThat(object(model) && nonblank(model.id) && !models.has(model.id) && nonblank(model.content));
     models.add(model.id);
   }
-  const context = { sources, cells, models, authoredModelsByCell, hld: null };
+  const context = { sources, cells, models, authoredClausesByCell, hld: null };
   if (stage === 'low-level') {
     const upstream = parsed.get('high-level');
     requireThat(exact(upstream, ['type', 'stage', 'sources', 'design', 'admitted', 'proof']));
@@ -211,7 +226,16 @@ function traceValid(rows, elements, context, lowLevel) {
     seen.add(row.requirementCellId);
     if (!strings(row.specificationClauseIds, 1, true) || !strings(row.architectureModelIds, 1, true) || !strings(row.designElementIds, 1, true)) return false;
     if (!sameSet(row.specificationClauseIds, context.cells.get(row.requirementCellId))) return false;
-    if (!row.architectureModelIds.every(id => context.models.has(id) && context.authoredModelsByCell.get(row.requirementCellId)?.has(id)) || !row.designElementIds.every(id => elements.has(id))) return false;
+    // Selected models must *jointly* witness every claimed normative clause,
+    // not merely occur somewhere under the same original Requirement cell.
+    const byModel = context.authoredClausesByCell.get(row.requirementCellId);
+    const supportedClauses = new Set();
+    if (!row.architectureModelIds.every(id => {
+      if (!context.models.has(id) || !byModel?.has(id)) return false;
+      for (const clause of byModel.get(id)) supportedClauses.add(clause);
+      return true;
+    }) || !sameSet([...supportedClauses], row.specificationClauseIds) ||
+      !row.designElementIds.every(id => elements.has(id))) return false;
     for (const id of row.designElementIds) covered.add(id);
     if (lowLevel && (!sameSet(row.designElementIds.map(id => elements.get(id).componentId), upstreamRows.get(row.requirementCellId)?.designElementIds ?? []) ||
       !sameSet(row.architectureModelIds, upstreamRows.get(row.requirementCellId)?.architectureModelIds ?? []))) return false;

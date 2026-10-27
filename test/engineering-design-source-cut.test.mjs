@@ -3,7 +3,7 @@
 // passing tests do NOT qualify architecture, Proof, fabrication or an Office.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { sourcesFixture } from './engineering-design-source-cut.fixture.mjs';
+import { sourcesFixture, clausesSplitAcrossModels } from './engineering-design-source-cut.fixture.mjs';
 import { planEngineeringDesign, receiveEngineeringDesign } from '../src/engineering-design.mjs';
 
 const copy = value => structuredClone(value);
@@ -120,4 +120,33 @@ test('same stage and source content yields the exact same plan without effect', 
   const sources = sourcesFixture();
   const first = planEngineeringDesign({ stage: 'high-level', sources });
   assert.deepEqual(planEngineeringDesign({ stage: 'high-level', sources: copy(sources) }), first);
+});
+
+test('refuse planning when a normative source clause has no Architecture model', () => {
+  const sources = clausesSplitAcrossModels();
+  assert.throws(() => planEngineeringDesign({
+    stage: 'high-level', sources,
+  }), TypeError);
+});
+
+test('refuse a Design row whose selected models cover only part of original clauses', () => {
+  const sources = clausesSplitAcrossModels({ completeArchitecture: true });
+  const plan = planEngineeringDesign({ stage: 'high-level', sources });
+  const design = hldFixture();
+  design.traceability[0].specificationClauseIds.push('clause-a2');
+  // model-a is real and traces this cell, but covers only clause-a.
+  assert.deepEqual(receiveEngineeringDesign({
+    stage: 'high-level', sources, plan, deliveryText: JSON.stringify(design),
+  }), {
+    type: 'EngineeringDesignDerivationRefusal', reason: 'invalid-design',
+  });
+  // The two selected, independently traced models jointly cover both clauses.
+  design.traceability[0].architectureModelIds.push('model-a2');
+  const received = receiveEngineeringDesign({
+    stage: 'high-level', sources, plan, deliveryText: JSON.stringify(design),
+  });
+  assert.equal(received.type, 'EngineeringDesignCandidate');
+  assert.equal(received.admitted, false);
+  assert.equal(received.proof, 'unreceived');
+  assert.deepEqual(received.design, design);
 });
