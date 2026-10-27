@@ -4,6 +4,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { sourcesFixture } from './engineering-design-source-cut.fixture.mjs';
+import { artifactId } from '@red-cup-engineering/semiotic-eavt-services-section/identity';
 import { planEngineeringDesign, receiveEngineeringDesign } from '../src/engineering-design.mjs';
 
 const copy = value => structuredClone(value);
@@ -120,4 +121,65 @@ test('same stage and source content yields the exact same plan without effect', 
   const sources = sourcesFixture();
   const first = planEngineeringDesign({ stage: 'high-level', sources });
   assert.deepEqual(planEngineeringDesign({ stage: 'high-level', sources: copy(sources) }), first);
+});
+
+function clausesSplitAcrossModels({ completeArchitecture = false } = {}) {
+  const sources = sourcesFixture();
+  const specification = JSON.parse(sources[1].text);
+  const architecture = JSON.parse(sources[2].text);
+  // Both normative clauses belong to source-req:a; each independently
+  // authored architectural model supplies only one of those clauses.
+  specification.topics[0].clauses.push({
+    id: 'clause-a2',
+    backedBy: [specification.topics[0].clauses[0].backedBy[0]],
+  });
+  architecture.sources.find(source => source.id === 'specification').revision =
+    artifactId(specification);
+  if (completeArchitecture) {
+    architecture.stakeholders[0].concernIds.push('concern-a2');
+    architecture.concerns.push({
+      id: 'concern-a2', statement: 'Independently model second clause for A.',
+      sourceIds: ['requirement', 'specification'],
+      requirementCellIds: ['source-req:a'], specificationClauseIds: ['clause-a2'],
+    });
+    architecture.viewpoints[0].concernIds.push('concern-a2');
+    architecture.views[0].modelIds.push('model-a2');
+    architecture.models.push({
+      id: 'model-a2', kind: 'component',
+      content: 'Source-identified second requirement-clause responsibility.',
+      concernIds: ['concern-a2'], sourceIds: ['requirement', 'specification'],
+    });
+  }
+  sources[1].text = JSON.stringify(specification);
+  sources[2].text = JSON.stringify(architecture);
+  return sources;
+}
+
+test('refuse planning when a normative source clause has no Architecture model', () => {
+  const sources = clausesSplitAcrossModels();
+  assert.throws(() => planEngineeringDesign({
+    stage: 'high-level', sources,
+  }), TypeError);
+});
+
+test('refuse a Design row whose selected models cover only part of original clauses', () => {
+  const sources = clausesSplitAcrossModels({ completeArchitecture: true });
+  const plan = planEngineeringDesign({ stage: 'high-level', sources });
+  const design = hldFixture();
+  design.traceability[0].specificationClauseIds.push('clause-a2');
+  // model-a is real and traces this cell, but covers only clause-a.
+  assert.deepEqual(receiveEngineeringDesign({
+    stage: 'high-level', sources, plan, deliveryText: JSON.stringify(design),
+  }), {
+    type: 'EngineeringDesignDerivationRefusal', reason: 'invalid-design',
+  });
+  // The two selected, independently traced models jointly cover both clauses.
+  design.traceability[0].architectureModelIds.push('model-a2');
+  const received = receiveEngineeringDesign({
+    stage: 'high-level', sources, plan, deliveryText: JSON.stringify(design),
+  });
+  assert.equal(received.type, 'EngineeringDesignCandidate');
+  assert.equal(received.admitted, false);
+  assert.equal(received.proof, 'unreceived');
+  assert.deepEqual(received.design, design);
 });
