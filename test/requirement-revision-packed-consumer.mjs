@@ -2,6 +2,7 @@
 // original public Architecture export from the installed npm package, not
 // the checkout, original source module or another simulated algorithm.
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import { readRequirementRevisionPressure } from '@red-cup-engineering/specification-engineering-services-section/architecture-description';
 
 const id='producer-artifacts-retire-at-their-terminal-owner-boundary';
@@ -46,4 +47,16 @@ assert.equal(held.firstOpenStage,'requirement-admission');
 const foreign=structuredClone(after);
 foreign.id='different-customer';
 assert.throws(()=>readRequirementRevisionPressure(before,foreign),TypeError);
+// Drive the installed original executable, not a working-tree alias. A model
+// cannot use the outer carrier to claim accepted Work or fabrication effects.
+const executable='node_modules/@red-cup-engineering/specification-engineering-services-section/scripts/render-architecture-description.mjs';
+const invoke=(request)=>spawnSync(process.execPath,[executable,'--requirement-pressure'],{
+  input:JSON.stringify(request),encoding:'utf8',timeout:15000,maxBuffer:1024*1024,
+});
+const cli=invoke({before,after});
+assert.equal(cli.status,0,cli.stderr);
+assert.deepEqual(JSON.parse(cli.stdout),received);
+const injection=invoke({before,after,accepted:true});
+assert.notEqual(injection.status,0);
+assert.equal(injection.stdout,'');
 console.log('Packed original Requirement-first reader: authentic source revisions, 3-to-4 request and all 8 condition changes require requalification; no Proof, maker, installer or customer acceptance.');
