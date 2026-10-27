@@ -9,6 +9,56 @@
 
 Fabricates Specification records from journaled rulings and semantic-record-journal rows into topic-sectioned, BCP14-clause Markdown carriers, never handwritten.
 
+## Source-bound HLD and LLD candidate generation
+
+The existing `./engineering-design` public export supplies
+`planEngineeringDesign({stage, sources})` and
+`receiveEngineeringDesign({stage, sources, plan, deliveryText})`.
+`stage` is `high-level` or `low-level`. The first stage requires **the
+complete original** `requirement`, `specification` and `architecture`
+source texts; the second additionally requires the exact previously received
+`high-level` candidate. The plan carries the original text/identity and a
+source-pinned inference request; a separately authorized provider supplies
+the JSON `deliveryText`. The receiving function checks that proposal against
+the exact plan and source cut and returns a typed refusal or an
+`EngineeringDesignCandidate`.
+
+A structurally received candidate retains `admitted:false` and
+`proof:"unreceived"`. The source reader refuses a changed original Requirement
+or Specification revision, a foreign Architecture model, a normative clause
+without an authored model witness, a design row whose selected models do not
+cover its claimed clauses, and an LLD that revises its HLD allocation without
+a new upstream design. No inference operation, proof authority, filesystem
+write, accepted Work or release is granted by this exported module.
+
+The original generation Work is recorded in
+`data/records/service-records/fabrication-work-order-service-records/moneyday-design-generators.work-order.md`;
+the original receiving candidate is in the neighboring
+`fabrication-receiving-service-records`. Those are source and acceptance
+records, not proof that the Moneyday buyer received an operating repair.
+See the original Engineering four-closure [issue #137](https://github.com/red-cup-engineering/engineering-services-section/issues/137)
+for the source-to-Design/Proof/maker/operation obligations.
+
+## Reproducible source-candidate qualification
+
+Source changes and **shipped README changes** run the original native Node 24
+suite, historical source regressions, npm packaging, and a clean independent
+installation exercising the public Specification/Architecture/HLD/LLD APIs.
+The same checks also run on merged main source, not only PR previews. The CI
+job packs the candidate twice from the same source, requires byte-identical
+archives, creates and verifies `SHA256SUMS`, and retains the exact
+consumer-tested tarball plus checksum for 30 days in its Actions artifact.
+A different source commit must earn its own source-qualified checksum.
+
+To run the source checks in a qualified Node 24 checkout, resolve the declared
+dependencies from the original approved registry and run `npm test`. The
+CI-installed consumer uses `npm pack --ignore-scripts`, an independent
+`npm install` of that archive, and the package's actual exported APIs.
+The SHA-256 checksum proves local archive integrity; it is **not** a SLSA
+attestation, immutable published release, independently accepted Design proof,
+successful Bare Cedar Fog host installation, or beneficiary receipt.
+
+
 ## Deterministic architecture-description projection (source proposal)
 
 This package also projects an **ArchitectureDescriptionCandidate** record into a reproducible, **ISO/IEC/IEEE 42010:2022-informed** Markdown architecture description. The source schema is [`data/records/schema/architecture-description.schema.json`](data/records/schema/architecture-description.schema.json), the pure-ish read/validation/rendering surface is exported as `./architecture-description`, and the stdin→stdout CLI is `scripts/render-architecture-description.mjs`.
