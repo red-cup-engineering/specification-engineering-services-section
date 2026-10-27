@@ -1,11 +1,25 @@
 name: Specification Engineering native source and package receiving
 
 on:
+  # A merged source cut must receive its own source-qualified job on main;
+  # pull-request CI alone is not a post-integration acceptance receipt.
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/specification-native-receiving.yml"
+      - ".npmrc"
+      - "package.json"
+      - "README.md"
+      - "src/**"
+      - "scripts/**"
+      - "test/**"
+      - "data/records/schema/**"
   pull_request:
     paths:
       - ".github/workflows/specification-native-receiving.yml"
       - ".npmrc"
       - "package.json"
+      - "README.md"
       - "src/**"
       - "scripts/**"
       - "test/**"
@@ -66,6 +80,16 @@ jobs:
           set -euo pipefail
           npm pack --ignore-scripts --json --pack-destination "$RUNNER_TEMP" > "$RUNNER_TEMP/specification-pack.json"
           tarball="$(node -e 'const p=require(process.argv[1]); if(p.length!==1 || typeof p[0]?.filename!=="string")process.exit(2); process.stdout.write(p[0].filename)' "$RUNNER_TEMP/specification-pack.json")"
+          # The candidate used by the clean-room consumer must have an
+          # independently reproduced, byte-identical npm archive. This is
+          # a source/build receipt, not a SLSA signature or publication.
+          mkdir -p "$RUNNER_TEMP/specification-repack" "$RUNNER_TEMP/specification-candidate"
+          npm pack --ignore-scripts --json --pack-destination "$RUNNER_TEMP/specification-repack" > "$RUNNER_TEMP/specification-repack.json"
+          test -f "$RUNNER_TEMP/specification-repack/$tarball"
+          cmp "$RUNNER_TEMP/$tarball" "$RUNNER_TEMP/specification-repack/$tarball"
+          cp "$RUNNER_TEMP/$tarball" "$RUNNER_TEMP/specification-candidate/$tarball"
+          (cd "$RUNNER_TEMP/specification-candidate" && sha256sum "$tarball" > SHA256SUMS && sha256sum --check SHA256SUMS)
+          # Preserve only the exact package that the separate consumer installs.
           tar -tzf "$RUNNER_TEMP/$tarball" > "$RUNNER_TEMP/specification-members.txt"
           grep -Fx 'package/data/records/schema/specification.schema.json' "$RUNNER_TEMP/specification-members.txt"
           grep -Fx 'package/data/records/schema/architecture-description.schema.json' "$RUNNER_TEMP/specification-members.txt"
@@ -344,3 +368,10 @@ jobs:
             if(!xml.includes("buyer MUST accept")
                ||xml.includes("Still inert SHOULD NOT")) process.exit(2);
           '
+      - name: Retain unpromoted source artifact and checksum after all receiving
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: specification-design-qualified-source-${{ github.sha }}
+          path: ${{ runner.temp }}/specification-candidate/
+          if-no-files-found: error
+          retention-days: 30
