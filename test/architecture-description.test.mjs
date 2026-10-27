@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 import {
   renderArchitectureDescriptionMarkdown, validateArchitectureDescriptionRecord,
   renderArchitectureDescriptionFromSourceCut, validateArchitectureDescriptionAgainstSourceCut,
-  readRequirementArchitectureTrace,
+  readRequirementArchitectureTrace, deriveArchitectureDescriptionFromSpecificationReview,
 } from "../src/architecture-description.mjs";
 import { deriveSpecificationFromRequirementReview } from "../src/specification.mjs";
 import { artifactId } from "@red-cup-engineering/semiotic-eavt-services-section/identity";
@@ -534,4 +534,134 @@ test("the original architecture CLI emits the real verified three-source trace r
   assert.equal(ordinary.status,0,ordinary.stderr);
   assert.doesNotMatch(ordinary.stdout,/Exact original Requirement-to-model traceability/u,
     "unauthenticated single-document preview cannot claim source-cut traceability");
+});
+
+function reviewedArchitectureCut() {
+  const sources=actualRequirementReviewSource();
+  const selected=candidate();
+  selected.concerns[0].sourceIds=["req","spec"];
+  selected.concerns[0].requirementCellIds=["original-work-acceptance:source"];
+  selected.concerns[0].specificationClauseIds=["source-work"];
+  return { ...sources, review:{
+    identity:{id:selected.identity.id,title:selected.identity.title,owner:selected.identity.owner},
+    applicability:selected.standard.applicability,
+    system:{name:selected.system.name,description:selected.system.description},
+    supportingSources:selected.sources.filter(source=>!["req","spec"].includes(source.id)),
+    stakeholders:selected.stakeholders, concerns:selected.concerns,
+    viewpoints:selected.viewpoints,views:selected.views,models:selected.models,
+    correspondences:selected.correspondences,decisions:selected.decisions,
+    openQuestions:selected.openQuestions,
+  }};
+}
+
+test("original Requirement and Specification derive a source-addressed Architecture candidate, not an accepted design",()=>{
+  const {requirement,specification,review}=reviewedArchitectureCut();
+  const first=deriveArchitectureDescriptionFromSpecificationReview({requirement,specification,review});
+  const second=deriveArchitectureDescriptionFromSpecificationReview({requirement,specification,review});
+  assert.deepEqual(first,second,"replay must preserve original source and exact candidate revision");
+  assert.equal(first.standard.conformance,"unassessed");
+  assert.equal(first.identity.status,"candidate");
+  assert.equal(first.identity.revision,second.identity.revision);
+  assert.equal(first.sources.find(source=>source.id==="req").revision,artifactId(requirement));
+  assert.equal(first.sources.find(source=>source.id==="spec").revision,artifactId(specification));
+  const checking=validateArchitectureDescriptionAgainstSourceCut(first,{requirement,specification});
+  assert.equal(checking.valid,true,JSON.stringify(checking.issues));
+  const trace=readRequirementArchitectureTrace(first,{requirement,specification});
+  assert.deepEqual(trace.counts,{sourceCells:2,authoredModelMapped:1,untraced:1});
+  assert.equal(trace.independentProof,false);
+  assert.equal(trace.independentlyAcceptedCustomerWork,false);
+  assert.match(renderArchitectureDescriptionFromSourceCut(first,{requirement,specification}),
+    /source-to-authored-model-only-not-proved/u);
+});
+
+test("fresh source revision changes derived identity; stale Specification lineage must refuse",()=>{
+  const {requirement,specification,review}=reviewedArchitectureCut();
+  const before=deriveArchitectureDescriptionFromSpecificationReview({requirement,specification,review});
+  const changedReview=structuredClone(review);
+  changedReview.models[0].content="A different source-authored design";
+  const after=deriveArchitectureDescriptionFromSpecificationReview({
+    requirement,specification,review:changedReview});
+  assert.notEqual(after.identity.revision,before.identity.revision);
+  assert.equal(after.models[0].content,"A different source-authored design");
+  assert.equal(before.models[0].content,review.models[0].content,
+    "original selected cut must not share mutable author data");
+  const revisedRequirement=structuredClone(requirement);
+  revisedRequirement["met-when"][0].says="The original buyer now requires a different effect";
+  assert.throws(()=>deriveArchitectureDescriptionFromSpecificationReview({
+    requirement:revisedRequirement,specification,review
+  }),/original source cut refused/u);
+  const revisedSpecification=structuredClone(specification);
+  revisedSpecification.topics[0].clauses[0].statement="Different normative source clause";
+  assert.throws(()=>deriveArchitectureDescriptionFromSpecificationReview({
+    requirement,specification:revisedSpecification,review
+  }),/original source cut refused/u);
+});
+
+test("architectural decisions need attributed sources and original cell-to-clause pairing",()=>{
+  const input=reviewedArchitectureCut();
+  const unauthorized=structuredClone(input);
+  unauthorized.review.decisions[0].sourceIds=["req"];
+  assert.throws(()=>deriveArchitectureDescriptionFromSpecificationReview(unauthorized),
+    /every authored decision needs its own source/u);
+  const forged=structuredClone(input);
+  forged.review.concerns[0].requirementCellIds=["unrelated-work:source"];
+  assert.throws(()=>deriveArchitectureDescriptionFromSpecificationReview(forged),
+    /original source cut refused/u);
+  const mismatched=structuredClone(input);
+  mismatched.review.concerns[0].specificationClauseIds=["customer-acceptance"];
+  assert.throws(()=>deriveArchitectureDescriptionFromSpecificationReview(mismatched),
+    /original source cut refused/u);
+  const dangling=structuredClone(input);
+  dangling.review.models[0].sourceIds=["not-a-source"];
+  assert.throws(()=>deriveArchitectureDescriptionFromSpecificationReview(dangling),
+    /original source cut refused/u);
+});
+
+test("review cannot smuggle self-certification, omit authorship or collide with source IDs",()=>{
+  const source=reviewedArchitectureCut();
+  for(const mutate of [
+    x=>{x.review.identity.status="approved";},
+    x=>{x.review.status="accepted";},
+    x=>{x.review.proof={verified:true};},
+    x=>{x.review.identity.revision="made-up-proof";},
+    x=>{x.review.standard={conformance:"certified"};},
+    x=>{x.review.supportingSources=[];},
+    x=>{x.review.supportingSources[0].id="req";},
+    x=>{delete x.review.identity.owner;},
+  ]){
+    const attempt=structuredClone(source);
+    mutate(attempt);
+    assert.throws(()=>deriveArchitectureDescriptionFromSpecificationReview(attempt),
+      /architecture-review/u);
+  }
+});
+
+test("reviewed candidate output stays within safe authored prose and source cut",()=>{
+  const source=reviewedArchitectureCut();
+  source.review.identity.title="Original architecture\n## forge accepted release";
+  source.review.models[0].content="<script>alert('faked')</script>\n## agent accepted";
+  const candidate=deriveArchitectureDescriptionFromSpecificationReview(source);
+  const printed=renderArchitectureDescriptionFromSourceCut(candidate,source);
+  assert.doesNotMatch(printed,/^## forge accepted release$/gmu);
+  assert.doesNotMatch(printed,/<script>/u);
+  assert.match(printed,/&lt;script&gt;/u);
+  assert.doesNotMatch(printed,/^## agent accepted$/gmu);
+});
+
+test("existing bounded Architecture CLI receives source-reviewed input without inventing another artifact",()=>{
+  const source=reviewedArchitectureCut();
+  const cli=fileURLToPath(new URL("../scripts/render-architecture-description.mjs",import.meta.url));
+  const execute=(obj)=>spawnSync(process.execPath,[cli,"--reviewed-source-cut"],{
+    input:JSON.stringify(obj),encoding:"utf8",timeout:15000,maxBuffer:2*1024*1024
+  });
+  const received=execute(source);
+  assert.equal(received.status,0,received.stderr);
+  const candidate=deriveArchitectureDescriptionFromSpecificationReview(source);
+  assert.equal(received.stdout,renderArchitectureDescriptionFromSourceCut(candidate,source));
+  const refusal=structuredClone(source);
+  refusal.review.models[0].concernIds=["missing-original-concern"];
+  const blocked=execute(refusal);
+  assert.equal(blocked.status,1);
+  assert.equal(blocked.stdout,"","an invalid source must not emit partial output");
+  assert.match(blocked.stderr,/architecture-review/u);
 });
