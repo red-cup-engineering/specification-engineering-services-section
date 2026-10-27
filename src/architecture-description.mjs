@@ -455,11 +455,12 @@ export function deriveArchitectureDescriptionFromSpecificationReview({
   // authoring surface, so status, proof or conformance claims cannot be
   // smuggled in as alternate ArchitectureDescriptionCandidate metadata.
   exactly(review, [
-    "identity", "applicability", "system", "supportingSources", "stakeholders",
+    "identity", "sourceCut", "applicability", "system", "supportingSources", "stakeholders",
     "concerns", "viewpoints", "views", "models", "correspondences",
     "decisions", "openQuestions",
   ], [], "review");
   exactly(review.identity, ["id", "title", "owner"], [], "review.identity");
+  exactly(review.sourceCut, ["requirementRevision", "specificationRevision"], [], "review.sourceCut");
   exactly(review.system, ["name", "description"], ["supportingSourceIds"], "review.system");
   const checkedSpecification = validateSpecificationRecord(specification);
   if (!checkedSpecification.valid)
@@ -482,11 +483,18 @@ export function deriveArchitectureDescriptionFromSpecificationReview({
       (!Array.isArray(review.system.supportingSourceIds) ||
         review.system.supportingSourceIds.some(id => typeof id !== "string")))
     throw new TypeError("architecture-review: supporting system source IDs must be explicit strings");
+  // The architectural author must have actually selected the precise
+  // Requirement and Specification cuts they designed against. Recomputing
+  // output digests alone would otherwise silently rebind an OLD design review
+  // to newly revised normative requirements. Original source bytes win.
+  const requirementsRevision = artifactId(requirement);
+  const specificationRevision = artifactId(specification);
+  if (review.sourceCut.requirementRevision !== requirementsRevision ||
+      review.sourceCut.specificationRevision !== specificationRevision)
+    throw new TypeError("architecture-review: original source cut refused: review is stale or foreign");
   // Clone before hashing and projecting. A caller's later mutation cannot
   // silently alter the selected candidate or its source-revision identity.
   const authored = structuredClone(review);
-  const requirementsRevision = artifactId(requirement);
-  const specificationRevision = artifactId(specification);
   const candidate = {
     type: "ArchitectureDescriptionCandidate", version: 1,
     identity: { ...authored.identity,
