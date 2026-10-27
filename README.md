@@ -111,13 +111,15 @@ node scripts/render-architecture-description.mjs --reviewed-source-cut \
 
 The single input object has exactly `requirement`, `specification`, `review`.
 The review is *authored architectural data* with exactly
-`identity: {id,title,owner}`, `applicability`,
+`identity: {id,title,owner}`, `sourceCut: {requirementRevision,specificationRevision}`,
+`applicability`,
 `system: {name,description,supportingSourceIds?}`,
 `supportingSources: [{id,locator,revision},...]`,
 `stakeholders`, `concerns`, `viewpoints`, `views`, `models`,
 `correspondences`, `decisions` and `openQuestions`—the original
-Architecture graph arrays, **not** a new stage ledger. The derived cut binds
-`req` and `spec` to the *actual* content identities, rejecting stale
+Architecture graph arrays, **not** a new stage ledger. The review must itself identify the exact source cut it was authored against;
+the derived output binds `req` and `spec` to the *actual* content identities,
+rejecting stale
 Specification lineage, unsupported review fields, unauthored architectural
 decisions, missing model references, mismatched buyer cells and foreign
 normative clauses. Reviewer status/approval, revision hashes, Proof and
