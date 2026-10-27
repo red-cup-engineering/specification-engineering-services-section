@@ -416,24 +416,49 @@ export function readEngineeringCodeWork({
   });
   requireThat(equal(received, designCandidate));
 
-  // The Code source custodian must supply an explicitly scoped array of
-  // exact module views. Do not confuse unprovided files with repository
-  // absence, and never consume a source path outside the admitted LLD.
+  // This already independently reconstructed Design contains the HLD's
+  // original component owners. A relative src/ path is NOT a repository
+  // identity: File, Deployment and Fabrication may all propose the same
+  // relative module spelling. Preserve their original ownership, without
+  // inferring GitHub authorization or executable Work from the HLD label.
+  const highLevel = parseObject(designCandidate.sources[3].text);
+  const originalOwners = new Map(highLevel.design.components.map(row =>
+    [row.id, row.owner]));
+  const keyOf = (owner, path) => JSON.stringify([owner, path]);
+  const ownersByPath = new Map();
+  const plannedSources = new Set();
   requireThat(Array.isArray(sourceViews) && sourceViews.length <= 64);
   requireThat(designCandidate.design.operations.length <= 64);
-  const plannedPaths = new Set(designCandidate.design.operations.map(x => x.module));
+  for (const operation of designCandidate.design.operations) {
+    const owner = originalOwners.get(operation.componentId);
+    requireThat(nonblank(owner));
+    plannedSources.add(keyOf(owner, operation.module));
+    const owners = ownersByPath.get(operation.module) ?? new Set();
+    owners.add(owner);
+    ownersByPath.set(operation.module, owners);
+  }
   const views = new Map();
   let bytes = 0;
   for (const view of sourceViews) {
-    requireThat(exact(view, ['path', 'text', 'expectedSha256']) &&
-      typeof view.path === 'string' && plannedPaths.has(view.path) &&
-      !views.has(view.path) && typeof view.text === 'string' &&
-      view.text.isWellFormed() && /^sha256:[a-f0-9]{64}$/u.test(view.expectedSha256));
+    const qualified = exact(view, ['owner', 'path', 'text', 'expectedSha256']);
+    const legacy = exact(view, ['path', 'text', 'expectedSha256']);
+    requireThat(qualified || legacy);
+    // Legacy path-only views remain meaningful for exactly ONE HLD owner.
+    // A second original owner with the same relative path MUST name its
+    // distinct source owner in every view to prevent cross-repository alias.
+    const owners = ownersByPath.get(view.path);
+    const owner = qualified ? view.owner :
+      owners?.size === 1 ? [...owners][0] : null;
+    const key = keyOf(owner, view.path);
+    requireThat(nonblank(owner) && owners?.has(owner) &&
+      plannedSources.has(key) && !views.has(key) &&
+      typeof view.text === 'string' && view.text.isWellFormed() &&
+      /^sha256:[a-f0-9]{64}$/u.test(view.expectedSha256));
     bytes += Buffer.byteLength(view.text, 'utf8');
     requireThat(Number.isSafeInteger(bytes) && bytes <= 2_097_152);
     const actualSha256 =
       'sha256:' + createHash('sha256').update(view.text, 'utf8').digest('hex');
-    views.set(view.path, {
+    views.set(key, {
       actualSha256, expectedSha256: view.expectedSha256,
       matchesExpectedSource: actualSha256 === view.expectedSha256,
     });
@@ -459,7 +484,7 @@ export function readEngineeringCodeWork({
   const targets = [...designCandidate.design.operations]
     .sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0)
     .map(operation => {
-      const source = views.get(operation.module);
+      const source = views.get(keyOf(originalOwners.get(operation.componentId), operation.module));
       const status = source === undefined ? 'source-not-observed'
         : !source.matchesExpectedSource ? 'source-cut-disagreement'
           : 'source-present-unassayed';
@@ -474,6 +499,7 @@ export function readEngineeringCodeWork({
       // automatically generated behavioral assertions or passing tests.
       return {
         operationId: operation.id, componentId: operation.componentId,
+        originalComponentOwner: originalOwners.get(operation.componentId),
         module: operation.module, exportName: operation.exportName,
         sourceStatus: status,
         observedSha256: source?.actualSha256 ?? null,
