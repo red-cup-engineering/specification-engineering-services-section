@@ -3,8 +3,7 @@
 // passing tests do NOT qualify architecture, Proof, fabrication or an Office.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { sourcesFixture } from './engineering-design-source-cut.fixture.mjs';
-import { artifactId } from '@red-cup-engineering/semiotic-eavt-services-section/identity';
+import { sourcesFixture, clausesSplitAcrossModels } from './engineering-design-source-cut.fixture.mjs';
 import { planEngineeringDesign, receiveEngineeringDesign } from '../src/engineering-design.mjs';
 
 const copy = value => structuredClone(value);
@@ -122,38 +121,6 @@ test('same stage and source content yields the exact same plan without effect', 
   const first = planEngineeringDesign({ stage: 'high-level', sources });
   assert.deepEqual(planEngineeringDesign({ stage: 'high-level', sources: copy(sources) }), first);
 });
-
-function clausesSplitAcrossModels({ completeArchitecture = false } = {}) {
-  const sources = sourcesFixture();
-  const specification = JSON.parse(sources[1].text);
-  const architecture = JSON.parse(sources[2].text);
-  // Both normative clauses belong to source-req:a; each independently
-  // authored architectural model supplies only one of those clauses.
-  specification.topics[0].clauses.push({
-    id: 'clause-a2',
-    backedBy: [specification.topics[0].clauses[0].backedBy[0]],
-  });
-  architecture.sources.find(source => source.id === 'specification').revision =
-    artifactId(specification);
-  if (completeArchitecture) {
-    architecture.stakeholders[0].concernIds.push('concern-a2');
-    architecture.concerns.push({
-      id: 'concern-a2', statement: 'Independently model second clause for A.',
-      sourceIds: ['requirement', 'specification'],
-      requirementCellIds: ['source-req:a'], specificationClauseIds: ['clause-a2'],
-    });
-    architecture.viewpoints[0].concernIds.push('concern-a2');
-    architecture.views[0].modelIds.push('model-a2');
-    architecture.models.push({
-      id: 'model-a2', kind: 'component',
-      content: 'Source-identified second requirement-clause responsibility.',
-      concernIds: ['concern-a2'], sourceIds: ['requirement', 'specification'],
-    });
-  }
-  sources[1].text = JSON.stringify(specification);
-  sources[2].text = JSON.stringify(architecture);
-  return sources;
-}
 
 test('refuse planning when a normative source clause has no Architecture model', () => {
   const sources = clausesSplitAcrossModels();

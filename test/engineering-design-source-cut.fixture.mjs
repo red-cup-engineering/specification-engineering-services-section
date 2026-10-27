@@ -72,3 +72,36 @@ export function sourcesFixture() {
   ];
 }
 
+// Shared native and independently packed-consumer source-cut counterexample.
+// These are format-only, unadmitted records, not a qualified design.
+export function clausesSplitAcrossModels({ completeArchitecture = false } = {}) {
+  const sources = sourcesFixture();
+  const specification = JSON.parse(sources[1].text);
+  const architecture = JSON.parse(sources[2].text);
+  // Both normative clauses belong to source-req:a; each independently
+  // authored architectural model supplies only one of those clauses.
+  specification.topics[0].clauses.push({
+    id: 'clause-a2',
+    backedBy: [specification.topics[0].clauses[0].backedBy[0]],
+  });
+  architecture.sources.find(source => source.id === 'specification').revision =
+    artifactId(specification);
+  if (completeArchitecture) {
+    architecture.stakeholders[0].concernIds.push('concern-a2');
+    architecture.concerns.push({
+      id: 'concern-a2', statement: 'Independently model second clause for A.',
+      sourceIds: ['requirement', 'specification'],
+      requirementCellIds: ['source-req:a'], specificationClauseIds: ['clause-a2'],
+    });
+    architecture.viewpoints[0].concernIds.push('concern-a2');
+    architecture.views[0].modelIds.push('model-a2');
+    architecture.models.push({
+      id: 'model-a2', kind: 'component',
+      content: 'Source-identified second requirement-clause responsibility.',
+      concernIds: ['concern-a2'], sourceIds: ['requirement', 'specification'],
+    });
+  }
+  sources[1].text = JSON.stringify(specification);
+  sources[2].text = JSON.stringify(architecture);
+  return sources;
+}

@@ -6,7 +6,7 @@ import {
   planEngineeringDesign,
   receiveEngineeringDesign,
 } from '@red-cup-engineering/specification-engineering-services-section/engineering-design';
-import { sourcesFixture } from './engineering-design-source-cut.fixture.mjs';
+import { sourcesFixture, clausesSplitAcrossModels } from './engineering-design-source-cut.fixture.mjs';
 
 const original = sourcesFixture();
 const plan = planEngineeringDesign({ stage: 'high-level', sources: original });
@@ -72,4 +72,52 @@ staleArch.sources[0].revision = 'ni:///sha-256;stale-original-requirement';
 stale[2].text = JSON.stringify(staleArch);
 assert.throws(() => planEngineeringDesign({ stage: 'high-level', sources: stale }), TypeError);
 
-console.log('Packed original Design consumer: HLD+LLD source-bound candidates received; stale and cross-cell sources refused; proof, adoption and installation still unreceived.');
+  
+// Independently installed Design-export receiving of the same clause-to-model
+// law tested at source level. The original archived candidate cannot pass by
+// citing one model for two independent normative clauses.
+const clauseWithoutModel = clausesSplitAcrossModels();
+assert.throws(() => planEngineeringDesign({
+  stage: 'high-level', sources: clauseWithoutModel,
+}), TypeError, 'unmodeled normative clause refuses before inference');
+
+const clauseSources = clausesSplitAcrossModels({ completeArchitecture: true });
+const clausePlan = planEngineeringDesign({ stage: 'high-level', sources: clauseSources });
+const clauseHld = structuredClone(hld);
+clauseHld.traceability[0].specificationClauseIds.push('clause-a2');
+assert.deepEqual(receiveEngineeringDesign({
+  stage: 'high-level', sources: clauseSources, plan: clausePlan,
+  deliveryText: JSON.stringify(clauseHld),
+}), { type: 'EngineeringDesignDerivationRefusal', reason: 'invalid-design' },
+'one selected model cannot falsely receive a second independent clause');
+
+clauseHld.traceability[0].architectureModelIds.push('model-a2');
+const clauseHigh = receiveEngineeringDesign({
+  stage: 'high-level', sources: clauseSources, plan: clausePlan,
+  deliveryText: JSON.stringify(clauseHld),
+});
+assert.equal(clauseHigh.type, 'EngineeringDesignCandidate');
+assert.equal(clauseHigh.admitted, false);
+assert.equal(clauseHigh.proof, 'unreceived');
+
+const clauseLowSources = [
+  ...clauseSources, { kind: 'high-level', text: JSON.stringify(clauseHigh) },
+];
+const clauseLowPlan = planEngineeringDesign({ stage: 'low-level', sources: clauseLowSources });
+const clauseLld = structuredClone(low.design);
+clauseLld.traceability[0].specificationClauseIds.push('clause-a2');
+assert.deepEqual(receiveEngineeringDesign({
+  stage: 'low-level', sources: clauseLowSources, plan: clauseLowPlan,
+  deliveryText: JSON.stringify(clauseLld),
+}), { type: 'EngineeringDesignDerivationRefusal', reason: 'invalid-design' },
+'LLD cannot drop an independently modeled clause from its same-source HLD');
+clauseLld.traceability[0].architectureModelIds.push('model-a2');
+const clauseLow = receiveEngineeringDesign({
+  stage: 'low-level', sources: clauseLowSources, plan: clauseLowPlan,
+  deliveryText: JSON.stringify(clauseLld),
+});
+assert.equal(clauseLow.type, 'EngineeringDesignCandidate');
+assert.equal(clauseLow.admitted, false);
+assert.equal(clauseLow.proof, 'unreceived');
+
+console.log('Packed original Design consumer: HLD+LLD source-bound and per-clause model-covered candidates received; stale, cross-cell, unmodeled-clause and partial-model sources refused; proof, adoption and installation still unreceived.');
