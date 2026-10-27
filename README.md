@@ -53,6 +53,57 @@ records, not proof that the Moneyday buyer received an operating repair.
 See the original Engineering four-closure [issue #137](https://github.com/red-cup-engineering/engineering-services-section/issues/137)
 for the source-to-Design/Proof/maker/operation obligations.
 
+## Source-bound LLD to Code Work readout
+
+The original engineering-design public export now includes
+**readEngineeringCodeWork**. It consumes one incumbent LLD
+EngineeringDesignCandidate, the **original derivation plan**, the **exact
+original provider-delivered Design JSON**, and bounded source views of the
+Code modules addressed by that LLD. It reuses the original
+receiveEngineeringDesign function to reconstruct the same source-received
+candidate. A mutated candidate, foreign plan, changed normative clause,
+stale Architecture/HLD allocation, false adoption or forged Proof status
+refuses before any Code Work is projected.
+
+Each source view is an exact {path, text, expectedSha256} declaration from
+the original Code custodian. Its raw UTF-8 digest is independently computed
+and compared with that supplied expectation. Only module paths named in
+the LLD are allowed, no duplicates; the complete supplied view is capped
+at 2 MiB. This verifies correspondence **within the supplied source cut**.
+It does not authenticate GitHub checkout ownership, prove the file actually
+exports the named function, test runtime behavior, or establish source
+completeness. Missing from a supplied view means "not observed", not
+"does not exist in the repository."
+
+The typed EngineeringDesignCodeWorkReadout provides a bounded, deterministic
+Code work target for each source-traced LLD operation: the exact prospective
+module/export pair, observed source digest, inherited original Requirement
+cells / Specification clauses / Architecture models, parsed input/output
+JSON Schemas, preconditions, behavior, failure and resource/effect bounds,
+and unchanged independently **unreceived** test and acceptance obligations.
+The discrepancy codes SOURCE_VIEW_NOT_RECEIVED and
+SOURCE_DIGEST_DISAGREEMENT identify genuine failures of the supplied cut.
+Even with every source present, the status is only
+source-present-unassayed. The result is deeply immutable.
+
+The reader cannot create another WorkCell registry or scheduler, choose
+an inference provider, write a module, synthesize behavioral assertions from
+unqualified prose, authenticate a model delivery, spend resources or settle a
+customer obligation. The flags originalDesignAdmitted, executableWork,
+codeApplied and beneficiaryReceived remain false; independentProof remains
+unreceived. The original Engineering, Code, Work, Sign and Enterprise owners
+must independently qualify revision-pinned Proof, verify exports and behavior
+in an isolated assay, and admit effects and actual consumer receiving.
+
+Native regression tests use the actual Requirement→Specification→Architecture
+→HLD→LLD source fixture and cover correct trace, changed source digest,
+unprovided/extra source, fabricated Design mutation, prototype/Unicode and
+source budget boundaries, and several Code operations in one module. The
+existing packed-consumer test imports the new reader through the public
+engineering-design export from a clean independently installed package, not
+from the local source tree. These tests qualify a source-producing readout,
+not delivered working software.
+
 ## Reproducible source-candidate qualification
 
 Source changes and **shipped README changes** run the original native Node 24
