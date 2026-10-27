@@ -6,7 +6,8 @@ import { fileURLToPath } from "node:url";
 import {
   renderArchitectureDescriptionMarkdown, validateArchitectureDescriptionRecord,
   renderArchitectureDescriptionFromSourceCut, validateArchitectureDescriptionAgainstSourceCut,
-  readRequirementArchitectureTrace, deriveArchitectureDescriptionFromSpecificationReview,
+  readRequirementArchitectureTrace, readRequirementArchitectureImpact,
+  deriveArchitectureDescriptionFromSpecificationReview,
 } from "../src/architecture-description.mjs";
 import { deriveSpecificationFromRequirementReview } from "../src/specification.mjs";
 import { artifactId } from "@red-cup-engineering/semiotic-eavt-services-section/identity";
@@ -440,7 +441,7 @@ function publishedUtilityBuyerTrace() {
   concern.sourceIds=["req","spec"];
   concern.requirementCellIds=[requirement["met-when"][0].cell];
   concern.specificationClauseIds=["nypa-permissioned-answers"];
-  return {requirement,specification,architecture};
+  return {requirement,specification,architecture,review};
 }
 
 test("a real published utility buyer's three source conditions trace only the one actually mapped to an authored model",()=>{
@@ -534,6 +535,116 @@ test("the original architecture CLI emits the real verified three-source trace r
   assert.equal(ordinary.status,0,ordinary.stderr);
   assert.doesNotMatch(ordinary.stdout,/Exact original Requirement-to-model traceability/u,
     "unauthenticated single-document preview cannot claim source-cut traceability");
+});
+test("independent source-cut replay has no new Work or model impact", () => {
+  const cut = publishedUtilityBuyerTrace();
+  const first = readRequirementArchitectureImpact(cut,cut);
+  const cloned = structuredClone(cut);
+  assert.deepEqual(readRequirementArchitectureImpact(cut,cloned),first);
+  assert.equal(first.kind,"specification.requirement-architecture-impact.v1");
+  assert.equal(first.summary.affectedCells,0);
+  assert.equal(first.summary.regenerationCells,0);
+  assert.equal(first.summary.requalificationOnlyCells,0);
+  assert.deepEqual(first.changes,[]);
+  assert.deepEqual(first.affectedModels,[]);
+  assert.deepEqual(first.affectedViews,[]);
+  assert.equal(first.independentReceiving,"required-from-original-work-and-customer");
+  assert.equal(Object.isFrozen(first.changes),true);
+  assert.equal(Object.isFrozen(first.summary),true);
+});
+
+test("changed buyer words invalidate the old source cut but identify only genuinely changed fabrication work", () => {
+  const prior = publishedUtilityBuyerTrace();
+  const next = structuredClone(prior);
+  next.requirement["met-when"][0].says =
+    "The revised buyer now requires cited answers to omit inaccessible source snippets.";
+  next.specification = deriveSpecificationFromRequirementReview(next.requirement,next.review);
+  next.architecture.sources.find(source=>source.id==="req").revision = artifactId(next.requirement);
+  next.architecture.sources.find(source=>source.id==="spec").revision = artifactId(next.specification);
+  const impact=readRequirementArchitectureImpact(prior,next);
+  assert.equal(impact.summary.affectedCells,3,
+    "all original source witnesses need requalification after source-revision change");
+  assert.equal(impact.summary.regenerationCells,1,
+    "only one original condition changed materially");
+  assert.equal(impact.summary.requalificationOnlyCells,2);
+  assert.ok(impact.changes.find(row=>row.cell.endsWith(":permission-filtered-answers"))
+    .reasons.includes("source-statement-changed"));
+  assert.equal(impact.changes.filter(row=>row.kind==="regenerate-and-requalify").length,1);
+  assert.equal(impact.changes.filter(row=>row.kind==="requalify-source-only").length,2);
+  assert.deepEqual(impact.affectedModels,["auth-model"]);
+  assert.deepEqual(impact.affectedViews,["boundary-view"]);
+  assert.notEqual(impact.before.requirement,impact.after.requirement);
+  assert.notEqual(impact.before.specification,impact.after.specification);
+  assert.equal(impact.after.architecture,artifactId(next.architecture));
+});
+
+test("newly mapped Architecture concerns trigger model requalification without fabricating a beneficiary receipt", () => {
+  const prior = publishedUtilityBuyerTrace();
+  const next = structuredClone(prior);
+  const concern=next.architecture.concerns.find(row=>row.id==="failure");
+  concern.sourceIds=["req","spec"];
+  concern.requirementCellIds=["nypa-knowledge-management:governed-vocabulary"];
+  concern.specificationClauseIds=["nypa-governed-vocabulary"];
+  const impact=readRequirementArchitectureImpact(prior,next);
+  assert.equal(impact.summary.affectedCells,3,"changed Architecture source must not reuse an old proof");
+  assert.equal(impact.summary.regenerationCells,1);
+  assert.equal(impact.summary.requalificationOnlyCells,2);
+  const added=impact.changes.find(row=>row.cell.endsWith(":governed-vocabulary"));
+  assert.ok(added.reasons.includes("architecture-model-trace-changed"));
+  assert.equal(added.beforeStanding,"normative-but-architecture-untraced");
+  assert.equal(added.afterStanding,"source-to-authored-model-only-not-proved");
+  assert.deepEqual(impact.affectedModels,["auth-model"]);
+  assert.equal(impact.summary.untracedAfter,1);
+  assert.equal(impact.independentlyAcceptedCustomerWork,false);
+});
+
+test("a stale, unpaired, or forged source cut never produces a change-impact Work instruction", () => {
+  const prior=publishedUtilityBuyerTrace();
+  const invalid=structuredClone(prior);
+  invalid.requirement["met-when"][0].says="new unreviewed customer wording";
+  assert.throws(()=>readRequirementArchitectureImpact(prior,invalid),/selected source cut/u);
+  const foreign=structuredClone(prior);
+  foreign.architecture.concerns[0].specificationClauseIds=["nypa-governed-vocabulary"];
+  assert.throws(()=>readRequirementArchitectureImpact(prior,foreign),/selected source cut/u);
+  assert.throws(()=>readRequirementArchitectureImpact(prior,{}),TypeError);
+  assert.throws(()=>readRequirementArchitectureImpact(undefined,prior),TypeError);
+});
+
+test("original source-impact CLI performs a bounded JSON read and returns source-qualified Work impact", () => {
+  const prior=publishedUtilityBuyerTrace();
+  const next=structuredClone(prior);
+  next.specification.topics[0].clauses[0].statement="Changed authored clause wording.";
+  next.architecture.sources.find(source=>source.id==="spec").revision=artifactId(next.specification);
+  const runner=fileURLToPath(new URL("../scripts/render-architecture-description.mjs",import.meta.url));
+  const sourceCut=({requirement,specification,architecture})=>({requirement,specification,architecture});
+  const request=JSON.stringify({before:sourceCut(prior),after:sourceCut(next)});
+  const result=spawnSync(process.execPath,[runner,"--source-impact"],{
+    input:request,encoding:"utf8",timeout:20000,
+  });
+  assert.equal(result.status,0,result.stderr);
+  const impact=JSON.parse(result.stdout);
+  assert.equal(impact.kind,"specification.requirement-architecture-impact.v1");
+  assert.equal(impact.summary.regenerationCells,1,
+    "changed normative clause content requires regenerating affected implementation even when the clause ID remains stable");
+  assert.equal(impact.summary.requalificationOnlyCells,2);
+  assert.ok(impact.changes.find(row=>row.cell.endsWith(":permission-filtered-answers"))
+    .reasons.includes("normative-clause-content-changed"));
+  const denied=spawnSync(process.execPath,[runner,"--source-impact"],{
+    input:JSON.stringify({before:sourceCut(prior),after:sourceCut(next),accepted:true}),encoding:"utf8",timeout:20000,
+  });
+  assert.notEqual(denied.status,0);
+  assert.equal(denied.stdout,"","foreign acceptance words never become rendered instructions");
+});
+test("changing the code-facing model body under an unchanged ID is a genuine regeneration obligation",()=>{
+  const prior=publishedUtilityBuyerTrace();
+  const next=structuredClone(prior);
+  next.architecture.models[0].content="The revised original model fails closed on an expired permission witness.";
+  const impact=readRequirementArchitectureImpact(prior,next);
+  assert.equal(impact.summary.regenerationCells,1);
+  assert.equal(impact.summary.requalificationOnlyCells,2);
+  assert.ok(impact.changes.find(row=>row.cell.endsWith(":permission-filtered-answers"))
+    .reasons.includes("architecture-model-content-changed"));
+  assert.deepEqual(impact.affectedModels,["auth-model"]);
 });
 
 function reviewedArchitectureCut() {
@@ -666,4 +777,25 @@ test("existing bounded Architecture CLI receives source-reviewed input without i
   assert.equal(blocked.status,1);
   assert.equal(blocked.stdout,"","an invalid source must not emit partial output");
   assert.match(blocked.stderr,/architecture-review/u);
+});
+
+
+test("review-derived Architecture drives the incumbent revision-impact reader without fabricating Work",()=>{
+  const input=reviewedArchitectureCut();
+  const before=deriveArchitectureDescriptionFromSpecificationReview(input);
+  const original={requirement:input.requirement,specification:input.specification,architecture:before};
+  const noChange=readRequirementArchitectureImpact(original,original);
+  assert.equal(noChange.summary.regenerationCells,0);
+  assert.equal(noChange.summary.requalificationOnlyCells,0);
+  const changed=structuredClone(input);
+  changed.review.models[0].content="Newly authored model requires a current source-bound refusal policy.";
+  const revised=deriveArchitectureDescriptionFromSpecificationReview(changed);
+  const impact=readRequirementArchitectureImpact(original,{
+    requirement:input.requirement,specification:input.specification,architecture:revised,
+  });
+  assert.equal(impact.summary.regenerationCells,1);
+  assert.equal(impact.summary.requalificationOnlyCells,1);
+  assert.deepEqual(impact.affectedModels,["auth-model"]);
+  assert.equal(impact.independentlyAcceptedCustomerWork,false);
+  assert.equal(impact.originalEffect,"none-read-only");
 });
