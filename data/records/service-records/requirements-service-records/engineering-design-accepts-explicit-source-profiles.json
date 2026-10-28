@@ -19,67 +19,67 @@
     {
       "cell": "engineering-design-accepts-explicit-source-profiles:original-owner",
       "target": "held",
-      "says": "The existing Specification Engineering ./engineering-design provider is the one general source-bound Design engine. Its original planEngineeringDesign, receiveEngineeringDesign and readEngineeringCodeWork producer/consumer family is completed in place; no parallel Scheme designer, JS wrapper around Scheme, copied provider or second package is introduced."
+      "says": "ensure that the existing Specification Engineering ./engineering-design provider is the one general source-bound Design engine. Its original planEngineeringDesign, receiveEngineeringDesign and readEngineeringCodeWork producer/consumer family is completed in place; no parallel Scheme designer, JS wrapper around Scheme, copied provider or second package is introduced."
     },
     {
       "cell": "engineering-design-accepts-explicit-source-profiles:explicit-profile",
       "target": "held",
-      "says": "Every Design plan, receiving request and Code Work readout selects one explicit source-language/artifact profile as a checked parameter. A missing, malformed, ambiguous or changed profile refuses before inference or Code Work projection. The API offers no implicit JavaScript profile, old-call fallback, alias or compatibility shim."
+      "says": "ensure that every Design plan, receiving request and Code Work readout selects one explicit source-language/artifact profile as a checked parameter. A missing, malformed, ambiguous or changed profile refuses before inference or Code Work projection. The API offers no implicit JavaScript profile, old-call fallback, alias or compatibility shim."
     },
     {
       "cell": "engineering-design-accepts-explicit-source-profiles:data-policy",
       "target": "held",
-      "says": "The profile carries finite literal data identifying the source language/artifact role and its normalized module path, extension, symbol-spelling and resource constraints. The engine validates the profile at its boundary and checks source names against that selected policy. A profile cannot introduce a callable parser, arbitrary executable grammar, regular-expression program, shell command, dynamic import, host path, authority flag or effect grant."
+      "says": "ensure that the profile carries finite literal data identifying the source language/artifact role and its normalized module path, extension, symbol-spelling and resource constraints. The engine validates the profile at its boundary and checks source names against that selected policy. A profile cannot introduce a callable parser, arbitrary executable grammar, regular-expression program, shell command, dynamic import, host path, authority flag or effect grant."
     },
     {
       "cell": "engineering-design-accepts-explicit-source-profiles:general-names",
       "target": "held",
-      "says": "The same engine can plan and receive existing JavaScript module/export targets and native Scheme source/symbol targets, including the original CDE src/, scripts/ and test/ source roles, through their respective explicitly supplied profiles. It does not silently rename a target, translate Scheme into JavaScript or treat a profile label as proof that a parser or source file exists."
+      "says": "ensure that the same engine can plan and receive existing JavaScript module/export targets and native Scheme source/symbol targets, including the original CDE src/, scripts/ and test/ source roles, through their respective explicitly supplied profiles. It does not silently rename a target, translate Scheme into JavaScript or treat a profile label as proof that a parser or source file exists."
     },
     {
       "cell": "engineering-design-accepts-explicit-source-profiles:profile-source-binding",
       "target": "held",
-      "says": "The complete selected profile is bound into the actual source-pinned inference plan, its context/output constraints, the received candidate and every downstream reconstruction. An LLD uses exactly its original HLD profile; changing a profile body under the same name, revising a bound, changing a source path policy or swapping a stale plan/candidate cannot preserve the old Design identity or receive a Code Work readout."
+      "says": "ensure that the complete selected profile is bound into the actual source-pinned inference plan, its context/output constraints, the received candidate and every downstream reconstruction. An LLD uses exactly its original HLD profile; changing a profile body under the same name, revising a bound, changing a source path policy or swapping a stale plan/candidate cannot preserve the old Design identity or receive a Code Work readout."
     },
     {
       "cell": "engineering-design-accepts-explicit-source-profiles:preserve-original-cut",
       "target": "held",
-      "says": "The complete exact Requirement, Specification, Architecture and original HLD text cuts, their original supplier/SEN identities, existing raw JSON admission semantics and all retained uncertainty remain intact. The engine delegates identity to the original admitted Data supplier on the complete parsed source, propagates its native refusals, and never strips unknown input fields, invents a codec or repairs source text under an old identity."
+      "says": "ensure that the complete exact Requirement, Specification, Architecture and original HLD text cuts, their original supplier/SEN identities, existing raw JSON admission semantics and all retained uncertainty remain intact. The engine delegates identity to the original admitted Data supplier on the complete parsed source, propagates its native refusals, and never strips unknown input fields, invents a codec or repairs source text under an old identity."
     },
     {
       "cell": "engineering-design-accepts-explicit-source-profiles:preserve-traces",
       "target": "held",
-      "says": "Every original Requirement cell retains its exact Specification clause and authored Architecture model witnesses through HLD component allocations and LLD operations. The actual Data, Code, Networking and Systems dependency/port constraints, complete per-clause model coverage, source lineage and original HLD allocation rules remain enforced; accepting another source language cannot weaken those checks."
+      "says": "ensure that every original Requirement cell retains its exact Specification clause and authored Architecture model witnesses through HLD component allocations and LLD operations. The actual Data, Code, Networking and Systems dependency/port constraints, complete per-clause model coverage, source lineage and original HLD allocation rules remain enforced; accepting another source language cannot weaken those checks."
     },
     {
       "cell": "engineering-design-accepts-explicit-source-profiles:source-owner-custody",
       "target": "held",
-      "says": "Code source identity is the pair of the original HLD component owner and normalized relative source path. Module/export collision checks remain scoped by that original owner: identical module/export names in distinct original repositories remain distinct; the same owner/path/export collision refuses. Every supplied Code source view explicitly names its original owner; retire the current ownerless-source-view fallback and migrate all actual callers and fixtures together."
+      "says": "ensure that code source identity is the pair of the original HLD component owner and normalized relative source path. Module/export collision checks remain scoped by that original owner: identical module/export names in distinct original repositories remain distinct; the same owner/path/export collision refuses. Every supplied Code source view explicitly names its original owner; retire the current ownerless-source-view fallback and migrate all actual callers and fixtures together."
     },
     {
       "cell": "engineering-design-accepts-explicit-source-profiles:candidate-limits",
       "target": "held",
-      "says": "A structurally received candidate remains admitted:false and proof:unreceived. A generated profile, source declaration, parsed native proposal or passing output case does not grant source effects, native governance, independent Design admission, Proof, package publication, production activation or customer acceptance."
+      "says": "ensure that a structurally received candidate remains admitted:false and proof:unreceived. A generated profile, source declaration, parsed native proposal or passing output case does not grant source effects, native governance, independent Design admission, Proof, package publication, production activation or customer acceptance."
     },
     {
       "cell": "engineering-design-accepts-explicit-source-profiles:original-fabrication",
       "target": "held",
-      "says": "Generated normative implementation and assays use the original house generation chain and original generic Fabrication source-transformation carrier, with exact writable snapshots, complete verified source views, source-independent review, original development-history custody and the actual resumable CIE task. The input profile never chooses the model, provider, account, resource grant, native command or acceptance authority."
+      "says": "ensure that generated normative implementation and assays use the original house generation chain and original generic Fabrication source-transformation carrier, with exact writable snapshots, complete verified source views, source-independent review, original development-history custody and the actual resumable CIE task. The input profile never chooses the model, provider, account, resource grant, native command or acceptance authority."
     },
     {
       "cell": "engineering-design-accepts-explicit-source-profiles:whole-family-cutover",
       "target": "held",
-      "says": "The actual current Design source, all direct callers, declared operation input/output schemas or requests, source-free work order/examples, packed-consumer tests and documentation move to the explicit-profile contract as one coherent cutover. Preserve their useful meanings and archive only superseded source evidence. Do not mint a public version solely for a requirement, specification or test-only candidate."
+      "says": "ensure that the actual current Design source, all direct callers, declared operation input/output schemas or requests, source-free work order/examples, packed-consumer tests and documentation move to the explicit-profile contract as one coherent cutover. Preserve their useful meanings and archive only superseded source evidence. Do not mint a public version solely for a requirement, specification or test-only candidate."
     },
     {
       "cell": "engineering-design-accepts-explicit-source-profiles:native-receiving",
       "target": "held",
-      "says": "Independent receiving covers complete positive JavaScript and Scheme HLD/LLD/Code Work examples; missing and malformed profiles; forged or changed profile bodies; stale HLD/LLD/plan or source cuts; invalid normalized paths and symbol spelling; wrong source owner and ownerless views; within-owner collisions and cross-owner equality; preserved clause/model/uncertainty refusals; and the unchanged candidate claim limits. Scheme source is received by the actual qualified native Scheme parser/consumer, never imported as JavaScript."
+      "says": "ensure that independent receiving covers complete positive JavaScript and Scheme HLD/LLD/Code Work examples; missing and malformed profiles; forged or changed profile bodies; stale HLD/LLD/plan or source cuts; invalid normalized paths and symbol spelling; wrong source owner and ownerless views; within-owner collisions and cross-owner equality; preserved clause/model/uncertainty refusals; and the unchanged candidate claim limits. Scheme source is received by the actual qualified native Scheme parser/consumer, never imported as JavaScript."
     },
     {
       "cell": "engineering-design-accepts-explicit-source-profiles:source-and-operation-evidence",
       "target": "held",
-      "says": "Evidence binds the actual source revision, original profile/request, provider task and exact delivery, generated artifacts, independent native receiving and actual consuming CDE/Engineering paths. Actual provider availability and qualitative source completeness are separate; a catalog label, quota failure, memory refusal or transport success cannot stand in for a qualified Design or operating Koios outcome."
+      "says": "ensure that evidence binds the actual source revision, original profile/request, provider task and exact delivery, generated artifacts, independent native receiving and actual consuming CDE/Engineering paths. Actual provider availability and qualitative source completeness are separate; a catalog label, quota failure, memory refusal or transport success cannot stand in for a qualified Design or operating Koios outcome."
     }
   ],
   "owners": [
@@ -94,6 +94,7 @@
     "basis": "First asks entry is the current Leader-provided AGENTS rule text, second is the literal current Leader correction. met-when cells are explicit engineering inferences for the original Design family; they are not Leader quotations or passing claims.",
     "current-gap": "validLld and the Design inference instruction hardcode src/*.mjs and ASCII JavaScript export spelling; CDE requires native Scheme targets. A generic source-transformation producer already exists and is to be reused.",
     "existing-work-review": "No open Specification PR was found. Three older Design/source-lineage branches are wholly behind main. The diverged pulse13 branch contains original owner-scoped collision source/tests; its useful owner-scope semantics are retained in this requirement, not discarded for lack of knowledge.",
-    "recovery": "Original BCF world-connect timed out after90s without Character/Work/provider readback. No empty journal, native appointment, admitted Work, authority or missing-provider conclusion is inferred from that timeout."
+    "recovery": "Original BCF world-connect timed out after90s without Character/Work/provider readback. No empty journal, native appointment, admitted Work, authority or missing-provider conclusion is inferred from that timeout.",
+    "normative-predicate": "Conditions are authored as ensure-that predicates so the original generator can combine an explicit actor and BCP14 keyword with the untouched source statement. No generated carrier is manually rewritten."
   }
 }
