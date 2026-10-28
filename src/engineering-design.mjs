@@ -297,7 +297,7 @@ function schemaTextValid(text) {
 function validLld(design, context) {
   if (!exact(design, ['operations', 'traceability', 'openQuestions']) || !strings(design.openQuestions)) return false;
   if (!Array.isArray(design.operations) || design.operations.length === 0) return false;
-  const components = new Set(context.hld.components.map(c => c.id));
+  const components = new Map(context.hld.components.map(c => [c.id, c]));
   const realized = new Set(), operations = new Map(), pairs = new Set();
   const scalars = ['id', 'componentId', 'module', 'exportName', 'inputSchemaJson', 'outputSchemaJson', 'behavior'];
   const lists = ['preconditions', 'postconditions', 'failureCases', 'resourceBounds', 'effectBoundaries', 'acceptanceObligations'];
@@ -305,7 +305,11 @@ function validLld(design, context) {
     if (!exact(operation, [...scalars, ...lists]) || !scalars.every(k => nonblank(operation[k]))) return false;
     if (!lists.every(k => strings(operation[k], k === 'preconditions' ? 0 : 1))) return false;
     if (operations.has(operation.id) || !components.has(operation.componentId)) return false;
-    const pair = JSON.stringify([operation.module, operation.exportName]);
+    // A relative module/export is unique only within its original HLD owner.
+    // Identically named exports in different source repositories are distinct
+    // Code targets; the same owner/path/export remains an actual collision.
+    const pair = JSON.stringify([components.get(operation.componentId)?.owner,
+      operation.module, operation.exportName]);
     if (pairs.has(pair)) return false;
     const path = operation.module;
     // POSIX source paths cannot contain NUL. Unpaired UTF-16 surrogates

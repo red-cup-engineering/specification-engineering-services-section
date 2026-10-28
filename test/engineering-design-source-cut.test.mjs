@@ -416,3 +416,67 @@ test('foreign or unowned multi-owner Code views cannot impersonate a second sour
     designCandidate:low,originalPlan:lowPlan,originalDeliveryText,sourceViews,
   }),TypeError);
 });
+
+
+test('LLD module/export uniqueness is scoped to the original HLD source owner, not a global path', () => {
+  const requirementSources = sourcesFixture();
+  const hld = hldFixture();
+  hld.components[0].owner = 'red-cup-engineering/computer-file-engineering-services-section';
+  hld.components[1].owner = 'red-cup-engineering/computer-deployment-engine';
+  const hldPlan = planEngineeringDesign({ stage: 'high-level', sources: requirementSources });
+  const high = receiveEngineeringDesign({ stage: 'high-level', sources: requirementSources,
+    plan: hldPlan, deliveryText: JSON.stringify(hld) });
+  assert.equal(high.type, 'EngineeringDesignCandidate');
+  const sources = [...requirementSources, { kind: 'high-level', text: JSON.stringify(high) }];
+  const plan = planEngineeringDesign({ stage: 'low-level', sources });
+  const lld = lldFixture();
+  for (const operation of lld.operations) {
+    operation.module = 'src/shared-original.mjs';
+    operation.exportName = 'make';
+  }
+  const originalDeliveryText = JSON.stringify(lld);
+  const received = receiveEngineeringDesign({ stage: 'low-level', sources,
+    plan, deliveryText: originalDeliveryText });
+  assert.equal(received.type, 'EngineeringDesignCandidate',
+    'two distinct original repositories may both export make from src/shared-original.mjs');
+  assert.equal(received.admitted, false);
+  assert.equal(received.proof, 'unreceived');
+
+  const views = [
+    { owner: hld.components[0].owner, path: 'src/shared-original.mjs',
+      text: 'export const make = () => "original file owner";',
+      expectedSha256: codeDigest('export const make = () => "original file owner";') },
+    { owner: hld.components[1].owner, path: 'src/shared-original.mjs',
+      text: 'export const make = () => "original deployment owner";',
+      expectedSha256: codeDigest('export const make = () => "original deployment owner";') },
+  ];
+  const codeWork = readSourceOwnedEngineeringCodeWork({
+    designCandidate: received, originalPlan: plan, originalDeliveryText,
+    sourceViews: views,
+  });
+  assert.equal(codeWork.status, 'source-present-unassayed');
+  assert.deepEqual(codeWork.targets.map(target => target.originalComponentOwner),
+    hld.components.map(component => component.owner));
+  assert.deepEqual(codeWork.targets.map(target => target.exportName), ['make', 'make']);
+  assert.deepEqual(codeWork.targets.map(target => target.observedSha256),
+    views.map(view => view.expectedSha256));
+  assert.equal(codeWork.executableWork, false);
+  assert.equal(codeWork.independentProof, 'unreceived');
+
+  // Reusing one owner/path/export in the SAME original repository remains a
+  // conflict, even if different HLD component IDs have separate trace rows.
+  const collidingHld = structuredClone(hld);
+  collidingHld.components[1].owner = collidingHld.components[0].owner;
+  const collidingHigh = receiveEngineeringDesign({ stage: 'high-level',
+    sources: requirementSources, plan: hldPlan,
+    deliveryText: JSON.stringify(collidingHld) });
+  assert.equal(collidingHigh.type, 'EngineeringDesignCandidate');
+  const collidingSources = [...requirementSources,
+    { kind: 'high-level', text: JSON.stringify(collidingHigh) }];
+  const collidingPlan = planEngineeringDesign({ stage: 'low-level',
+    sources: collidingSources });
+  assert.deepEqual(receiveEngineeringDesign({ stage: 'low-level',
+    sources: collidingSources, plan: collidingPlan,
+    deliveryText: originalDeliveryText }),
+  { type: 'EngineeringDesignDerivationRefusal', reason: 'invalid-design' });
+});

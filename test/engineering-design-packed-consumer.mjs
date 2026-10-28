@@ -188,7 +188,8 @@ assert.equal(unicodeReceived.admitted, false);
 assert.equal(unicodeReceived.proof, 'unreceived');
 
 // The clean, independently installed package must keep SAME relative path
-// from two authentic HLD owners as TWO original Code source identities.
+// from two authentic HLD owners as TWO original Code source identities,
+// even when the export name is also byte-identical.
 const owners=['red-cup-engineering/computer-file-engineering-services-section',
   'red-cup-engineering/computer-deployment-engine'];
 const splitHld=structuredClone(hld);
@@ -209,9 +210,9 @@ const shared='src/same-relative-name.mjs';
 const splitDesign=structuredClone(low.design);
 splitDesign.operations=[
   {...low.design.operations[0],id:'file-op',componentId:'file-component',
-    module:shared,exportName:'fileOp'},
+    module:shared,exportName:'make'},
   {...low.design.operations[0],id:'deployment-op',componentId:'deployment-component',
-    module:shared,exportName:'deploymentOp'},
+    module:shared,exportName:'make'},
 ];
 splitDesign.traceability[0].designElementIds=['file-op'];
 splitDesign.traceability[1].designElementIds=['deployment-op'];
@@ -223,7 +224,7 @@ const splitLow=receiveEngineeringDesign({
 assert.equal(splitLow.type,'EngineeringDesignCandidate');
 const digest=text=>'sha256:'+createHash('sha256').update(text,'utf8').digest('hex');
 const sourceViews=owners.map((owner,i)=>{
-  const text='export const '+(i?'deploymentOp':'fileOp')+' = () => '+i+';';
+  const text='export const make = () => '+i+';';
   return {owner,path:shared,text,expectedSha256:digest(text)};
 });
 const splitReadout=readEngineeringCodeWork({
@@ -235,6 +236,7 @@ const targets=new Map(splitReadout.targets.map(x=>[x.originalComponentOwner,x]))
 for(const view of sourceViews){
   assert.equal(targets.get(view.owner).observedSha256,view.expectedSha256);
   assert.equal(targets.get(view.owner).module,shared);
+  assert.equal(targets.get(view.owner).exportName,'make');
 }
 assert.equal(splitReadout.executableWork,false);
 assert.equal(splitReadout.independentProof,'unreceived');
@@ -244,6 +246,22 @@ assert.throws(()=>readEngineeringCodeWork({
   sourceViews:[{path:shared,text:sourceViews[0].text,
     expectedSha256:sourceViews[0].expectedSha256}],
 }),TypeError,'one ownerless source view cannot impersonate two original repositories');
+
+// Identical module/export within one original source owner must still
+// refuse before a Code Work readout, despite the two distinct component IDs.
+const collidingHld=structuredClone(splitHld);
+collidingHld.components[1].owner=owners[0];
+const collidingHigh=receiveEngineeringDesign({
+  stage:'high-level',sources:original,plan,
+  deliveryText:JSON.stringify(collidingHld),
+});
+assert.equal(collidingHigh.type,'EngineeringDesignCandidate');
+const collidingSources=[...original,{kind:'high-level',text:JSON.stringify(collidingHigh)}];
+const collidingPlan=planEngineeringDesign({stage:'low-level',sources:collidingSources});
+assert.deepEqual(receiveEngineeringDesign({
+  stage:'low-level',sources:collidingSources,plan:collidingPlan,
+  deliveryText:splitDelivery,
+}),{type:'EngineeringDesignDerivationRefusal',reason:'invalid-design'});
 
 console.log('Packed original Design consumer: original LLD-to-Code work and test obligations source-read; no effect, proof or implementation conformance granted.');
 console.log('Packed original Design consumer: HLD+LLD source-bound and per-clause model-covered candidates received; stale, cross-cell, unmodeled-clause and partial-model sources refused; proof, adoption and installation still unreceived.');
