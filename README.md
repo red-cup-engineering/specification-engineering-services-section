@@ -33,11 +33,18 @@ write, accepted Work or release is granted by this exported module.
 
 The LLD `operations[].module` is a **prospective source file name**, not
 an arbitrary model label. In addition to its already required canonical POSIX
-`src/...mjs` shape, it must contain no NUL and be well-formed UTF-16
-(therefore a single stable UTF-8 spelling on materialization). The receiver
-refuses unpaired high/low surrogates without rewriting or normalizing the
-model's proposal. Valid paired Unicode characters remain permitted. This
+`src/...mjs` shape, it must contain no NUL, be well-formed UTF-16, and already
+have an **NFC-stable Unicode spelling**. The receiver refuses unpaired
+surrogates and decomposed source names that canonically alias another path;
+it never silently renames a reviewed module while retaining its old
+Design/source identity. Valid canonical Unicode characters remain permitted. This
 source-format gate makes no assertion that a target file or export exists.
+
+**Migration:** Older unadmitted Design candidates with decomposed/non-NFC
+module paths must be re-received from their complete original source cut,
+not rewritten downstream under the previous Design identity. This does not
+retroactively invalidate any separately installed source file or claim a
+filesystem migration was executed.
 
 **Migration:** Older unadmitted Design candidates containing a NUL or
 unpaired surrogate module path cannot be grandfathered into Code fabrication.

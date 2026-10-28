@@ -154,6 +154,43 @@ test('refuse a Design row whose selected models cover only part of original clau
 });
 
 
+
+test('refuse Unicode-normalization alias in an original LLD module without altering its source name', () => {
+  const sources=sourcesFixture(),high=hldReceipt(sources);
+  const lowSources=[...sources,{kind:'high-level',text:JSON.stringify(high)}];
+  const plan=planEngineeringDesign({stage:'low-level',sources:lowSources});
+  const decomposed='src/cafe\u0301.mjs',composed='src/caf\u00e9.mjs';
+  assert.notEqual(decomposed,composed);
+  assert.equal(decomposed.normalize('NFC'),composed);
+  const former=lldFixture();
+  former.operations[0].module=decomposed;
+  assert.deepEqual(receiveEngineeringDesign({
+    stage:'low-level',sources:lowSources,plan,deliveryText:JSON.stringify(former),
+  }),{type:'EngineeringDesignDerivationRefusal',reason:'invalid-design'},
+  'a canonical-equivalent path cannot silently resolve to a different file identity');
+
+  // This is not an ASCII-only policy: the canonical scalar spelling is
+  // still legal, and its exact source/text identity is never rewritten.
+  const valid=lldFixture();
+  valid.operations[0].module=composed;
+  const received=receiveEngineeringDesign({
+    stage:'low-level',sources:lowSources,plan,deliveryText:JSON.stringify(valid),
+  });
+  assert.equal(received.type,'EngineeringDesignCandidate');
+  assert.equal(received.design.operations[0].module,composed);
+  assert.equal(received.admitted,false);
+  assert.equal(received.proof,'unreceived');
+
+  // A mixed representation in two claimed modules is likewise not an
+  // executable workaround for the same path collision.
+  const aliased=lldFixture();
+  aliased.operations[0].module=decomposed;
+  aliased.operations[1].module=composed;
+  assert.deepEqual(receiveEngineeringDesign({
+    stage:'low-level',sources:lowSources,plan,deliveryText:JSON.stringify(aliased),
+  }),{type:'EngineeringDesignDerivationRefusal',reason:'invalid-design'});
+});
+
 test('refuse LLD module paths that cannot preserve their own POSIX UTF-8 file identity', () => {
   const sources = sourcesFixture();
   const highLevel = hldReceipt(sources);

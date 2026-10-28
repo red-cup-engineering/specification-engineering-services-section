@@ -315,8 +315,11 @@ function validLld(design, context) {
     // POSIX source paths cannot contain NUL. Unpaired UTF-16 surrogates
     // materialize as replacement-character bytes, so they can alias another
     // prospectively named module while the Design IDs still appear distinct.
-    // Keep valid scalar Unicode paths; do not silently normalize source.
-    if (path.includes(String.fromCharCode(0)) || !path.isWellFormed()) return false;
+    // Keep valid scalar Unicode paths but insist on their exact NFC-stable
+    // spelling: a Code/filesystem source may otherwise address the same
+    // prospective module through a different canonically equivalent path.
+    // Refuse the proposal, never rewrite a reviewed path under its old NI.
+    if (path.includes(String.fromCharCode(0)) || !path.isWellFormed() || path.normalize('NFC') !== path) return false;
     if (!path.startsWith('src/') || !path.endsWith('.mjs') || path.includes('\\') || path.split('/').some(part => part === '' || part === '.' || part === '..')) return false;
     // Whole ASCII membership, including exclusion of every trailing terminator.
     if (!/^[A-Za-z_$]/.test(operation.exportName) || /[^A-Za-z0-9_$]/.test(operation.exportName)) return false;

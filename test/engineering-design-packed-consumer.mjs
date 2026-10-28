@@ -61,6 +61,43 @@ assert.equal(low.type, 'EngineeringDesignCandidate');
 assert.equal(low.admitted, false);
 assert.equal(low.proof, 'unreceived');
 
+ // Canonical-equivalent module paths may alias after materialization. The
+ // installed consumer must see a source refusal, not normalize the Design
+ // silently or inherit the previous output identity.
+const decomposedName='src/cafe\u0301.mjs';
+const canonicalName='src/caf\u00e9.mjs';
+assert.notEqual(decomposedName,canonicalName);
+assert.equal(decomposedName.normalize('NFC'),canonicalName);
+const ambiguousLLD=structuredClone(low.design);
+ambiguousLLD.operations[0].module=decomposedName;
+assert.deepEqual(receiveEngineeringDesign({
+  stage:'low-level',sources:lowSources,plan:lowPlan,
+  deliveryText:JSON.stringify(ambiguousLLD),
+}),{type:'EngineeringDesignDerivationRefusal',reason:'invalid-design'});
+const canonicalLLD=structuredClone(low.design);
+canonicalLLD.operations[0].module=canonicalName;
+const canonicalReceipt=receiveEngineeringDesign({
+  stage:'low-level',sources:lowSources,plan:lowPlan,
+  deliveryText:JSON.stringify(canonicalLLD),
+});
+assert.equal(canonicalReceipt.type,'EngineeringDesignCandidate');
+assert.equal(canonicalReceipt.design.operations[0].module,canonicalName);
+assert.equal(canonicalReceipt.admitted,false);
+assert.equal(canonicalReceipt.proof,'unreceived');
+const canonicalText='export const retainSourceValue = x => x;';
+const canonicalReadout=readEngineeringCodeWork({
+  designCandidate:canonicalReceipt,originalPlan:lowPlan,
+  originalDeliveryText:JSON.stringify(canonicalLLD),
+  sourceViews:[{path:canonicalName,text:canonicalText,
+    expectedSha256:'sha256:'+createHash('sha256').update(canonicalText,'utf8').digest('hex')}],
+});
+assert.equal(canonicalReadout.status,'source-present-unassayed');
+assert.equal(canonicalReadout.targets[0].module,canonicalName);
+assert.equal(canonicalReadout.executableWork,false);
+assert.equal(canonicalReadout.independentProof,'unreceived');
+
+
+
 // Independently installed consumer of the ORIGINAL Design→Code readout.
 // This source snapshot is a byte-addressed selected target, not an authentic
 // GitHub checkout or a permitted Code effect.
