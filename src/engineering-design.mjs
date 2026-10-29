@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { readRequirementArchitectureTrace } from './architecture-description.mjs';
 import { semanticIdOf } from '@red-cup-engineering/computer-data-engineering-services-section/semiotic-expression-notation/semantic-content-identity';
 import { admitCanonicalJson, UNBOUNDED_JSON_ENVELOPE } from '@red-cup-engineering/json-services-section/canonical-json';
+import { indexJavaScriptModuleBindings } from './javascript-module-bindings.mjs';
 
 /*
  * engineering-design-generator-bootstrap; selected artifact src/engineering-design.mjs.
@@ -481,6 +482,7 @@ export function readEngineeringCodeWork({
     const actualSha256 =
       'sha256:' + createHash('sha256').update(view.text, 'utf8').digest('hex');
     views.set(key, {
+      owner, path: view.path, text: view.text,
       actualSha256, expectedSha256: view.expectedSha256,
       matchesExpectedSource: actualSha256 === view.expectedSha256,
     });
@@ -503,6 +505,13 @@ export function readEngineeringCodeWork({
   const gap = (code, operationId, module, detail) =>
     ({ code, operationId, module, detail });
   const discrepancies = [];
+  // Only exact custodian-addressed bytes may enter the existing nonexecuting
+  // ECMAScript grammar reader. Unobserved and mismatched source remains
+  // unknown; imported modules outside this finite original target cut cannot
+  // be guessed from the consumer's installed node_modules.
+  const syntax = indexJavaScriptModuleBindings(
+    [...views.values()].filter(v => v.matchesExpectedSource)
+      .map(({owner,path,text}) => ({owner,path,text})));
   const targets = [...designCandidate.design.operations]
     .sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0)
     .map(operation => {
@@ -516,6 +525,15 @@ export function readEngineeringCodeWork({
       if (status === 'source-cut-disagreement')
         discrepancies.push(gap('SOURCE_DIGEST_DISAGREEMENT', operation.id,
           operation.module, 'Source bytes differ from the custodian-addressed digest'));
+      const bindingObservation = status === 'source-present-unassayed'
+        ? syntax.inspect({owner:originalOwners.get(operation.componentId),
+          path:operation.module,exportName:operation.exportName}) : null;
+      if (bindingObservation?.status === 'absent')
+        discrepancies.push(gap('CODE_EXPORT_NOT_OBSERVED', operation.id,
+          operation.module, 'Selected named export is absent in the complete supplied ECMAScript module'));
+      if (bindingObservation?.status === 'contested')
+        discrepancies.push(gap('CODE_EXPORT_CONTESTED', operation.id,
+          operation.module, 'Distinct or duplicated ECMAScript export claims are contested'));
       // This is a ready-to-route *plan*, not an executable WorkCell. Treat
       // qualitative test obligations as independently unreceived, never
       // automatically generated behavioral assertions or passing tests.
@@ -526,6 +544,9 @@ export function readEngineeringCodeWork({
         sourceStatus: status,
         observedSha256: source?.actualSha256 ?? null,
         expectedSha256: source?.expectedSha256 ?? null,
+        // Syntax-only reading, never a semantic implementation/Proof verdict.
+        // Unknown imports and parser refusals cannot become a clean code assay.
+        bindingObservation,
         originalTrace: traced.get(operation.id)
           .sort((a,b) => a.requirementCellId < b.requirementCellId ? -1 :
             a.requirementCellId > b.requirementCellId ? 1 : 0),
