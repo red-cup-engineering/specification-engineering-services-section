@@ -88,7 +88,7 @@ const canonicalText='export const retainSourceValue = x => x;';
 const canonicalReadout=readEngineeringCodeWork({
   designCandidate:canonicalReceipt,originalPlan:lowPlan,
   originalDeliveryText:JSON.stringify(canonicalLLD),
-  sourceViews:[{path:canonicalName,text:canonicalText,
+  sourceViews:[{owner:'fixture-only',path:canonicalName,text:canonicalText,
     expectedSha256:'sha256:'+createHash('sha256').update(canonicalText,'utf8').digest('hex')}],
 });
 assert.equal(canonicalReadout.status,'source-present-unassayed');
@@ -105,7 +105,7 @@ const codeSourceText='export const retainSourceValue = x => x;' + '\n';
 const codeSourceSha256='sha256:' + createHash('sha256')
   .update(codeSourceText,'utf8').digest('hex');
 const sourceCut=[{
-  path:'src/source-operation.mjs',text:codeSourceText,
+  owner:'fixture-only',path:'src/source-operation.mjs',text:codeSourceText,
   expectedSha256:codeSourceSha256,
 }];
 const work=readEngineeringCodeWork({
@@ -113,6 +113,9 @@ const work=readEngineeringCodeWork({
   originalDeliveryText:JSON.stringify(low.design),sourceViews:sourceCut,
 });
 assert.equal(work.type,'EngineeringDesignCodeWorkReadout');
+assert.match(work.designCarrierId,/^ni:\/\/\/sha-256;/u);
+assert.equal(work.designCarrierSha256,undefined,
+  'the Code Work reader no longer hashes caller-ordered JSON serialization');
 assert.equal(work.status,'source-present-unassayed');
 assert.equal(work.targets.length,1);
 assert.equal(work.targets[0].operationId,'source-operation');
