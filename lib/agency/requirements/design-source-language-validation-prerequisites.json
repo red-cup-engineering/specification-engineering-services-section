@@ -1,0 +1,82 @@
+{
+  "kind": "requirement",
+  "id": "design-source-language-validation-prerequisites",
+  "name": "Shared source-language validation prerequisites for engineering design",
+  "raised-by": "codex-engineering-session-root",
+  "asks": "Construct and qualify the shared source-analysis prerequisites selected by the independently reviewed parent architecture, so the original design engine can receive actual agency and Scheme source owners.",
+  "met-when": [
+    {
+      "cell": "design-source-language-validation-prerequisites:shared",
+      "target": "held",
+      "says": "Build one reusable JavaScript ESM source-analysis capability and one reusable nonexecuting Guile Scheme source-analysis capability as Specification Engineering source-owned JavaScript modules. They are shared prerequisites for the existing design engine, not forwarding implementations of Scheme programs."
+    },
+    {
+      "cell": "design-source-language-validation-prerequisites:syntax",
+      "target": "held",
+      "says": "Recognize actual top-level named ESM exports and actual Guile 3.0.9 top-level define and define* bindings from selected source text without evaluating that source; retain exact identifier and path spelling, reject malformed or ambiguous syntax, and do not treat an arbitrary regular expression or caller assertion as proof."
+    },
+    {
+      "cell": "design-source-language-validation-prerequisites:parameters",
+      "target": "held",
+      "says": "Receive the source text, selected dialect and owner identity, exact requested binding, and all byte, time, memory and worker limits through checked explicit host-admitted parameters. Never allow caller inputs to grant execution authority or weaken the parent engine source-view and aggregate bounds."
+    },
+    {
+      "cell": "design-source-language-validation-prerequisites:custody",
+      "target": "held",
+      "says": "Treat trusted immutable source custody, dialect selection and host admission as external contracts supplied by the actual host; do not invent a host owner, authority, receipt, callback path or wrapper. Return deterministic analysis evidence bound to the exact selected source and parameters, with explicit failure and uncertainty."
+    },
+    {
+      "cell": "design-source-language-validation-prerequisites:qualification",
+      "target": "held",
+      "says": "Independently qualify the shared implementations against actual selected ESM source, the real Guile maintenance source and safe Guile 3.0.9 syntax fixtures, including malformed, changed, ambiguous and denied inputs. Qualification itself must not execute submitted source."
+    },
+    {
+      "cell": "design-source-language-validation-prerequisites:construction",
+      "target": "held",
+      "says": "Use the existing JavaScript-only native generation and fabrication chain for this bounded prerequisite, retain the original full thirteen-condition parent requirement, and deliver source, package and actual host consumption before using these capabilities to admit Scheme planning. No compatibility modes or hand-written code."
+    },
+    {
+      "cell": "design-source-language-validation-prerequisites:complete-interface-contract",
+      "target": "held",
+      "says": "The derived design specifies complete closed machine-readable input and output schemas for every implemented operation, including all nested source selections, graph entries, requested bindings, admitted parameters, limits, checked targets, evidence identities, ordered results, ranges, diagnostic codes, failure and unavailable cases. Define field types, requiredness, allowed values, units, invariants and exact status transitions; an unconstrained object or promise to decide later is not a fabricable contract."
+    },
+    {
+      "cell": "design-source-language-validation-prerequisites:implementable-analysis",
+      "target": "held",
+      "says": "The derived design selects an implementable nonexecuting analysis procedure and conservative supported grammar for the actual selected dialects, including static binding recognition, lexical and syntactic ambiguity, re-export resolution, Unicode and source byte ranges, exact deterministic resource accounting and defined refusal for unsupported input. Explain how the selected original ESM parser is qualified or instrumented for every required bound; do not assume its current API supplies counters or host isolation."
+    },
+    {
+      "cell": "design-source-language-validation-prerequisites:fabrication-completeness",
+      "target": "held",
+      "says": "Before native fabrication, source-bound design and independent source-free assays specify all behavior and adverse cases needed to implement each selected module without inventing normative fields, algorithms, authority, counters, effect boundaries or always-unavailable stubs. Actual host resource values, parser-release selection, independent qualification results and live authority remain external receiving conditions rather than fabricated facts."
+    },
+    {
+      "cell": "design-source-language-validation-prerequisites:esm-resolved-identity",
+      "target": "held",
+      "says": "ESM re-export analysis preserves the selected dialect standard semantic resolved module-and-binding identity separately from declaration occurrence and diagnostic ranges. Different paths resolving to the same namespace target are not falsely ambiguous; distinct semantic targets, unresolvable paths and actual conflicting stars are handled according to the selected qualified dialect. Specify deterministic evidence selection across equivalent routes and include direct and transitive namespace re-export counterexamples in independent qualification."
+    }
+  ],
+  "x-provenance": {
+    "author": "Codex engineering session /root",
+    "parentRequirement": "design-generation-receives-source-language-bindings@ni:///sha-256;EYHqDVSe_ZgBCT2_7g5to5ZtySh2V6YhEbSx9cm8fZU",
+    "parentArchitecture": "data/state/design-language-generation-service-state/architecture-review-request-v6.architecture.json",
+    "parentArchitectureSha256": "b8082ca1a25f7c8dc41efc5a830058704b957b95bf93356f39cdc2adcabdbea3",
+    "wholeSystemHldRefusal": "data/state/design-language-generation-service-state/high-level-v6.independent-semantic-receiving.json",
+    "standing": "bounded prerequisite, not completion of parent Work; no claim of authority or operating receipt",
+    "contract-completion": {
+      "author": "Codex engineering session /root",
+      "previousRequirement": "ni:///sha-256;ui2xqzEWvIwCTQeauaHmBECkKmKwka5uLBFyUI8ocm0",
+      "previousSource": "data/state/design-language-generation-service-state/prerequisite-architecture-request-v3.json messages[1].content.requirement",
+      "refusedLowLevel": "data/state/design-language-generation-service-state/prerequisite-low-level-v3.independent-semantic-receiving.json",
+      "basis": "Independent source review found opaque schemas and unresolved analysis/accounting contracts. Preserve all six original conditions and complete upstream specification before fabricating.",
+      "standing": "Requirement amendment, not code, acceptance, authority or proof."
+    },
+    "esm-resolution-completion": {
+      "author": "Codex engineering session /root",
+      "previousRequirement": "ni:///sha-256;ZLa8COB-KxcCL8yhw8mGIc44vuGlWa66txLYMPXYhbk",
+      "previousSource": "data/state/design-language-generation-service-state/prerequisite-architecture-request-v4.json messages[1].content.requirement",
+      "independentReview": "data/state/design-language-generation-service-state/prerequisite-architecture-request-v4.independent-semantic-receiving.json",
+      "basis": "Independent review identified a concrete namespace re-export graph where declaration occurrences differ but their resolved namespace identity is the same. This condition corrects the source contract without claiming a selected parser, implemented code or proof."
+    }
+  }
+}

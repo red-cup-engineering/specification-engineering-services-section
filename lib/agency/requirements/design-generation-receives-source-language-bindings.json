@@ -1,0 +1,169 @@
+{
+  "kind": "requirement",
+  "id": "design-generation-receives-source-language-bindings",
+  "name": "Engineering design receives the actual source-language and binding contract",
+  "raised-by": "codex-engineering-session-root",
+  "asks": "Generate high- and low-level designs for the actual source owners, including the existing Scheme deployment owner, while completing the Leader-required single coherent agency implementation and the original registry repair.",
+  "met-when": [
+    {
+      "cell": "design-generation-receives-source-language-bindings:general-engine",
+      "target": "held",
+      "says": "The original engineering design engine receives source-language, source-owner, allowable module and exported-binding constraints as explicit checked parameters of its source-bound request, rather than hardcoding JavaScript, src directories, mjs suffixes or ASCII JavaScript identifiers as universal engineering rules."
+    },
+    {
+      "cell": "design-generation-receives-source-language-bindings:exact-source-binding",
+      "target": "held",
+      "says": "The complete target contract is retained in each native design plan and independently reconstructed during receiving together with the original Requirement, Specification, Architecture and HLD source cut. A changed, omitted, malformed, ambiguous or foreign contract refuses before a delivered candidate is received."
+    },
+    {
+      "cell": "design-generation-receives-source-language-bindings:actual-owner",
+      "target": "held",
+      "says": "Every generated LLD operation names its actual HLD component source owner and a materializable module/export binding admitted by that owner contract. Existing modules and proposed new modules remain distinguishable without fictitious forwarding modules, aliases, compatibility paths or language changes chosen solely to satisfy a generator."
+    },
+    {
+      "cell": "design-generation-receives-source-language-bindings:path-identity",
+      "target": "held",
+      "says": "Preserve original canonical POSIX module path identity and exact NFC spelling: reject absolute paths, empty/dot/dotdot segments, traversal, backslash aliases, invalid Unicode and owner ambiguity; a language parameter never weakens the original path, source, collision or traceability boundary."
+    },
+    {
+      "cell": "design-generation-receives-source-language-bindings:language-receiving",
+      "target": "held",
+      "says": "Source-language binding validation is supplied or derived from the selected source owner dialect and checked at its boundary. A language name, arbitrary regular expression, model assertion, boolean or user-defined code path does not itself establish a validated binding or execution authority. Preserve exact Scheme binding spellings and JavaScript binding spellings in their respective valid contracts."
+    },
+    {
+      "cell": "design-generation-receives-source-language-bindings:preserve-stage-semantics",
+      "target": "held",
+      "says": "Preserve the original complete source text, native Data identity supplier, original Requirement-cell to Specification-clause to Architecture-model to HLD-component to LLD-operation correspondence, provider-delivery binding, uncertainty and unreceived Proof. Do not equate a structural candidate with adopted design, fabricated code or operating acceptance."
+    },
+    {
+      "cell": "design-generation-receives-source-language-bindings:finish-current-callers",
+      "target": "held",
+      "says": "Migrate the original design request producers, receivers, source-bound Code Work readout and existing native callers to the one final parameterized contract. Remove the superseded implicit JavaScript-only contract and update existing tests rather than maintain two API modes or a compatibility shim."
+    },
+    {
+      "cell": "design-generation-receives-source-language-bindings:normal-generation",
+      "target": "held",
+      "says": "Use the original admitted zero-cash house generation and Fabrication producers with the original development history, source and provider-task custody. The session writes requirements rather than hand-editing generator code; this is a bounded continuation of the original engineering-generator bootstrap requirement, not a grant for unrelated implementation or paid inference."
+    },
+    {
+      "cell": "design-generation-receives-source-language-bindings:native-receiving",
+      "target": "held",
+      "says": "Independently receive native JavaScript and actual Scheme source-owner cases, existing and new modules, two owners sharing one relative module path, changed target contracts, invalid path and binding counterexamples, and exact original per-cell allocation/source-cut refusals. Receive the real CDE whole-window maintenance design through the selected owner before its source is fabricated."
+    },
+    {
+      "cell": "design-generation-receives-source-language-bindings:consumer-receiving",
+      "target": "held",
+      "says": "Carry the accepted original generator source through its normal package publication and actual original generation consumer. Then complete the original deployment and agency consumer Work; a local requirement, generated document, source test or draft PR does not discharge those operating outcomes."
+    },
+    {
+      "cell": "design-generation-receives-source-language-bindings:checked-qualification-parameters",
+      "target": "held",
+      "says": "Every new qualification, target-count, byte, time, memory and worker limit is an explicit checked host-admitted parameter, retained in the complete source-bound plan and reconstructed at receiving and Code Work. Generated example values do not become universal engine constants; caller parameters cannot relax the original admitted source-view and operation boundaries. Omitted, changed, malformed or foreign admission refuses before effects."
+    },
+    {
+      "cell": "design-generation-receives-source-language-bindings:shared-validation-and-host-composition",
+      "target": "held",
+      "says": "Specify one shared prerequisite implementation for each dialect validation capability, receiving source-owner and source-selection specifics as parameters instead of copying ESM validation into every consumer section. Name the actual trusted host-composition boundary for selecting qualified owner syntax ports and immutable source custody outside untrusted request JSON. The reusable design engine depends on this declared port contract rather than importing all consumer owners, and the source, package and host dependency direction remains acyclic."
+    },
+    {
+      "cell": "design-generation-receives-source-language-bindings:acyclic-bootstrap",
+      "target": "held",
+      "says": "Give a feasible generated construction and independent qualification order using the original currently admitted generator and Fabrication capabilities. A needed Scheme validator cannot depend on Scheme planning that already requires that same validator. Any new bootstrap source must use forms the existing construction stage actually admits; qualify the necessary syntax capability before its first dependent planning call, then receive the actual original Scheme consumer. Preserve the real existing Scheme source/bindings; a fictitious JavaScript forwarding module, hand-written validator, unqualified callback or asserted receipt is not a bootstrap solution."
+    }
+  ],
+  "x-provenance": {
+    "recorded-by": "Codex engineering session /root",
+    "basis": "Technical requirement inferred from the Leader-requested agency family completion, the general-engine parameter rule, and the existing original generator requirement; not attributed to the Leader as authored wording.",
+    "original-requirement": "red-cup-engineering/engineering-services-section/data/records/service-records/requirements-management-service-records/requirements-generate-specifications-designs-and-normative-code.json",
+    "original-source": "red-cup-engineering/specification-engineering-services-section@db52af5115ce9cc12e027d3ec23c42fe5a2a1aa2:src/engineering-design.mjs",
+    "actual-consumer": "red-cup-engineering/computer-deployment-engine/data/records/requirements/cde-maintenance-serialization.json",
+    "authority": "source requirement proposal; no runtime appointment, grant, Proof, publication or operating acceptance",
+    "requirementCarrierNormalization": {
+      "sourceSha256": "752ed8d7d964cf172e96cf64b209941b4b9668e71d52b9ecd26bf9aa82a6c1eb",
+      "original": {
+        "raised-by": "Codex engineering session /root",
+        "asks": [
+          "Generate high- and low-level designs for the actual source owners, including the existing Scheme deployment owner, while completing the Leader-required single coherent agency implementation and the original registry repair."
+        ]
+      },
+      "reason": "The single canonical Requirement carrier has a typed slug raiser and one original ask string; original draft values retained as source evidence. Acceptance conditions unchanged.",
+      "raiserMeaning": "The actual authoring Codex engineering session; source proposal only, no new Character, account, office or native authority is asserted."
+    },
+    "actual-native-source-inputs": {
+      "scope": "Observed source facts and receiving examples supplied to complete the Requirement context; not operator-authored architecture, validator implementation or received syntax qualification. Acceptance conditions unchanged.",
+      "source-language-counterexample": {
+        "repository": "red-cup-engineering/computer-deployment-engine",
+        "commit": "13dc27ccc5e73c7747eaff301efd72c3d3173404",
+        "path": "src/maintenance-host.scm",
+        "gitBlob": "2f29c96f1051287140b61e68bf1ad1c40f09f857",
+        "sha256": "f98a8bb3571a82fab7df4653e41d2daf680830c6f9c414526ed4cf0dbc03435a",
+        "dialect": "GNU Guile Scheme, selected runtime3.0.9",
+        "bindingKind": "top-level current-module bindings in a primitive-loaded source fragment, not a define-module export list",
+        "literalBindings": [
+          "maintenance-host-input",
+          "maintenance-host-hold",
+          "maintenance-host-continuation"
+        ],
+        "sourceDeclarationForms": [
+          "define",
+          "define* with #:optional and opening-ingress?"
+        ],
+        "originalDriver": {
+          "path": "scripts/guix-deployment.scm",
+          "gitBlob": "2dda4bab8bfc28b9d3d74183b4756df01177210b",
+          "load": "Source-owned immutable driver asset selected outside untrusted request JSON, primitive-load then module-ref(current-module,name)",
+          "pureValidatorRecovered": false
+        },
+        "receivedEvidence": "services/internal-services-section/services/internal-operations-services-section/services/bare-cedar-fog-services-section/data/state/source-working-copy-service-state/cde-publisher-runtime-selection-20261028/data/state/maintenance-serialization-generation-service-state/scheme-maintenance-source-evidence.json"
+      },
+      "existing-js-module-counterexample": {
+        "owner": "red-cup-engineering/agentic-organization-services-section-engineering-services-section",
+        "commit": "94f3599bbeadba552815568f1ec61a3b55a8503d",
+        "path": "scripts/plan-agency-record-normalization.mjs",
+        "dialect": "JavaScript ESM",
+        "bindingKind": "named module export",
+        "literalBinding": "planAgencyRecordNormalization",
+        "fact": "This existing actual module path starts scripts/, so a universal src/ restriction cannot receive its original binding."
+      },
+      "existing-generator-input": {
+        "owner": "red-cup-engineering/specification-engineering-services-section",
+        "commit": "db52af5115ce9cc12e027d3ec23c42fe5a2a1aa2",
+        "path": "src/engineering-design.mjs",
+        "literalBindings": [
+          "planEngineeringDesign",
+          "receiveEngineeringDesign",
+          "readEngineeringCodeWork"
+        ],
+        "retainedResourceLimit": "Code Work sourceViews at most64, combined UTF-8 bytes at most2097152, not that amount for each view.",
+        "retainedDistinction": "Provider task/result identity and source-view-byte observation are different owners and outcomes."
+      },
+      "receiving-obligations": [
+        "A source-bound request must actually carry the checked owner/language/module/binding contract, and plan/receive/Code Work must reconstruct it; naming a parameter without representing it is insufficient.",
+        "Receive the literal actual Scheme and scripts/ ESM bindings above through their owner contracts. Prospective new names/modules must be explicitly marked prospective, checked by a real owner dialect boundary and never presented as observed exports.",
+        "Reject a bare owner manifest, caller regex/Boolean, language label or arbitrary module path as a validator witness. No standalone pure Scheme validator was recovered, so a needed original-owner parser/validation capability must be constructed and qualified honestly rather than invented as already supplied.",
+        "Syntax/data validation must not primitive-load or evaluate submitted Scheme fragments. Existing executing driver loading is source evidence, not a safe nonexecuting validation port.",
+        "Select original failure/reentry behavior and retain exact path spelling; reject non-NFC aliases rather than silently changing original paths."
+      ],
+      "reference": {
+        "url": "https://www.gnu.org/software/guile/manual/guile.html",
+        "standing": "Current GNU Guile manual general symbol syntax reference; selected3.0.9 native runtime receiving remains independent."
+      }
+    },
+    "source-context-revision": {
+      "previousRequirement": "ni:///sha-256;3nlOJBL284L9wWsiDmxsYmLHfedPJ2M88v9vr-p6dYo",
+      "previousSourceIn": "data/state/design-language-generation-service-state/architecture-review-request-v4.json messages[1].content.requirement",
+      "actualRefusal": "data/state/design-language-generation-service-state/architecture-review-request-v4.semantic-receiving.json",
+      "reason": "Complete actual source-owner and dialect facts missing from the generation source cut; preserve all ten acceptance statements and original authoring data. No implementation or proof supplied."
+    },
+    "architecture-completion-requirement": {
+      "previousRequirement": "ni:///sha-256;tE787cGZX9JFE3iKKHQcnF2xroLjBN1qHxwLWh80Cho",
+      "previousSpec": "ni:///sha-256;na-E5hJvr7WtnAX4ZaBB3RGUC_nVoJhXpEApBy64bFU",
+      "priorSourceIn": "data/state/design-language-generation-service-state/architecture-review-request-v5.json messages[1].content.requirement",
+      "independentReview": "data/state/design-language-generation-service-state/architecture-review-request-v5.independent-semantic-receiving.json",
+      "acceptedUsefulPredecessorContent": "Substantial mandatory complete targetContract, genuine Scheme and ESM roles, owner-qualified Code Work, exact-source reconstruction and original aggregate resource/source-versus-provider distinction retained as design evidence, not accepted Architecture.",
+      "addedConditionBasis": "Complete the source requirement against the actual house general-engine parameter rule, single capability ownership and the existing JS-only bootstrap constraint. All original ten statements and source facts remain unchanged; three explicit engineering conditions close actual design gaps.",
+      "sourceCodeChanged": false,
+      "governingAdmission": false
+    }
+  }
+}
