@@ -3,12 +3,30 @@
 // export, never ../src, and preserves source/Proof/admission boundaries.
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
+import { spawnSync } from 'node:child_process';
 import {
   planEngineeringDesign,
   receiveEngineeringDesign,
   readEngineeringCodeWork,
 } from '@red-cup-engineering/specification-engineering-services-section/engineering-design';
 import { sourcesFixture, clausesSplitAcrossModels } from './engineering-design-source-cut.fixture.mjs';
+
+// The installed package's four original source producers must share STRICT
+// JSON intake. Source bytes that hide an earlier claim cannot reach any
+// later Specification renderer or Design generator.
+const duplicateInput='{"claim":"preserved","claim":"silently erased"}';
+for (const name of [
+  'derive-specification','render-specification',
+  'render-specification-rfcxml','render-architecture-description',
+]) {
+  const command='node_modules/@red-cup-engineering/specification-engineering-services-section/scripts/'+name+'.mjs';
+  const result=spawnSync(process.execPath,[command],{
+    input:duplicateInput,encoding:'utf8',maxBuffer:2*1024*1024,timeout:15_000,
+  });
+  assert.equal(result.status,1,name+' '+result.stderr);
+  assert.equal(result.stdout,'',name+' emitted a partial product from ambiguous source');
+  assert.match(result.stderr,/duplicate-key/u,name+' did not use the shared JSON source admission');
+}
 
 const original = sourcesFixture();
 const plan = planEngineeringDesign({ stage: 'high-level', sources: original });
