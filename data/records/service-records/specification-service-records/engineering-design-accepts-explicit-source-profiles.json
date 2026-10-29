@@ -1,0 +1,158 @@
+{
+  "identity": {
+    "version": "0.1.0",
+    "stability": "draft",
+    "status": "requires-independent-requirement-and-interpretation-admission",
+    "date-created": "2026-10-28",
+    "id": "engineering-design-accepts-explicit-source-profiles",
+    "title": "Engineering Design accepts explicit source-language and artifact profiles",
+    "seat": "red-cup-engineering/specification-engineering-services-section",
+    "carrier": "content/text/documents/specifications/engineering-design-source-profiles.md",
+    "authors": [
+      "codex /root/koios_delivery"
+    ],
+    "profile": "prose"
+  },
+  "whatThisIs": "An unadmitted candidate reading of Requirement engineering-design-accepts-explicit-source-profiles at ni:///sha-256;oJBTBcQ8qRwN78ZGaPuAtLN1zTApV_geIhvgRZkrvhQ. External authority and specification acceptance remain open.",
+  "topics": [
+    {
+      "heading": "Source-owned requirement conditions",
+      "body": "{{clause:original-owner}}\n\n{{clause:explicit-profile}}\n\n{{clause:data-policy}}\n\n{{clause:general-names}}\n\n{{clause:profile-source-binding}}\n\n{{clause:preserve-original-cut}}\n\n{{clause:preserve-traces}}\n\n{{clause:source-owner-custody}}\n\n{{clause:candidate-limits}}\n\n{{clause:original-fabrication}}\n\n{{clause:whole-family-cutover}}\n\n{{clause:native-receiving}}\n\n{{clause:source-and-operation-evidence}}",
+      "clauses": [
+        {
+          "id": "original-owner",
+          "keyword": "MUST",
+          "actor": "The original source-bound Engineering Design provider and its receiving owners",
+          "statement": "ensure that the existing Specification Engineering ./engineering-design provider is the one general source-bound Design engine. Its original planEngineeringDesign, receiveEngineeringDesign and readEngineeringCodeWork producer/consumer family is completed in place; no parallel Scheme designer, JS wrapper around Scheme, copied provider or second package is introduced.",
+          "backedBy": [
+            "Original Requirement engineering-design-accepts-explicit-source-profiles (ni:///sha-256;oJBTBcQ8qRwN78ZGaPuAtLN1zTApV_geIhvgRZkrvhQ), cell engineering-design-accepts-explicit-source-profiles:original-owner"
+          ]
+        },
+        {
+          "id": "explicit-profile",
+          "keyword": "MUST",
+          "actor": "The original source-bound Engineering Design provider and its receiving owners",
+          "statement": "ensure that every Design plan, receiving request and Code Work readout selects one explicit source-language/artifact profile as a checked parameter. A missing, malformed, ambiguous or changed profile refuses before inference or Code Work projection. The API offers no implicit JavaScript profile, old-call fallback, alias or compatibility shim.",
+          "backedBy": [
+            "Original Requirement engineering-design-accepts-explicit-source-profiles (ni:///sha-256;oJBTBcQ8qRwN78ZGaPuAtLN1zTApV_geIhvgRZkrvhQ), cell engineering-design-accepts-explicit-source-profiles:explicit-profile"
+          ]
+        },
+        {
+          "id": "data-policy",
+          "keyword": "MUST",
+          "actor": "The original source-bound Engineering Design provider and its receiving owners",
+          "statement": "ensure that the profile carries finite literal data identifying the source language/artifact role and its normalized module path, extension, symbol-spelling and resource constraints. The engine validates the profile at its boundary and checks source names against that selected policy. A profile cannot introduce a callable parser, arbitrary executable grammar, regular-expression program, shell command, dynamic import, host path, authority flag or effect grant.",
+          "backedBy": [
+            "Original Requirement engineering-design-accepts-explicit-source-profiles (ni:///sha-256;oJBTBcQ8qRwN78ZGaPuAtLN1zTApV_geIhvgRZkrvhQ), cell engineering-design-accepts-explicit-source-profiles:data-policy"
+          ]
+        },
+        {
+          "id": "general-names",
+          "keyword": "MUST",
+          "actor": "The original source-bound Engineering Design provider and its receiving owners",
+          "statement": "ensure that the same engine can plan and receive existing JavaScript module/export targets and native Scheme source/symbol targets, including the original CDE src/, scripts/ and test/ source roles, through their respective explicitly supplied profiles. It does not silently rename a target, translate Scheme into JavaScript or treat a profile label as proof that a parser or source file exists.",
+          "backedBy": [
+            "Original Requirement engineering-design-accepts-explicit-source-profiles (ni:///sha-256;oJBTBcQ8qRwN78ZGaPuAtLN1zTApV_geIhvgRZkrvhQ), cell engineering-design-accepts-explicit-source-profiles:general-names"
+          ]
+        },
+        {
+          "id": "profile-source-binding",
+          "keyword": "MUST",
+          "actor": "The original source-bound Engineering Design provider and its receiving owners",
+          "statement": "ensure that the complete selected profile is bound into the actual source-pinned inference plan, its context/output constraints, the received candidate and every downstream reconstruction. An LLD uses exactly its original HLD profile; changing a profile body under the same name, revising a bound, changing a source path policy or swapping a stale plan/candidate cannot preserve the old Design identity or receive a Code Work readout.",
+          "backedBy": [
+            "Original Requirement engineering-design-accepts-explicit-source-profiles (ni:///sha-256;oJBTBcQ8qRwN78ZGaPuAtLN1zTApV_geIhvgRZkrvhQ), cell engineering-design-accepts-explicit-source-profiles:profile-source-binding"
+          ]
+        },
+        {
+          "id": "preserve-original-cut",
+          "keyword": "MUST",
+          "actor": "The original source-bound Engineering Design provider and its receiving owners",
+          "statement": "ensure that the complete exact Requirement, Specification, Architecture and original HLD text cuts, their original supplier/SEN identities, existing raw JSON admission semantics and all retained uncertainty remain intact. The engine delegates identity to the original admitted Data supplier on the complete parsed source, propagates its native refusals, and never strips unknown input fields, invents a codec or repairs source text under an old identity.",
+          "backedBy": [
+            "Original Requirement engineering-design-accepts-explicit-source-profiles (ni:///sha-256;oJBTBcQ8qRwN78ZGaPuAtLN1zTApV_geIhvgRZkrvhQ), cell engineering-design-accepts-explicit-source-profiles:preserve-original-cut"
+          ]
+        },
+        {
+          "id": "preserve-traces",
+          "keyword": "MUST",
+          "actor": "The original source-bound Engineering Design provider and its receiving owners",
+          "statement": "ensure that every original Requirement cell retains its exact Specification clause and authored Architecture model witnesses through HLD component allocations and LLD operations. The actual Data, Code, Networking and Systems dependency/port constraints, complete per-clause model coverage, source lineage and original HLD allocation rules remain enforced; accepting another source language cannot weaken those checks.",
+          "backedBy": [
+            "Original Requirement engineering-design-accepts-explicit-source-profiles (ni:///sha-256;oJBTBcQ8qRwN78ZGaPuAtLN1zTApV_geIhvgRZkrvhQ), cell engineering-design-accepts-explicit-source-profiles:preserve-traces"
+          ]
+        },
+        {
+          "id": "source-owner-custody",
+          "keyword": "MUST",
+          "actor": "The original source-bound Engineering Design provider and its receiving owners",
+          "statement": "ensure that code source identity is the pair of the original HLD component owner and normalized relative source path. Module/export collision checks remain scoped by that original owner: identical module/export names in distinct original repositories remain distinct; the same owner/path/export collision refuses. Every supplied Code source view explicitly names its original owner; retire the current ownerless-source-view fallback and migrate all actual callers and fixtures together.",
+          "backedBy": [
+            "Original Requirement engineering-design-accepts-explicit-source-profiles (ni:///sha-256;oJBTBcQ8qRwN78ZGaPuAtLN1zTApV_geIhvgRZkrvhQ), cell engineering-design-accepts-explicit-source-profiles:source-owner-custody"
+          ]
+        },
+        {
+          "id": "candidate-limits",
+          "keyword": "MUST",
+          "actor": "The original source-bound Engineering Design provider and its receiving owners",
+          "statement": "ensure that a structurally received candidate remains admitted:false and proof:unreceived. A generated profile, source declaration, parsed native proposal or passing output case does not grant source effects, native governance, independent Design admission, Proof, package publication, production activation or customer acceptance.",
+          "backedBy": [
+            "Original Requirement engineering-design-accepts-explicit-source-profiles (ni:///sha-256;oJBTBcQ8qRwN78ZGaPuAtLN1zTApV_geIhvgRZkrvhQ), cell engineering-design-accepts-explicit-source-profiles:candidate-limits"
+          ]
+        },
+        {
+          "id": "original-fabrication",
+          "keyword": "MUST",
+          "actor": "The original source-bound Engineering Design provider and its receiving owners",
+          "statement": "ensure that generated normative implementation and assays use the original house generation chain and original generic Fabrication source-transformation carrier, with exact writable snapshots, complete verified source views, source-independent review, original development-history custody and the actual resumable CIE task. The input profile never chooses the model, provider, account, resource grant, native command or acceptance authority.",
+          "backedBy": [
+            "Original Requirement engineering-design-accepts-explicit-source-profiles (ni:///sha-256;oJBTBcQ8qRwN78ZGaPuAtLN1zTApV_geIhvgRZkrvhQ), cell engineering-design-accepts-explicit-source-profiles:original-fabrication"
+          ]
+        },
+        {
+          "id": "whole-family-cutover",
+          "keyword": "MUST",
+          "actor": "The original source-bound Engineering Design provider and its receiving owners",
+          "statement": "ensure that the actual current Design source, all direct callers, declared operation input/output schemas or requests, source-free work order/examples, packed-consumer tests and documentation move to the explicit-profile contract as one coherent cutover. Preserve their useful meanings and archive only superseded source evidence. Do not mint a public version solely for a requirement, specification or test-only candidate.",
+          "backedBy": [
+            "Original Requirement engineering-design-accepts-explicit-source-profiles (ni:///sha-256;oJBTBcQ8qRwN78ZGaPuAtLN1zTApV_geIhvgRZkrvhQ), cell engineering-design-accepts-explicit-source-profiles:whole-family-cutover"
+          ]
+        },
+        {
+          "id": "native-receiving",
+          "keyword": "MUST",
+          "actor": "The original source-bound Engineering Design provider and its receiving owners",
+          "statement": "ensure that independent receiving covers complete positive JavaScript and Scheme HLD/LLD/Code Work examples; missing and malformed profiles; forged or changed profile bodies; stale HLD/LLD/plan or source cuts; invalid normalized paths and symbol spelling; wrong source owner and ownerless views; within-owner collisions and cross-owner equality; preserved clause/model/uncertainty refusals; and the unchanged candidate claim limits. Scheme source is received by the actual qualified native Scheme parser/consumer, never imported as JavaScript.",
+          "backedBy": [
+            "Original Requirement engineering-design-accepts-explicit-source-profiles (ni:///sha-256;oJBTBcQ8qRwN78ZGaPuAtLN1zTApV_geIhvgRZkrvhQ), cell engineering-design-accepts-explicit-source-profiles:native-receiving"
+          ]
+        },
+        {
+          "id": "source-and-operation-evidence",
+          "keyword": "MUST",
+          "actor": "The original source-bound Engineering Design provider and its receiving owners",
+          "statement": "ensure that evidence binds the actual source revision, original profile/request, provider task and exact delivery, generated artifacts, independent native receiving and actual consuming CDE/Engineering paths. Actual provider availability and qualitative source completeness are separate; a catalog label, quota failure, memory refusal or transport success cannot stand in for a qualified Design or operating Koios outcome.",
+          "backedBy": [
+            "Original Requirement engineering-design-accepts-explicit-source-profiles (ni:///sha-256;oJBTBcQ8qRwN78ZGaPuAtLN1zTApV_geIhvgRZkrvhQ), cell engineering-design-accepts-explicit-source-profiles:source-and-operation-evidence"
+          ]
+        }
+      ]
+    }
+  ],
+  "implementations": [],
+  "openQuestions": [
+    {
+      "question": "Has the original source Requirement and each BCP 14 interpretation been independently admitted?",
+      "blockedBy": "An original competent Office and external reviewer; no approval is inferred from this record"
+    }
+  ],
+  "laws": [],
+  "standards": [],
+  "provenance": {
+    "derivedAt": "2026-10-28T23:20:00.000Z",
+    "derivedBy": "codex /root/koios_delivery; source interpretation only, independent admission unsettled",
+    "derivedFrom": [
+      "engineering-design-accepts-explicit-source-profiles@ni:///sha-256;oJBTBcQ8qRwN78ZGaPuAtLN1zTApV_geIhvgRZkrvhQ"
+    ]
+  }
+}

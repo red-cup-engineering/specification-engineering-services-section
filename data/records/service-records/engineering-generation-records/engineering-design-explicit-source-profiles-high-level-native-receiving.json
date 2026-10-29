@@ -1,0 +1,120 @@
+{
+  "kind": "engineering-design.source-profile-high-level-native-receiving/v1",
+  "receivedAt": "2026-10-29T02:46:10.600Z",
+  "receiver": "Codex /root/koios_release_finish",
+  "providerReceiving": {
+    "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/design-source-profile-generation-state/48f6ed16/high-level-v2-whole-job/receiving/received.json",
+    "at": "2026-10-29T02:43:05.415Z",
+    "state": "provider-delivered-unreceived",
+    "deliveryMetadata": {
+      "configurationModel": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "nativeOutcome": "candidate-pending-codex-acceptance",
+      "durationMs": 175133,
+      "resources": [
+        {
+          "resource": "requests",
+          "unit": "request",
+          "amount": {
+            "numerator": "1",
+            "denominator": "1"
+          }
+        },
+        {
+          "resource": "input-tokens",
+          "unit": "token",
+          "amount": {
+            "numerator": "83929",
+            "denominator": "1"
+          }
+        },
+        {
+          "resource": "output-tokens",
+          "unit": "token",
+          "amount": {
+            "numerator": "12217",
+            "denominator": "1"
+          }
+        },
+        {
+          "resource": "total-tokens",
+          "unit": "token",
+          "amount": {
+            "numerator": "96146",
+            "denominator": "1"
+          }
+        },
+        {
+          "resource": "cached-input-tokens",
+          "unit": "token",
+          "amount": {
+            "numerator": "82384",
+            "denominator": "1"
+          }
+        },
+        {
+          "resource": "reasoning-output-tokens",
+          "unit": "token",
+          "amount": {
+            "numerator": "9860",
+            "denominator": "1"
+          }
+        },
+        {
+          "resource": "duration",
+          "unit": "millisecond",
+          "amount": {
+            "numerator": "175133",
+            "denominator": "1"
+          }
+        }
+      ],
+      "resourceProjectionComplete": true,
+      "unselectedResourceCount": 0,
+      "originalCieJournalOwnsFullDelivery": true,
+      "providerEvidenceOrRequestTreeCopied": false
+    },
+    "lot": {
+      "workLot": "urn:work-lot:inference:qO1uD-T_8hHUjjf4QUhrkVrUKaQkaAVJoACBT1iAanM",
+      "provider": "urn:ame:nvidia-inference-team",
+      "taskClass": "code-fabrication",
+      "selectedOffer": "urn:offer:direct-endpoint:urn:ame:nvidia-inference-team:2fUXmpnthgNbciM9wayHgJGw1vwg7JkTMjaUeQmU24g:code-fabrication",
+      "receipt": "ni:///sha-256;9r3IvwuzyRy0qoizEHl12JyHkEwSp34DMbk3Zl5yVvk",
+      "receiver": "actor:WWOM5azg-fTrn1Id0YVbz5AhppbnFny_W5Xl-rKgSs4",
+      "model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+      "configurationIdentity": "ni:///sha-256;2fUXmpnthgNbciM9wayHgJGw1vwg7JkTMjaUeQmU24g"
+    }
+  },
+  "requestSHA256": "71834b3b8c972e9ffeb1ad3a39759b0766f5c068cdf799ffda5c59d030e79c3d",
+  "nativePlanSHA256": "3b64fb59a356a4d4f843169fbe7931703e8f795d32faf37f8ab34efb809e8ad1",
+  "deliverySHA256": "56896b32f35a3be0705cfb1e013f68a4753e5b3f579f8474da8d2ea0298f5f9e",
+  "native": {
+    "host": "bare-cedar-fog",
+    "node": "v24.19.0",
+    "heapMiB": 48,
+    "semiSpaceMiB": 4,
+    "sourceCommit": "db52af5115ce9cc12e027d3ec23c42fe5a2a1aa2",
+    "module": "src/engineering-design.mjs",
+    "moduleSHA256": "af06370da48f9cae5c82c58c8866798da4403667dad3a3811527f7cf8b27d7dd",
+    "operation": "receiveEngineeringDesign",
+    "dependencyInstallPerformed": false
+  },
+  "schema": {
+    "valid": true,
+    "issues": []
+  },
+  "result": {
+    "type": "EngineeringDesignCandidate",
+    "reason": null
+  },
+  "error": null,
+  "structuralSourceCutPass": true,
+  "counts": {
+    "components": 7,
+    "connections": 7,
+    "traceability": 13
+  },
+  "independentSemanticReceiving": false,
+  "implementationGenerated": false,
+  "sourceIntegrated": false,
+  "productionActivated": false
+}

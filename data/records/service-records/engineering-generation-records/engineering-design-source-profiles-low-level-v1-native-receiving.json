@@ -1,0 +1,180 @@
+{
+  "kind": "OriginalSourceProfileLowLevelNativeReceiving",
+  "version": 1,
+  "observedBy": "Codex /root/koios_release_finish",
+  "at": "2026-10-29T06:01:31.259Z",
+  "operation": {
+    "node": "v24.18.0",
+    "producerCommit": "db52af5115ce9cc12e027d3ec23c42fe5a2a1aa2",
+    "moduleSHA256": "af06370da48f9cae5c82c58c8866798da4403667dad3a3811527f7cf8b27d7dd",
+    "architectureModuleSHA256": "fc98de612426477836ff93443064cdd3fe24808d1374c8023e0641fbf4d37833",
+    "operation": "receiveEngineeringDesign",
+    "stage": "low-level",
+    "nativePlanSHA256": "b81a953ab983a609b97dc4940826f58401263d1211dfc6c78ff1957139205a18",
+    "requestSHA256": "93efd0cc247bf9884deee65eb61af43fa101aba6407c3d40d7da34532ce4df91"
+  },
+  "actualBcfSource": {
+    "originalGeneratorAndArchitectureBytesMatchDb52": true,
+    "originalDataSupplier": {
+      "version": "0.6.0",
+      "gitHead": "373dd45cadc44f3b6804b0e5cee49d8261cb9744"
+    },
+    "lastObservedGitHead": "f195201eecc569d48785eb7982c102e98048964d",
+    "headMetadataReadBeforeNativeReceiver": true,
+    "generatorAndArchitectureBytesCheckedBeforeAndAfterReceiving": true
+  },
+  "providerDelivery": {
+    "kind": "engineering-design.source-profile-low-level-delivery/v1",
+    "at": "2026-10-29T05:42:53.297Z",
+    "state": "provider-delivered-unreceived",
+    "requestSHA256": "93efd0cc247bf9884deee65eb61af43fa101aba6407c3d40d7da34532ce4df91",
+    "requestedReasoningEffort": "low",
+    "sourceCut": {
+      "requirementRevision": "ni:///sha-256;oJBTBcQ8qRwN78ZGaPuAtLN1zTApV_geIhvgRZkrvhQ",
+      "specificationRevision": "ni:///sha-256;gujZhOB3i5vPRZ0D8XYH-ZlFi3INchXGRPcgxchQwDg",
+      "architectureRevision": "ni:///sha-256;m2Rx2rHUHqPNLo9G9SGU15N5Psc_jJppov4oH0SJsQU",
+      "architecturePath": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/records/design-source-profile-generation-records/48f6ed16/architecture-v1-native-receiving/architecture.candidate.json",
+      "architectureSHA256": "91708bf4a7bdb80f58902ddf6b6c8163dffdab663b2900318cee9c2871a69837",
+      "highLevelCandidatePath": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/records/design-source-profile-generation-records/48f6ed16/high-level-v2-whole-job-native-receiving/high-level.candidate.json",
+      "highLevelCandidateSHA256": "bbde1ea9d7484ac99cfbd0061c1b69123bda2381087b93715d04651a4c913c69"
+    },
+    "lot": {
+      "workLot": "urn:work-lot:inference:W_VUqW2cDa-7GOc7-yDI-jMh1kgi4L53hRayhxd3C8U",
+      "provider": "urn:ame:nvidia-inference-team",
+      "taskClass": "code-fabrication",
+      "selectedOffer": "urn:offer:direct-endpoint:urn:ame:nvidia-inference-team:2fUXmpnthgNbciM9wayHgJGw1vwg7JkTMjaUeQmU24g:code-fabrication",
+      "receipt": "ni:///sha-256;9i8cjyAlgm-d4iPQRSoVbLavVmyPfLxhcgmsuectbtk",
+      "receiver": "actor:WWOM5azg-fTrn1Id0YVbz5AhppbnFny_W5Xl-rKgSs4",
+      "model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+      "configurationIdentity": "ni:///sha-256;2fUXmpnthgNbciM9wayHgJGw1vwg7JkTMjaUeQmU24g"
+    },
+    "deliveryMetadata": {
+      "configurationReasoningEffort": null,
+      "configurationModel": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "nativeOutcome": "candidate-pending-codex-acceptance",
+      "durationMs": 136596,
+      "resources": [
+        {
+          "resource": "requests",
+          "unit": "request",
+          "amount": {
+            "numerator": "1",
+            "denominator": "1"
+          }
+        },
+        {
+          "resource": "input-tokens",
+          "unit": "token",
+          "amount": {
+            "numerator": "147051",
+            "denominator": "1"
+          }
+        },
+        {
+          "resource": "output-tokens",
+          "unit": "token",
+          "amount": {
+            "numerator": "10744",
+            "denominator": "1"
+          }
+        },
+        {
+          "resource": "total-tokens",
+          "unit": "token",
+          "amount": {
+            "numerator": "157795",
+            "denominator": "1"
+          }
+        },
+        {
+          "resource": "cached-input-tokens",
+          "unit": "token",
+          "amount": {
+            "numerator": "0",
+            "denominator": "1"
+          }
+        },
+        {
+          "resource": "reasoning-output-tokens",
+          "unit": "token",
+          "amount": {
+            "numerator": "5841",
+            "denominator": "1"
+          }
+        },
+        {
+          "resource": "duration",
+          "unit": "millisecond",
+          "amount": {
+            "numerator": "136596",
+            "denominator": "1"
+          }
+        }
+      ],
+      "resourceProjectionComplete": true,
+      "unselectedResourceCount": 0,
+      "originalCieJournalOwnsFullDelivery": true,
+      "providerEvidenceOrRequestTreeCopied": false
+    },
+    "lowLevelDesignGenerated": false,
+    "independentSemanticReceiving": false,
+    "codeWritten": false
+  },
+  "rawDelivery": {
+    "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/design-source-profile-generation-state/48f6ed16/low-level-v1-whole-job/receiving/review-delivery.txt",
+    "bytes": 21583,
+    "sha256": "164a07f27b6de39aab5a417a13736fe304eaff164f3cfb02a2e791906f39843c"
+  },
+  "nativeResult": {
+    "path": "derivation-refusal.json",
+    "sha256": "a7ecb5775a136336111e61e143fc8debdfa18df983d5428ad88c7eedd82952ea",
+    "bytes": 81,
+    "type": "EngineeringDesignDerivationRefusal",
+    "reason": "invalid-design",
+    "originalNativeResultUnchanged": true
+  },
+  "firstSourceHeldPredicate": {
+    "source": "src/engineering-design.mjs",
+    "sourceSHA256": "af06370da48f9cae5c82c58c8866798da4403667dad3a3811527f7cf8b27d7dd",
+    "function": "validLld",
+    "line": 298,
+    "expectedExactRootKeys": [
+      "operations",
+      "traceability",
+      "openQuestions"
+    ],
+    "actualRootKeys": [
+      "type",
+      "additionalProperties",
+      "required",
+      "properties",
+      "operations",
+      "traceability",
+      "openQuestions"
+    ],
+    "extraRootKeys": [
+      "type",
+      "additionalProperties",
+      "required",
+      "properties"
+    ],
+    "sourceCounterexample": "The first original validLld exact-root predicate returns false on the four schema-definition keywords. No output stripping/projection or checker patch is performed.",
+    "downstreamStructuralPredicatesClaimedPassed": false
+  },
+  "rawDesignPreserved": {
+    "operations": 7,
+    "traceRows": 13,
+    "semanticQualification": false,
+    "note": "Useful actual unreceived source detail retained; native refusal is not deletion. Independent full semantic receiving remains owed."
+  },
+  "resourceReceiving": "../low-level-v1-whole-job-resource-receiving/received.json",
+  "nextDuty": "Complete the original detailed source contract/host request from this exact refusal/counterexample and actual independent source receiving; record original supplier outcome through its original owner before any distinct authorized generation. Never patch output/checker, replay this request, fake a Code/Proof/operating receipt or raise resource gates automatically.",
+  "effectClaims": {
+    "nativeStageGenerated": false,
+    "sourceCodeWritten": false,
+    "packageEditionCreated": false,
+    "physicalMigration": false,
+    "productionChanged": false,
+    "twentyNewArticlesPerDayReceived": false
+  }
+}
