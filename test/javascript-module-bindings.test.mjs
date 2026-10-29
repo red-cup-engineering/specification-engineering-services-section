@@ -2,9 +2,11 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { indexJavaScriptModuleBindings } from '../src/javascript-module-bindings.mjs';
 
+const LIMITS=Object.freeze({maxBytes:2_097_152,maxModules:64});
+const index=sources=>indexJavaScriptModuleBindings(sources,LIMITS);
 const owner='red-cup-engineering/original-source-owner';
 const source=(path,text,sourceOwner=owner)=>({owner:sourceOwner,path,text});
-const read=(views,path,exportName)=>indexJavaScriptModuleBindings(views)
+const read=(views,path,exportName)=>index(views)
   .inspect({owner,path,exportName});
 
 test('reads actual named ECMAScript exports without executing module code',()=>{
@@ -147,21 +149,35 @@ test('default is never inherited through export-star',()=>{
 });
 
 test('source owners, Unicode paths, and bounded source multiplicity refuse aliasing',()=>{
-  assert.throws(()=>indexJavaScriptModuleBindings([
+  assert.throws(()=>index([
     source('src/a.mjs','export const x=1;'),
     source('src/a.mjs','export const x=2;'),
   ]),TypeError);
-  assert.throws(()=>indexJavaScriptModuleBindings([
+  assert.throws(()=>index([
     source('src/../outside.mjs','export const x=1;'),
   ]),TypeError);
-  assert.throws(()=>indexJavaScriptModuleBindings([
+  assert.throws(()=>index([
     source('src/cafe\u0301.mjs','export const x=1;'),
   ]),TypeError);
-  assert.throws(()=>indexJavaScriptModuleBindings(new Array(65).fill(
+  assert.throws(()=>index(new Array(65).fill(
     source('src/a.mjs','export const x=1;'))),TypeError);
   const views=[source('src/a.mjs','export const x=1;')];
-  assert.equal(indexJavaScriptModuleBindings(views)
+  assert.equal(index(views)
     .inspect({owner:'another/repository',path:'src/a.mjs',exportName:'x'}).status,'unknown');
-  assert.equal(indexJavaScriptModuleBindings(views)
+  assert.equal(index(views)
     .inspect({owner,path:'src/a.mjs',exportName:'x'}).status,'observed');
+});
+
+test('caller must supply checked finite existing source limits before any syntax analysis',()=>{
+  const views=[source('src/small.mjs','export const x=1;')];
+  assert.throws(()=>indexJavaScriptModuleBindings(views),RangeError);
+  assert.throws(()=>indexJavaScriptModuleBindings(views,
+    {maxBytes:2_097_153,maxModules:64}),RangeError);
+  assert.throws(()=>indexJavaScriptModuleBindings(views,
+    {maxBytes:2_097_152,maxModules:65}),RangeError);
+  assert.throws(()=>indexJavaScriptModuleBindings(views,
+    {maxBytes:1,maxModules:1}),RangeError);
+  assert.equal(indexJavaScriptModuleBindings(views,
+    {maxBytes:Buffer.byteLength(views[0].text,'utf8'),maxModules:1})
+    .inspect({owner,path:'src/small.mjs',exportName:'x'}).status,'observed');
 });
