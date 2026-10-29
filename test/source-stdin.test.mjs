@@ -35,6 +35,34 @@ test("missing, malformed and lossy-decoded input cannot become fabricated source
   await assert.rejects(readSourceJsonStdin(chunks(Buffer.from("{}")), {maxBytes:1}), /input exceeds/u);
 });
 
+test("original JSON source entrance refuses duplicate claims before every producing command", async () => {
+  const duplicate = '{"requirement":"retain source","requirement":"discard source"}';
+  assert.equal(JSON.parse(duplicate).requirement,'discard source',
+    'negative control: ordinary JSON parsing drops the first source instruction');
+  await assert.rejects(readSourceJsonStdin(chunks(Buffer.from(duplicate))),
+    {code:'duplicate-key'});
+  for (const name of [
+    'derive-specification.mjs','render-specification.mjs',
+    'render-specification-rfcxml.mjs','render-architecture-description.mjs',
+  ]) {
+    const command=fileURLToPath(new URL('../scripts/'+name,import.meta.url));
+    const result=spawnSync(process.execPath,[command],{
+      input:duplicate,encoding:'utf8',timeout:15_000,maxBuffer:2*1024*1024,
+    });
+    assert.equal(result.status,1,name+' '+result.stderr);
+    assert.equal(result.stdout,'',name+' emitted a partial product before JSON admission');
+    assert.match(result.stderr,/duplicate-key/u,name+' must expose the first failed source boundary');
+  }
+});
+
+test("escaped Unicode surrogate refuses before source semantics or output", async () => {
+  const escaped = '{"claim":"\\\\ud800"}';
+  assert.equal(JSON.parse(escaped).claim.isWellFormed(),false,
+    'negative control: escaped surrogates survive the raw UTF-8 byte gate');
+  await assert.rejects(readSourceJsonStdin(chunks(Buffer.from(escaped))),
+    {code:'unicode-scalar'});
+});
+
 test("all four actual original producer CLIs reject oversized byte input without partial product", () => {
   const names = [
     "derive-specification.mjs",
