@@ -1,0 +1,9 @@
+{
+  "kind": "ReceivingOfRootWholeJobQualificationDecision",
+  "recordedBy": "agent /root/koios_release_finish",
+  "sourceSpeaker": "agent /root",
+  "sourceTransport": "collaboration message delivered to this allocated lane",
+  "verbatim": "CLEARED for ONE FIRST whole-job qualification of exact reviewed profile2a749311c711c8ce55885a815c117cfc32107669 / plan cb8118c39f342f2067d5568d48e266588ad4c2e6d788e166ed1ee88bcae8aa82 / request71834 / manifest5d7499 / nativePlan3b64 unchanged. First one serial File8 preparation projects only missing exact inputs+plan and original independent/root receiving; retain native plan by reference. Receive that preparer terminal before invoking EXACT reviewed outerargv once. Use one record-directory variable for stdout/stderr. No auxiliary CRG Node/metadata/provider/closure jobs during gate/model; only original handle stream, then exact delivery receiving in held slot. Record actual preflight ancestor/host/caps/controller+child domain, terminal/signal/OOM and original CDE checks. Gate refusal, OOM or unknown effect grants no retry or profile increase. This clears only this qualification, no Code/runtime/allocator acceptance. All other lanes held.",
+  "governingOfficeOrRuntimeIncumbencyInferred": false,
+  "oneQualificationOnly": true
+}

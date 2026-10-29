@@ -1,0 +1,87 @@
+{
+  "kind": "IndependentWholeJobOperatorProfileSourceReceiving",
+  "version": 1,
+  "reviewedBy": "agent /root/publisher_delivery",
+  "allocation": "Root-assigned bounded engineering-assurance receiving; no office incumbency or source/runtime authority inferred",
+  "at": "2026-10-29T02:32:55.741Z",
+  "source": {
+    "repository": "red-cup-engineering/specification-engineering-services-section",
+    "commit": "2a749311c711c8ce55885a815c117cfc32107669",
+    "path": "data/records/service-records/engineering-generation-records/engineering-design-whole-job-operator-profile.json",
+    "sha256": "7858608fe9e0dea0fb0be29756254f3000540e89471a1296787be419689cc861",
+    "bytes": 45497
+  },
+  "nativeSourceReceiving": {
+    "at": "2026-10-29T02:32:55.741Z",
+    "host": "bare-cedar-fog",
+    "node": "v24.18.0",
+    "profile": {
+      "sha256": "7858608fe9e0dea0fb0be29756254f3000540e89471a1296787be419689cc861",
+      "bytes": 45497
+    },
+    "nativePlan": {
+      "sha256": "cb8118c39f342f2067d5568d48e266588ad4c2e6d788e166ed1ee88bcae8aa82",
+      "bytes": 19298,
+      "validated": true
+    },
+    "manifest": {
+      "sha256": "5d7499f802cce730ae0ea0326c10bc44219792828a00b00cfb5a5d24ebcc8785",
+      "bytes": 4687
+    },
+    "shellSyntax": {
+      "code": 0,
+      "stderr": ""
+    },
+    "nodeSyntax": {
+      "code": 0,
+      "stderr": ""
+    },
+    "cdeCLIHash": "7524c8b5c3c8acee093e9bb63f6a0139b5985677868411bb951e69f65973eec0",
+    "cdeStorageHash": "2a02e68e6f74be384e51cebca4e3e812beabd968a649e0e3e06c13f106cd399a",
+    "crgEffects": false
+  },
+  "sourceFindings": [
+    {
+      "subject": "Original controller/source",
+      "finding": "Complete original CLI and storage source bytes independently read on BCF match the installed-source hashes in the proposal. Controller uses ordinary direct spawn with inherited stdio/cgroup and forwarding of TERM/INT; original storage/backing/destination pre/post receiving remains intact."
+    },
+    {
+      "subject": "One whole-job domain",
+      "finding": "The sole outer systemd scope encloses the POSIX preflight, exec-preserved CDE controller at48MiB heap and direct64MiB model client. Stage argv contains only Node, not an inner systemd-run/sibling scope. Before model intent the child verifies admitted cgroup, actual parent PID, controller cgroup and kernel memory/swap/pids/CPU values."
+    },
+    {
+      "subject": "Host/ancestor metrics",
+      "finding": "Host MemAvailable floor remains262144KiB and receives no credit from charged cgroup.current. Own scope receives only its134217728byte job cap. Finite proper ancestors require limit-current >= remainingJob+134217728 for both memory.max and memory.high, using fresh own current then ancestor current in the same metric. Native literal max is distinct from missing/malformed; only the explicit true-root interface exception uses host capacity. No generic reservation is claimed."
+    },
+    {
+      "subject": "Tasks32 provenance",
+      "finding": "Original e1cddcb2 profile is byte-pinned before Node, and its exact selected original stage argv must contain the -p/TasksMax=32 pair before model intent. New outer kernel pids.max must actually be32. This is an explicitly supplied original bound, not a new hardcoded policy claim."
+    },
+    {
+      "subject": "Input custody gap closed",
+      "finding": "Revision3 pins exact4,687byte manifest SHA5d7499f802cce730ae0ea0326c10bc44219792828a00b00cfb5a5d24ebcc8785 before JSON parsing or consuming sourceCut/nativePlan/independent-review/native-contract pointers. Native plan3b64 and request71834 remain unchanged. Lifecycle.custody remains honestly descriptive."
+    },
+    {
+      "subject": "Effect ordering",
+      "finding": "Outer limits, exact source/prior-profile hashes, mount/hierarchy readings, ancestor capacity and fixed host floor precede every Node. Original CDE plan hash/storage admission precedes direct child. Child domain/source/original-negative-feedback/request/schema/manifest guards precede credentials/market composition; an original one-attempt intent precedes market.chat. Existing intents forbid replay."
+    },
+    {
+      "subject": "Compact receiving",
+      "finding": "Unchanged raw text is retained once before metadata projection. Coordinates are finite primitive IDs; configuration.model remains separate; resource projections are bounded exact dimensions. No recursive lot.delivery, candidate, providerEvidence, request or exchange tree is copied. Delivered text whose metadata refuses retains the provider-effect distinction."
+    },
+    {
+      "subject": "Qualification scope",
+      "finding": "Static/native-source acceptance only for ONE first original whole-job qualification of this exact Design-profile HLD request. Actual host/ancestor admission, controller-child domain, whole-domain terminal/OOM/signal, unchanged original CIE/account/ledger and native HLD plus independent semantic receiving remain owed. This does not qualify generic CDE174, Code, migration, public correction, deployment or twenty new daily articles."
+    }
+  ],
+  "disposition": "accepted-for-one-original-whole-job-qualification",
+  "executionPlan": {
+    "sha256": "cb8118c39f342f2067d5568d48e266588ad4c2e6d788e166ed1ee88bcae8aa82",
+    "bytes": 19298,
+    "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/records/design-source-profile-generation-records/48f6ed16/high-level-v2-whole-job/cb8118c39f342f2067d5568d48e266588ad4c2e6d788e166ed1ee88bcae8aa82/plan.json"
+  },
+  "requestSHA256": "71834b3b8c972e9ffeb1ad3a39759b0766f5c068cdf799ffda5c59d030e79c3d",
+  "nativeDesignPlanSHA256": "3b64fb59a356a4d4f843169fbe7931703e8f795d32faf37f8ab34efb809e8ad1",
+  "CRGReadOrEffectPerformed": false,
+  "modelOrCIEEffectClearedByThisReview": false
+}

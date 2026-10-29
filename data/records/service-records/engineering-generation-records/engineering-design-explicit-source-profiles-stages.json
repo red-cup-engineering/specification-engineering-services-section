@@ -132,5 +132,171 @@
   "normativeImplementationWritten": false,
   "packageEditionCreated": false,
   "productionActivated": false,
-  "twentyNewArticlesPerDayReceived": false
+  "twentyNewArticlesPerDayReceived": false,
+  "completedHighLevel": {
+    "kind": "actual-original-source-bound-high-level-generation",
+    "sourceProposal": {
+      "commit": "2a749311c711c8ce55885a815c117cfc32107669",
+      "sha256": "7858608fe9e0dea0fb0be29756254f3000540e89471a1296787be419689cc861"
+    },
+    "requestSHA256": "71834b3b8c972e9ffeb1ad3a39759b0766f5c068cdf799ffda5c59d030e79c3d",
+    "requestBytes": 344256,
+    "inputManifestSHA256": "5d7499f802cce730ae0ea0326c10bc44219792828a00b00cfb5a5d24ebcc8785",
+    "originalNativePlanSHA256": "3b64fb59a356a4d4f843169fbe7931703e8f795d32faf37f8ab34efb809e8ad1",
+    "originalNativePlanReusedByReference": true,
+    "executionPlanSHA256": "cb8118c39f342f2067d5568d48e266588ad4c2e6d788e166ed1ee88bcae8aa82",
+    "actualProviderReceiving": {
+      "kind": "engineering-design.source-profile-high-level-delivery/v1",
+      "at": "2026-10-29T02:43:05.415Z",
+      "state": "provider-delivered-unreceived",
+      "requestSHA256": "71834b3b8c972e9ffeb1ad3a39759b0766f5c068cdf799ffda5c59d030e79c3d",
+      "sourceCut": {
+        "requirementRevision": "ni:///sha-256;oJBTBcQ8qRwN78ZGaPuAtLN1zTApV_geIhvgRZkrvhQ",
+        "specificationRevision": "ni:///sha-256;gujZhOB3i5vPRZ0D8XYH-ZlFi3INchXGRPcgxchQwDg",
+        "architectureRevision": "ni:///sha-256;m2Rx2rHUHqPNLo9G9SGU15N5Psc_jJppov4oH0SJsQU",
+        "architecturePath": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/records/design-source-profile-generation-records/48f6ed16/architecture-v1-native-receiving/architecture.candidate.json",
+        "architectureSHA256": "91708bf4a7bdb80f58902ddf6b6c8163dffdab663b2900318cee9c2871a69837"
+      },
+      "lot": {
+        "workLot": "urn:work-lot:inference:qO1uD-T_8hHUjjf4QUhrkVrUKaQkaAVJoACBT1iAanM",
+        "provider": "urn:ame:nvidia-inference-team",
+        "taskClass": "code-fabrication",
+        "selectedOffer": "urn:offer:direct-endpoint:urn:ame:nvidia-inference-team:2fUXmpnthgNbciM9wayHgJGw1vwg7JkTMjaUeQmU24g:code-fabrication",
+        "receipt": "ni:///sha-256;9r3IvwuzyRy0qoizEHl12JyHkEwSp34DMbk3Zl5yVvk",
+        "receiver": "actor:WWOM5azg-fTrn1Id0YVbz5AhppbnFny_W5Xl-rKgSs4",
+        "model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+        "configurationIdentity": "ni:///sha-256;2fUXmpnthgNbciM9wayHgJGw1vwg7JkTMjaUeQmU24g"
+      },
+      "deliveryMetadata": {
+        "configurationModel": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "nativeOutcome": "candidate-pending-codex-acceptance",
+        "durationMs": 175133,
+        "resources": [
+          {
+            "resource": "requests",
+            "unit": "request",
+            "amount": {
+              "numerator": "1",
+              "denominator": "1"
+            }
+          },
+          {
+            "resource": "input-tokens",
+            "unit": "token",
+            "amount": {
+              "numerator": "83929",
+              "denominator": "1"
+            }
+          },
+          {
+            "resource": "output-tokens",
+            "unit": "token",
+            "amount": {
+              "numerator": "12217",
+              "denominator": "1"
+            }
+          },
+          {
+            "resource": "total-tokens",
+            "unit": "token",
+            "amount": {
+              "numerator": "96146",
+              "denominator": "1"
+            }
+          },
+          {
+            "resource": "cached-input-tokens",
+            "unit": "token",
+            "amount": {
+              "numerator": "82384",
+              "denominator": "1"
+            }
+          },
+          {
+            "resource": "reasoning-output-tokens",
+            "unit": "token",
+            "amount": {
+              "numerator": "9860",
+              "denominator": "1"
+            }
+          },
+          {
+            "resource": "duration",
+            "unit": "millisecond",
+            "amount": {
+              "numerator": "175133",
+              "denominator": "1"
+            }
+          }
+        ],
+        "resourceProjectionComplete": true,
+        "unselectedResourceCount": 0,
+        "originalCieJournalOwnsFullDelivery": true,
+        "providerEvidenceOrRequestTreeCopied": false
+      },
+      "highLevelDesignGenerated": false,
+      "independentSemanticReceiving": false,
+      "codeWritten": false
+    },
+    "rawDelivery": {
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/design-source-profile-generation-state/48f6ed16/high-level-v2-whole-job/receiving/review-delivery.txt",
+      "sha256": "56896b32f35a3be0705cfb1e013f68a4753e5b3f579f8474da8d2ea0298f5f9e",
+      "bytes": 10286,
+      "rawTextCopiedIntoThisRecord": false
+    },
+    "nativeReceiving": {
+      "path": "data/records/service-records/engineering-generation-records/engineering-design-explicit-source-profiles-high-level-native-receiving.json",
+      "sha256": "34d76aeb71f5a57aeefc4058099b24b8917b475a16cebe8a979e58541e969819",
+      "schemaValid": true,
+      "components": 7,
+      "traceRows": 13,
+      "originalOperation": "receiveEngineeringDesign"
+    },
+    "candidate": {
+      "path": "data/records/service-records/high-level-design-service-records/engineering-design-explicit-source-profiles.json",
+      "sha256": "bbde1ea9d7484ac99cfbd0061c1b69123bda2381087b93715d04651a4c913c69",
+      "bytes": 67776,
+      "admitted": false,
+      "proof": "unreceived"
+    },
+    "resourceQualification": {
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/records/design-source-profile-generation-records/48f6ed16/high-level-v2-whole-job-resource-receiving/received.json",
+      "sha256": "9604b683935f6642e44adf7442027a1ca2f12110b72e1b111797c5b4a80536f3",
+      "controllerAndDirectChildSameDomain": true,
+      "controllerPid": 2823860,
+      "modelClientPid": 2824073,
+      "memoryMaxBytes": 134217728,
+      "memorySwapMaxBytes": 0,
+      "cpuQuotaPercent": 25,
+      "tasksMax": 32,
+      "controllerHeapMiB": 48,
+      "clientHeapMiB": 64,
+      "preAnyNodeAvailableKiB": 389508,
+      "requiredHostKiB": 262144,
+      "properAncestorsRead": 4,
+      "properAncestorMaxAndHigh": "all explicitly native max",
+      "beforeAndAfterNativeCdeStorageAdmitted": true,
+      "outerExitCode": 0,
+      "childCommandCode": 0,
+      "signal": null,
+      "scopeManagerResult": "success",
+      "scopeManagerState": "inactive/dead",
+      "kernelMemoryPeakBytes": null,
+      "kernelOomCounters": null,
+      "unavailableReason": "Successful transient scope/cgroup was already collected at receiving; no counter values invented.",
+      "finiteAncestorRefusalOperationallyExercised": false,
+      "genericCde174ImplementationReceived": false
+    },
+    "independentResourceProfileReceiving": {
+      "path": "data/records/service-records/engineering-generation-records/engineering-design-whole-job-profile-independent-receiving.json",
+      "sha256": "35473402ec664ade9bc7b4fb7131acfb7fb76d197111331537f9a7f4ccaf5e1e",
+      "bytes": 5865,
+      "qualificationOnly": true
+    },
+    "rootDecisionSource": "data/records/service-records/engineering-generation-records/engineering-design-whole-job-root-decision-source.json",
+    "independentHldSemanticReceiving": false,
+    "supplierOutcomeRecorded": false,
+    "normativeCodeGenerated": false,
+    "productionActivated": false
+  }
 }
