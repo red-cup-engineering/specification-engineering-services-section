@@ -9,6 +9,7 @@ import {
   receiveEngineeringDesign,
   readEngineeringCodeWork,
 } from '@red-cup-engineering/specification-engineering-services-section/engineering-design';
+import { indexJavaScriptModuleBindings } from '@red-cup-engineering/specification-engineering-services-section/javascript-module-bindings';
 import { sourcesFixture, clausesSplitAcrossModels } from './engineering-design-source-cut.fixture.mjs';
 
 // The installed package's four original source producers must share STRICT
@@ -27,6 +28,25 @@ for (const name of [
   assert.equal(result.stdout,'',name+' emitted a partial product from ambiguous source');
   assert.match(result.stderr,/duplicate-key/u,name+' did not use the shared JSON source admission');
 }
+
+// Resolve original semantic ESM bindings through the exact installed package
+// export. No module under analysis is imported or executed.
+const runtimeBindings=indexJavaScriptModuleBindings([
+  {owner:'fixture-only',path:'src/leaf.mjs',text:'export const original=1;'},
+  {owner:'fixture-only',path:'src/forward.mjs',
+    text:'export {original as publicName} from "./leaf.mjs";'},
+],{maxBytes:2_097_152,maxModules:64});
+const reading=runtimeBindings.inspect({
+  owner:'fixture-only',path:'src/forward.mjs',exportName:'publicName',
+});
+assert.equal(reading.status,'observed');
+assert.deepEqual(reading.resolved,{
+  owner:'fixture-only',path:'src/leaf.mjs',binding:'original',
+});
+assert.equal(runtimeBindings.inspect({
+  owner:'fixture-only',path:'src/forward.mjs',exportName:'absent',
+}).status,'absent');
+assert.throws(()=>indexJavaScriptModuleBindings([],{}),RangeError);
 
 const original = sourcesFixture();
 const plan = planEngineeringDesign({ stage: 'high-level', sources: original });
