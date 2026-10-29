@@ -79,15 +79,24 @@ Each projected Code-work target now carries `originalComponentOwner` copied
 from the **source-verified HLD**. The original Design still owns that
 attribution; this reader does not infer, appoint or authenticate an Office.
 
-For multiple owners, provide exact source views as
-`{owner, path, text, expectedSha256}`. Their key is the pair of original
-HLD owner and relative module path, never the path alone. A legacy source
-view `{path, text, expectedSha256}` is accepted only when that path
-has **exactly one original owner** in the current LLD. Two different
-original owners claiming the same path require separate owner-qualified
-views and separate SHA-256 identities; a foreign or duplicate owner/path
-refuses before constructing Code-work readout. The total supplied source
-view remains capped at 2 MiB.
+Every source view **must** name its original owner:
+`{owner, path, text, expectedSha256}`. Its key is the pair of original
+HLD owner and relative source path, never the path alone. Even a single
+observed owner does **not** authorize an ownerless `{path, text,
+expectedSha256}` view: a later source revision can add another owner
+without granting authority to a former path-only claimant. Distinct
+original owners with the same path retain separate SHA-256 source views;
+foreign, duplicate, unqualified or ownerless views refuse before Code-work
+projection. The total supplied source view remains capped at 2 MiB.
+
+`designCarrierId` is computed by the existing Data
+`semanticIdOf('metroplat.artifact')` provider over the complete,
+source-received design candidate. It is stable under irrelevant JavaScript
+object-property ordering and changes with a genuine normative Design
+revision. It is **not** the raw-byte SHA-256 of the provider's delivery,
+nor a signed or independently accepted proof; the original byte-exact
+source hashes are retained in `sourceCut` and the original delivery
+remains independently required.
 
 The source digest only establishes equality with the supplied custodian
 address. Neither an HLD owner string nor a hash comparison authenticates
