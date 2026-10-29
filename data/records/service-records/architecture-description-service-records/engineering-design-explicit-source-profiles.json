@@ -1,0 +1,653 @@
+{
+  "type": "ArchitectureDescriptionCandidate",
+  "version": 1,
+  "identity": {
+    "id": "engineering-design-explicit-source-profiles-review",
+    "title": "Explicit source-language and artifact profiles architecture review",
+    "owner": "red-cup-engineering/specification-engineering-services-section",
+    "revision": "ni:///sha-256;m2Rx2rHUHqPNLo9G9SGU15N5Psc_jJppov4oH0SJsQU",
+    "status": "candidate"
+  },
+  "standard": {
+    "designation": "ISO/IEC/IEEE 42010",
+    "edition": "2022",
+    "applicability": "Governs the source-bound Engineering Design provider's explicit source-language/artifact profile contract across HLD/LLD/Code Work for JavaScript and native Scheme CDE source roles.",
+    "conformance": "unassessed"
+  },
+  "system": {
+    "name": "Specification Engineering source-profile Design review",
+    "description": "ISO/IEC/IEEE 42010:2022-informed candidate architecture review of the Engineering Design explicit source-profile requirement cells and Specification clauses.",
+    "sourceIds": [
+      "req",
+      "spec",
+      "design-engine",
+      "architecture-engine",
+      "owner-manifest",
+      "owner-documentation",
+      "architecture-schema",
+      "plan-input-schema",
+      "plan-output-schema",
+      "receive-input-schema",
+      "receive-output-schema",
+      "original-source-fixture",
+      "native-source-cut-assays",
+      "packed-consumer",
+      "fabrication-operation",
+      "fabrication-derivation",
+      "fabrication-semantics",
+      "fabrication-input-schema",
+      "fabrication-output-schema"
+    ]
+  },
+  "upstream": {
+    "requirementsSourceId": "req",
+    "specificationSourceId": "spec"
+  },
+  "sources": [
+    {
+      "id": "req",
+      "locator": "ni:///sha-256;oJBTBcQ8qRwN78ZGaPuAtLN1zTApV_geIhvgRZkrvhQ",
+      "revision": "ni:///sha-256;oJBTBcQ8qRwN78ZGaPuAtLN1zTApV_geIhvgRZkrvhQ"
+    },
+    {
+      "id": "spec",
+      "locator": "ni:///sha-256;gujZhOB3i5vPRZ0D8XYH-ZlFi3INchXGRPcgxchQwDg",
+      "revision": "ni:///sha-256;gujZhOB3i5vPRZ0D8XYH-ZlFi3INchXGRPcgxchQwDg"
+    },
+    {
+      "id": "design-engine",
+      "locator": "https://github.com/red-cup-engineering/specification-engineering-services-section/blob/db52af5115ce9cc12e027d3ec23c42fe5a2a1aa2/src/engineering-design.mjs",
+      "revision": "db52af5115ce9cc12e027d3ec23c42fe5a2a1aa2"
+    },
+    {
+      "id": "architecture-engine",
+      "locator": "https://github.com/red-cup-engineering/specification-engineering-services-section/blob/db52af5115ce9cc12e027d3ec23c42fe5a2a1aa2/src/architecture-description.mjs",
+      "revision": "db52af5115ce9cc12e027d3ec23c42fe5a2a1aa2"
+    },
+    {
+      "id": "owner-manifest",
+      "locator": "https://github.com/red-cup-engineering/specification-engineering-services-section/blob/db52af5115ce9cc12e027d3ec23c42fe5a2a1aa2/package.json",
+      "revision": "db52af5115ce9cc12e027d3ec23c42fe5a2a1aa2"
+    },
+    {
+      "id": "owner-documentation",
+      "locator": "https://github.com/red-cup-engineering/specification-engineering-services-section/blob/db52af5115ce9cc12e027d3ec23c42fe5a2a1aa2/README.md",
+      "revision": "db52af5115ce9cc12e027d3ec23c42fe5a2a1aa2"
+    },
+    {
+      "id": "architecture-schema",
+      "locator": "https://github.com/red-cup-engineering/specification-engineering-services-section/blob/db52af5115ce9cc12e027d3ec23c42fe5a2a1aa2/data/records/schema/architecture-description.schema.json",
+      "revision": "db52af5115ce9cc12e027d3ec23c42fe5a2a1aa2"
+    },
+    {
+      "id": "plan-input-schema",
+      "locator": "https://github.com/red-cup-engineering/specification-engineering-services-section/blob/db52af5115ce9cc12e027d3ec23c42fe5a2a1aa2/data/records/schema/plan-engineering-design.input.schema.json",
+      "revision": "db52af5115ce9cc12e027d3ec23c42fe5a2a1aa2"
+    },
+    {
+      "id": "plan-output-schema",
+      "locator": "https://github.com/red-cup-engineering/specification-engineering-services-section/blob/db52af5115ce9cc12e027d3ec23c42fe5a2a1aa2/data/records/schema/plan-engineering-design.output.schema.json",
+      "revision": "db52af5115ce9cc12e027d3ec23c42fe5a2a1aa2"
+    },
+    {
+      "id": "receive-input-schema",
+      "locator": "https://github.com/red-cup-engineering/specification-engineering-services-section/blob/db52af5115ce9cc12e027d3ec23c42fe5a2a1aa2/data/records/schema/receive-engineering-design.input.schema.json",
+      "revision": "db52af5115ce9cc12e027d3ec23c42fe5a2a1aa2"
+    },
+    {
+      "id": "receive-output-schema",
+      "locator": "https://github.com/red-cup-engineering/specification-engineering-services-section/blob/db52af5115ce9cc12e027d3ec23c42fe5a2a1aa2/data/records/schema/receive-engineering-design.output.schema.json",
+      "revision": "db52af5115ce9cc12e027d3ec23c42fe5a2a1aa2"
+    },
+    {
+      "id": "original-source-fixture",
+      "locator": "https://github.com/red-cup-engineering/specification-engineering-services-section/blob/db52af5115ce9cc12e027d3ec23c42fe5a2a1aa2/test/engineering-design-source-cut.fixture.mjs",
+      "revision": "db52af5115ce9cc12e027d3ec23c42fe5a2a1aa2"
+    },
+    {
+      "id": "native-source-cut-assays",
+      "locator": "https://github.com/red-cup-engineering/specification-engineering-services-section/blob/db52af5115ce9cc12e027d3ec23c42fe5a2a1aa2/test/engineering-design-source-cut.test.mjs",
+      "revision": "db52af5115ce9cc12e027d3ec23c42fe5a2a1aa2"
+    },
+    {
+      "id": "packed-consumer",
+      "locator": "https://github.com/red-cup-engineering/specification-engineering-services-section/blob/db52af5115ce9cc12e027d3ec23c42fe5a2a1aa2/test/engineering-design-packed-consumer.mjs",
+      "revision": "db52af5115ce9cc12e027d3ec23c42fe5a2a1aa2"
+    },
+    {
+      "id": "fabrication-operation",
+      "locator": "https://github.com/red-cup-engineering/computer-systems-fabrication-engineering-services-section/blob/adf33698574d02bef8d744d0c13b9b0b1dc66f8c/src/fabrication/operations.mjs",
+      "revision": "adf33698574d02bef8d744d0c13b9b0b1dc66f8c"
+    },
+    {
+      "id": "fabrication-derivation",
+      "locator": "https://github.com/red-cup-engineering/computer-systems-fabrication-engineering-services-section/blob/adf33698574d02bef8d744d0c13b9b0b1dc66f8c/src/fabrication/source-transformation.mjs",
+      "revision": "adf33698574d02bef8d744d0c13b9b0b1dc66f8c"
+    },
+    {
+      "id": "fabrication-semantics",
+      "locator": "https://github.com/red-cup-engineering/computer-systems-fabrication-engineering-services-section/blob/adf33698574d02bef8d744d0c13b9b0b1dc66f8c/src/fabrication/source-transformation-semantics.mjs",
+      "revision": "adf33698574d02bef8d744d0c13b9b0b1dc66f8c"
+    },
+    {
+      "id": "fabrication-input-schema",
+      "locator": "https://github.com/red-cup-engineering/computer-systems-fabrication-engineering-services-section/blob/adf33698574d02bef8d744d0c13b9b0b1dc66f8c/data/records/schema/prepare-source-transformation-request.input.schema.json",
+      "revision": "adf33698574d02bef8d744d0c13b9b0b1dc66f8c"
+    },
+    {
+      "id": "fabrication-output-schema",
+      "locator": "https://github.com/red-cup-engineering/computer-systems-fabrication-engineering-services-section/blob/adf33698574d02bef8d744d0c13b9b0b1dc66f8c/data/records/schema/receive-source-transformation-delivery.output.schema.json",
+      "revision": "adf33698574d02bef8d744d0c13b9b0b1dc66f8c"
+    }
+  ],
+  "stakeholders": [
+    {
+      "id": "red-cup-engineering",
+      "name": "Red Cup Engineering Specification Engineering Services Section",
+      "concernIds": [
+        "original-owner",
+        "explicit-profile",
+        "data-policy",
+        "general-names",
+        "profile-source-binding",
+        "preserve-original-cut",
+        "preserve-traces",
+        "source-owner-custody",
+        "candidate-limits",
+        "original-fabrication",
+        "whole-family-cutover",
+        "native-receiving",
+        "source-and-operation-evidence"
+      ]
+    }
+  ],
+  "concerns": [
+    {
+      "id": "original-owner",
+      "statement": "The existing ./engineering-design provider is the single general source-bound Design engine; planEngineeringDesign, receiveEngineeringDesign and readEngineeringCodeWork are completed in place with no parallel Scheme designer, JS wrapper, copied provider or second package.",
+      "sourceIds": [
+        "req",
+        "spec",
+        "design-engine",
+        "architecture-engine"
+      ],
+      "requirementCellIds": [
+        "engineering-design-accepts-explicit-source-profiles:original-owner"
+      ],
+      "specificationClauseIds": [
+        "original-owner"
+      ]
+    },
+    {
+      "id": "explicit-profile",
+      "statement": "Every Design plan, receiving request and Code Work readout selects one explicit source-language/artifact profile as a checked parameter; missing, malformed, ambiguous or changed profiles refuse before inference or projection, with no implicit JavaScript profile or compatibility shim.",
+      "sourceIds": [
+        "req",
+        "spec",
+        "design-engine",
+        "architecture-engine"
+      ],
+      "requirementCellIds": [
+        "engineering-design-accepts-explicit-source-profiles:explicit-profile"
+      ],
+      "specificationClauseIds": [
+        "explicit-profile"
+      ]
+    },
+    {
+      "id": "data-policy",
+      "statement": "The profile carries finite literal data for source language/artifact role, normalized module path, extension, symbol spelling and resource constraints, validated at the boundary without callable parsers, executable grammars, regex programs, shell commands, dynamic imports, host paths, authority flags or effect grants.",
+      "sourceIds": [
+        "req",
+        "spec",
+        "design-engine",
+        "architecture-engine"
+      ],
+      "requirementCellIds": [
+        "engineering-design-accepts-explicit-source-profiles:data-policy"
+      ],
+      "specificationClauseIds": [
+        "data-policy"
+      ]
+    },
+    {
+      "id": "general-names",
+      "statement": "The same engine plans and receives JavaScript module/export targets and native Scheme source/symbol targets across CDE src/, scripts/ and test/ roles through explicitly supplied profiles, without silent renaming, Scheme-to-JavaScript translation or treating a profile label as proof of parser or file existence.",
+      "sourceIds": [
+        "req",
+        "spec",
+        "design-engine",
+        "architecture-engine"
+      ],
+      "requirementCellIds": [
+        "engineering-design-accepts-explicit-source-profiles:general-names"
+      ],
+      "specificationClauseIds": [
+        "general-names"
+      ]
+    },
+    {
+      "id": "profile-source-binding",
+      "statement": "The complete selected profile is bound into the source-pinned inference plan, context/output constraints, received candidate and downstream reconstruction; LLD uses exactly its original HLD profile and changed profile bodies, bounds, paths or stale plans cannot preserve old Design identity.",
+      "sourceIds": [
+        "req",
+        "spec",
+        "design-engine",
+        "architecture-engine"
+      ],
+      "requirementCellIds": [
+        "engineering-design-accepts-explicit-source-profiles:profile-source-binding"
+      ],
+      "specificationClauseIds": [
+        "profile-source-binding"
+      ]
+    },
+    {
+      "id": "preserve-original-cut",
+      "statement": "The exact Requirement, Specification, Architecture and original HLD text cuts, supplier/SEN identities, raw JSON admission semantics and retained uncertainty remain intact; identity delegates to the original admitted Data supplier on the complete parsed source and native refusals propagate.",
+      "sourceIds": [
+        "req",
+        "spec",
+        "design-engine",
+        "architecture-engine"
+      ],
+      "requirementCellIds": [
+        "engineering-design-accepts-explicit-source-profiles:preserve-original-cut"
+      ],
+      "specificationClauseIds": [
+        "preserve-original-cut"
+      ]
+    },
+    {
+      "id": "preserve-traces",
+      "statement": "Every Requirement cell retains its exact Specification clause and Architecture model witnesses through HLD allocations and LLD operations, with Data, Code, Networking and Systems dependency/port constraints, per-clause model coverage, source lineage and HLD allocation rules enforced.",
+      "sourceIds": [
+        "req",
+        "spec",
+        "design-engine",
+        "architecture-engine"
+      ],
+      "requirementCellIds": [
+        "engineering-design-accepts-explicit-source-profiles:preserve-traces"
+      ],
+      "specificationClauseIds": [
+        "preserve-traces"
+      ]
+    },
+    {
+      "id": "source-owner-custody",
+      "statement": "Code source identity is the pair of original HLD component owner and normalized relative source path; module/export collisions are owner-scoped, identical names in distinct repositories remain distinct, same owner/path/export refuses, and every Code source view names its original owner.",
+      "sourceIds": [
+        "req",
+        "spec",
+        "design-engine",
+        "architecture-engine"
+      ],
+      "requirementCellIds": [
+        "engineering-design-accepts-explicit-source-profiles:source-owner-custody"
+      ],
+      "specificationClauseIds": [
+        "source-owner-custody"
+      ]
+    },
+    {
+      "id": "candidate-limits",
+      "statement": "A structurally received candidate remains admitted:false and proof:unreceived; received profiles, source declarations, parsed proposals or passing outputs grant no source effects, native governance, Design admission, Proof, publication, production activation or customer acceptance.",
+      "sourceIds": [
+        "req",
+        "spec",
+        "design-engine",
+        "architecture-engine"
+      ],
+      "requirementCellIds": [
+        "engineering-design-accepts-explicit-source-profiles:candidate-limits"
+      ],
+      "specificationClauseIds": [
+        "candidate-limits"
+      ]
+    },
+    {
+      "id": "original-fabrication",
+      "statement": "Generated normative implementation and assays use the original house generation chain and generic Fabrication source-transformation carrier with writable snapshots, verified source views, source-independent review, development-history custody and the resumable CIE task; the input profile never chooses model, provider, account, grant, native command or acceptance authority.",
+      "sourceIds": [
+        "req",
+        "spec",
+        "design-engine",
+        "architecture-engine"
+      ],
+      "requirementCellIds": [
+        "engineering-design-accepts-explicit-source-profiles:original-fabrication"
+      ],
+      "specificationClauseIds": [
+        "original-fabrication"
+      ]
+    },
+    {
+      "id": "whole-family-cutover",
+      "statement": "The current Design source, direct callers, operation schemas, source-free work order/examples, packed-consumer tests and documentation move to the explicit-profile contract as one coherent cutover, preserving useful meanings and archiving only superseded evidence without a public version for requirement, specification or test-only candidates.",
+      "sourceIds": [
+        "req",
+        "spec",
+        "design-engine",
+        "architecture-engine"
+      ],
+      "requirementCellIds": [
+        "engineering-design-accepts-explicit-source-profiles:whole-family-cutover"
+      ],
+      "specificationClauseIds": [
+        "whole-family-cutover"
+      ]
+    },
+    {
+      "id": "native-receiving",
+      "statement": "Independent receiving covers positive JavaScript and Scheme HLD/LLD/Code Work examples, missing and malformed profiles, forged or changed profile bodies, stale cuts, invalid paths and symbol spelling, wrong or ownerless views, within-owner and cross-owner collisions, preserved clause/model/uncertainty refusals and unchanged candidate limits, with Scheme received by the qualified native Scheme parser/consumer.",
+      "sourceIds": [
+        "req",
+        "spec",
+        "design-engine",
+        "architecture-engine"
+      ],
+      "requirementCellIds": [
+        "engineering-design-accepts-explicit-source-profiles:native-receiving"
+      ],
+      "specificationClauseIds": [
+        "native-receiving"
+      ]
+    },
+    {
+      "id": "source-and-operation-evidence",
+      "statement": "Evidence binds the actual source revision, original profile/request, provider task and exact delivery, generated artifacts, independent native receiving and consuming CDE/Engineering paths; catalog labels, quota failures, memory refusals or transport success cannot stand in for a qualified Design or operating Koios outcome.",
+      "sourceIds": [
+        "req",
+        "spec",
+        "design-engine",
+        "architecture-engine"
+      ],
+      "requirementCellIds": [
+        "engineering-design-accepts-explicit-source-profiles:source-and-operation-evidence"
+      ],
+      "specificationClauseIds": [
+        "source-and-operation-evidence"
+      ]
+    }
+  ],
+  "viewpoints": [
+    {
+      "id": "source-profile-design",
+      "name": "Explicit source profile design viewpoint",
+      "concernIds": [
+        "original-owner",
+        "explicit-profile",
+        "data-policy",
+        "general-names",
+        "profile-source-binding",
+        "preserve-original-cut",
+        "preserve-traces",
+        "source-owner-custody",
+        "candidate-limits",
+        "original-fabrication",
+        "whole-family-cutover",
+        "native-receiving",
+        "source-and-operation-evidence"
+      ],
+      "modelKinds": [
+        "component"
+      ],
+      "method": "Deterministic source-cut traceability review mapping each Requirement cell to its Specification clause and Architecture component model."
+    }
+  ],
+  "views": [
+    {
+      "id": "source-profile-view",
+      "name": "Source profile design view",
+      "viewpointId": "source-profile-design",
+      "modelIds": [
+        "original-owner",
+        "explicit-profile",
+        "data-policy",
+        "general-names",
+        "profile-source-binding",
+        "preserve-original-cut",
+        "preserve-traces",
+        "source-owner-custody",
+        "candidate-limits",
+        "original-fabrication",
+        "whole-family-cutover",
+        "native-receiving",
+        "source-and-operation-evidence"
+      ],
+      "sourceIds": [
+        "req",
+        "spec",
+        "design-engine",
+        "architecture-engine"
+      ]
+    }
+  ],
+  "models": [
+    {
+      "id": "original-owner",
+      "kind": "component",
+      "content": "Single general source-bound Engineering Design provider hosting planEngineeringDesign, receiveEngineeringDesign and readEngineeringCodeWork with no parallel Scheme designer, JS wrapper, copied provider or second package.",
+      "concernIds": [
+        "original-owner"
+      ],
+      "sourceIds": [
+        "req",
+        "spec",
+        "design-engine",
+        "architecture-engine"
+      ]
+    },
+    {
+      "id": "explicit-profile",
+      "kind": "component",
+      "content": "Explicit checked source-language/artifact profile parameter on every Design plan, receiving request and Code Work readout, refusing missing, malformed, ambiguous or changed profiles before inference or projection with no implicit JavaScript fallback or shim.",
+      "concernIds": [
+        "explicit-profile"
+      ],
+      "sourceIds": [
+        "req",
+        "spec",
+        "design-engine",
+        "architecture-engine"
+      ]
+    },
+    {
+      "id": "data-policy",
+      "kind": "component",
+      "content": "Finite literal profile data for source language/artifact role, normalized module path, extension, symbol spelling and resource constraints, boundary-validated without callable parsers, executable grammars, regex programs, shell commands, dynamic imports, host paths, authority flags or effect grants.",
+      "concernIds": [
+        "data-policy"
+      ],
+      "sourceIds": [
+        "req",
+        "spec",
+        "design-engine",
+        "architecture-engine"
+      ]
+    },
+    {
+      "id": "general-names",
+      "kind": "component",
+      "content": "Shared engine for JavaScript module/export and native Scheme source/symbol targets across CDE src/, scripts/ and test/ roles through explicitly supplied profiles, without silent renaming, Scheme-to-JavaScript translation or profile-label-as-existence proof.",
+      "concernIds": [
+        "general-names"
+      ],
+      "sourceIds": [
+        "req",
+        "spec",
+        "design-engine",
+        "architecture-engine"
+      ]
+    },
+    {
+      "id": "profile-source-binding",
+      "kind": "component",
+      "content": "Complete selected profile bound into source-pinned inference plan, context/output constraints, received candidate and downstream reconstruction; LLD uses exactly its original HLD profile and rejects changed bodies, bounds, paths or stale plans under the same Design identity.",
+      "concernIds": [
+        "profile-source-binding"
+      ],
+      "sourceIds": [
+        "req",
+        "spec",
+        "design-engine",
+        "architecture-engine"
+      ]
+    },
+    {
+      "id": "preserve-original-cut",
+      "kind": "component",
+      "content": "Exact Requirement, Specification, Architecture and original HLD text cuts preserved with supplier/SEN identities, raw JSON admission semantics and retained uncertainty; identity delegates to the original admitted Data supplier on the complete parsed source and native refusals propagate.",
+      "concernIds": [
+        "preserve-original-cut"
+      ],
+      "sourceIds": [
+        "req",
+        "spec",
+        "design-engine",
+        "architecture-engine"
+      ]
+    },
+    {
+      "id": "preserve-traces",
+      "kind": "component",
+      "content": "Requirement-cell to Specification-clause to Architecture-model witnesses retained through HLD component allocations and LLD operations, enforcing Data, Code, Networking and Systems dependency/port constraints, per-clause model coverage, source lineage and HLD allocation rules.",
+      "concernIds": [
+        "preserve-traces"
+      ],
+      "sourceIds": [
+        "req",
+        "spec",
+        "design-engine",
+        "architecture-engine"
+      ]
+    },
+    {
+      "id": "source-owner-custody",
+      "kind": "component",
+      "content": "Code source identity as original HLD component owner plus normalized relative source path; owner-scoped module/export collisions, distinct identical names across repositories, refusal on same owner/path/export, and original-owner naming on every Code source view.",
+      "concernIds": [
+        "source-owner-custody"
+      ],
+      "sourceIds": [
+        "req",
+        "spec",
+        "design-engine",
+        "architecture-engine"
+      ]
+    },
+    {
+      "id": "candidate-limits",
+      "kind": "component",
+      "content": "Structurally received candidate remains admitted:false and proof:unreceived; received profiles, source declarations, parsed proposals or passing outputs grant no source effects, native governance, Design admission, Proof, publication, production activation or customer acceptance.",
+      "concernIds": [
+        "candidate-limits"
+      ],
+      "sourceIds": [
+        "req",
+        "spec",
+        "design-engine",
+        "architecture-engine"
+      ]
+    },
+    {
+      "id": "original-fabrication",
+      "kind": "component",
+      "content": "Generated normative implementation and assays use the original house generation chain and generic Fabrication source-transformation carrier with writable snapshots, verified source views, source-independent review, development-history custody and the resumable CIE task; input profile never chooses model, provider, account, grant, native command or acceptance authority.",
+      "concernIds": [
+        "original-fabrication"
+      ],
+      "sourceIds": [
+        "req",
+        "spec",
+        "design-engine",
+        "architecture-engine"
+      ]
+    },
+    {
+      "id": "whole-family-cutover",
+      "kind": "component",
+      "content": "One coherent cutover moving current Design source, direct callers, operation schemas, source-free work order/examples, packed-consumer tests and documentation to the explicit-profile contract, preserving useful meanings and archiving only superseded evidence without a public version for requirement, specification or test-only candidates.",
+      "concernIds": [
+        "whole-family-cutover"
+      ],
+      "sourceIds": [
+        "req",
+        "spec",
+        "design-engine",
+        "architecture-engine"
+      ]
+    },
+    {
+      "id": "native-receiving",
+      "kind": "component",
+      "content": "Independent receiving of positive JavaScript and Scheme HLD/LLD/Code Work examples, missing and malformed profiles, forged or changed profile bodies, stale cuts, invalid paths and symbol spelling, wrong or ownerless views, within-owner and cross-owner collisions, preserved clause/model/uncertainty refusals and unchanged candidate limits, with Scheme received by the qualified native Scheme parser/consumer.",
+      "concernIds": [
+        "native-receiving"
+      ],
+      "sourceIds": [
+        "req",
+        "spec",
+        "design-engine",
+        "architecture-engine"
+      ]
+    },
+    {
+      "id": "source-and-operation-evidence",
+      "kind": "component",
+      "content": "Evidence binding actual source revision, original profile/request, provider task and exact delivery, generated artifacts, independent native receiving and consuming CDE/Engineering paths; catalog labels, quota failures, memory refusals or transport success cannot substitute for a qualified Design or operating Koios outcome.",
+      "concernIds": [
+        "source-and-operation-evidence"
+      ],
+      "sourceIds": [
+        "req",
+        "spec",
+        "design-engine",
+        "architecture-engine"
+      ]
+    }
+  ],
+  "correspondences": [],
+  "decisions": [
+    {
+      "id": "explicit-profile-decision",
+      "statement": "Use one general source-bound Engineering Design engine with explicit checked source-language/artifact profiles at every HLD/LLD/Code Work boundary.",
+      "rationale": "Requirement cells original-owner through source-and-operation-evidence mandate explicit profiles with no implicit JavaScript fallback and native Scheme receiving.",
+      "alternatives": [
+        "parallel Scheme designer",
+        "JS wrapper around Scheme",
+        "implicit JavaScript profile",
+        "callable parser or executable grammar in profile"
+      ],
+      "concernIds": [
+        "original-owner",
+        "explicit-profile",
+        "data-policy",
+        "general-names",
+        "profile-source-binding",
+        "preserve-original-cut",
+        "preserve-traces",
+        "source-owner-custody",
+        "candidate-limits",
+        "original-fabrication",
+        "whole-family-cutover",
+        "native-receiving",
+        "source-and-operation-evidence"
+      ],
+      "sourceIds": [
+        "design-engine",
+        "architecture-engine",
+        "owner-manifest",
+        "owner-documentation"
+      ]
+    }
+  ],
+  "openQuestions": [
+    {
+      "id": "independent-admission",
+      "question": "Has the original source Requirement and each BCP 14 interpretation been independently admitted?",
+      "blockedBy": "An original competent Office and external reviewer; no approval is inferred from this record"
+    }
+  ]
+}
