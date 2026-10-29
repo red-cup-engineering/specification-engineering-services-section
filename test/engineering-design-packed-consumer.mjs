@@ -136,6 +136,50 @@ assert.equal(low.type, 'EngineeringDesignCandidate');
 assert.equal(low.admitted, false);
 assert.equal(low.proof, 'unreceived');
 
+// The distinct, independently installed npm consumer must exercise the
+// shared strict JSON reader INSIDE both original Design interface schemas.
+// The provider's raw outer JSON remains valid; only the nested, normative
+// Code schema is ambiguous. Never silently project a last-key-wins contract.
+for (const nested of [
+  '{"type":"object","required":["keep"],"required":[]}',
+  '{"type":"object","properties":{"x":{"type":"string"},"x":{"type":"null"}}}',
+  '{"type":"object","required":["keep"],"\\u0072equired":[]}',
+  '{"description":"\\ud800"}',
+]) {
+  assert.doesNotThrow(()=>JSON.parse(nested),
+    'negative control: ordinary JSON.parse does not preserve normative source');
+  for (const interfaceKey of ['inputSchemaJson','outputSchemaJson']) {
+    const ambiguousInterface=structuredClone(low.design);
+    ambiguousInterface.operations[0][interfaceKey]=nested;
+    assert.deepEqual(receiveEngineeringDesign({
+      stage:'low-level',sources:lowSources,plan:lowPlan,
+      deliveryText:JSON.stringify(ambiguousInterface),
+    }),{type:'EngineeringDesignDerivationRefusal',reason:'invalid-design'},
+    'an installed Design reader must refuse ambiguous Code schema: '+interfaceKey);
+  }
+}
+const concreteInterface=structuredClone(low.design);
+concreteInterface.operations[0].inputSchemaJson='false';
+concreteInterface.operations[0].outputSchemaJson=
+  '{"type":"object","required":["value"],"properties":{"value":{"type":"string"}},"additionalProperties":false}';
+const concreteDelivery=JSON.stringify(concreteInterface);
+const concreteCandidate=receiveEngineeringDesign({
+  stage:'low-level',sources:lowSources,plan:lowPlan,
+  deliveryText:concreteDelivery,
+});
+assert.equal(concreteCandidate.type,'EngineeringDesignCandidate');
+const concreteWork=readEngineeringCodeWork({
+  designCandidate:concreteCandidate,originalPlan:lowPlan,
+  originalDeliveryText:concreteDelivery,sourceViews:[],
+});
+assert.equal(concreteWork.targets[0].interface.inputSchema,false);
+assert.deepEqual(concreteWork.targets[0].interface.outputSchema,{
+  type:'object',required:['value'],properties:{value:{type:'string'}},
+  additionalProperties:false,
+});
+assert.equal(concreteWork.executableWork,false);
+assert.equal(concreteWork.independentProof,'unreceived');
+
  // Canonical-equivalent module paths may alias after materialization. The
  // installed consumer must see a source refusal, not normalize the Design
  // silently or inherit the previous output identity.
