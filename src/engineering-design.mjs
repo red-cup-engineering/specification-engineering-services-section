@@ -511,7 +511,8 @@ export function readEngineeringCodeWork({
   // be guessed from the consumer's installed node_modules.
   const syntax = indexJavaScriptModuleBindings(
     [...views.values()].filter(v => v.matchesExpectedSource)
-      .map(({owner,path,text}) => ({owner,path,text})));
+      .map(({owner,path,text}) => ({owner,path,text})),
+    {maxBytes:2_097_152,maxModules:64});
   const targets = [...designCandidate.design.operations]
     .sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0)
     .map(operation => {
