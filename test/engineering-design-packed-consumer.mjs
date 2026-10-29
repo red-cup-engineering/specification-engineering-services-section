@@ -168,6 +168,27 @@ const work=readEngineeringCodeWork({
   originalDeliveryText:JSON.stringify(low.design),sourceViews:sourceCut,
 });
 assert.equal(work.type,'EngineeringDesignCodeWorkReadout');
+assert.equal(work.targets[0].bindingObservation.status,'observed');
+assert.deepEqual(work.targets[0].bindingObservation.resolved,{
+  owner:'fixture-only',path:'src/source-operation.mjs',binding:'retainSourceValue',
+});
+// Deliberately clean source bytes with the WRONG export must disagree with the
+// original LLD; passing a digest proves no obligation of its implementation.
+const wrongText='export const differentOperation = () => 42;\n';
+const wrongView={
+  owner:'fixture-only',path:'src/source-operation.mjs',text:wrongText,
+  expectedSha256:'sha256:'+createHash('sha256').update(wrongText,'utf8').digest('hex'),
+};
+const wrongReadout=readEngineeringCodeWork({
+  designCandidate:low,originalPlan:lowPlan,
+  originalDeliveryText:JSON.stringify(low.design),sourceViews:[wrongView],
+});
+assert.equal(wrongReadout.targets[0].bindingObservation.status,'absent');
+assert.equal(wrongReadout.discrepancies[0].code,'CODE_EXPORT_NOT_OBSERVED');
+assert.equal(wrongReadout.status,'source-disagreement');
+assert.equal(wrongReadout.executableWork,false);
+assert.equal(wrongReadout.independentProof,'unreceived');
+
 assert.match(work.designCarrierId,/^ni:\/\/\/sha-256;/u);
 assert.equal(work.designCarrierSha256,undefined,
   'the Code Work reader no longer hashes caller-ordered JSON serialization');
