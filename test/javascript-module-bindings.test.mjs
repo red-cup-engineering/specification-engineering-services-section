@@ -141,6 +141,22 @@ test('duplicate explicit export name is contested even where both appear identic
   assert.equal(result.reason,'duplicate-explicit-export');
 });
 
+test('duplicate lexical or imported top-level binding never masquerades as one valid ESM export',()=>{
+  for(const text of [
+    'const value=1; const value=2; export {value};',
+    'import {value} from "./source.mjs"; const value=2; export {value};',
+    'let value=1; var value=2; export {value};',
+  ]) {
+    const result=read([source('src/clash.mjs',text)],'src/clash.mjs','value');
+    assert.notEqual(result.status,'observed',
+      'duplicate top-level source declarations are not one admitted binding');
+  }
+  // Repeated "var" declarations alone may be one legitimate source binding.
+  const valid=read([source('src/repeated.mjs',
+    'var value=1; var value=2; export {value};')],'src/repeated.mjs','value');
+  assert.equal(valid.status,'observed');
+});
+
 test('default is never inherited through export-star',()=>{
   const views=[
     source('src/leaf.mjs','export default 42;'),
