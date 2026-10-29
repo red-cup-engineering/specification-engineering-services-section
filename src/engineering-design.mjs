@@ -118,7 +118,11 @@ function envelope(input, receiving) {
   requireThat(input.stage === 'high-level' || input.stage === 'low-level');
   requireThat(Array.isArray(input.sources) && input.sources.length >= 1);
   for (const source of input.sources) {
-    requireThat(exact(source, ['kind', 'text']) && ORDER.includes(source.kind) && typeof source.text === 'string' && source.text.length >= 1);
+    requireThat(exact(source, ['kind', 'text']) && ORDER.includes(source.kind) &&
+      typeof source.text === 'string' && source.text.length >= 1 &&
+      // Node UTF-8 encoding replaces isolated UTF-16 surrogates with U+FFFD.
+      // Accepting them gives distinct authored source strings one digest.
+      source.text.isWellFormed());
   }
   if (receiving) requireThat(object(input.plan) && typeof input.deliveryText === 'string');
 }
@@ -369,6 +373,11 @@ export function receiveEngineeringDesign(input) {
   const context = sourceContext(input.stage, input.sources);
   const plan = makePlan(input.stage, context);
   if (!equal(plan, input.plan)) return { type: 'EngineeringDesignDerivationRefusal', reason: 'source-cut-mismatch' };
+  // A delivered raw string must have a one-to-one UTF-8 representation
+  // before parsing: JSON.parse tolerates lone surrogates even though hashing
+  // or materializing them silently changes the authored source bytes.
+  if (!input.deliveryText.isWellFormed())
+    return { type: 'EngineeringDesignDerivationRefusal', reason: 'invalid-design' };
   let design;
   try { design = JSON.parse(input.deliveryText); } catch {
     return { type: 'EngineeringDesignDerivationRefusal', reason: 'invalid-design' };
