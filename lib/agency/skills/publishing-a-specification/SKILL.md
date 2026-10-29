@@ -1,4 +1,5 @@
 ---
+id: publishing-a-specification
 name: publishing-a-specification
 description: "Turn what code enforces and rulings settle into a house Specification record, render it as the house Markdown carrier and as an RFCXML v3 Internet-Draft, and verify it; submission and adoption are the founder's acts."
 closure-kind: process
