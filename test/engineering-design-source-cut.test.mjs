@@ -63,6 +63,39 @@ function hldReceipt(sources) {
   return received;
 }
 
+test('duplicate normative Requirement member cannot be erased before Design source tracing', () => {
+  const sources = sourcesFixture();
+  const original = sources[0].text;
+  const duplicate = original.replace('"met-when":',
+    '"met-when":[{"cell":"source-req:hidden","target":"held","says":"Keep a denied action denied."}],"met-when":');
+  assert.notEqual(duplicate, original);
+  assert.deepEqual(JSON.parse(duplicate), JSON.parse(original),
+    'negative control: ordinary JSON.parse silently discards the first normative member');
+  sources[0].text = duplicate;
+  assert.throws(() => planEngineeringDesign({stage:'high-level',sources}), TypeError,
+    'the original strict JSON admission must refuse conflicting source members');
+});
+
+test('duplicate HLD operations and escaped isolated Unicode cannot become received Design', () => {
+  const sources = sourcesFixture();
+  const plan = planEngineeringDesign({stage:'high-level',sources});
+  const valid = JSON.stringify(hldFixture());
+  const duplicate = valid.replace('"components":','"components":[],"components":');
+  assert.deepEqual(JSON.parse(duplicate),JSON.parse(valid),
+    'negative control: JSON.parse makes a different delivery indistinguishable');
+  assert.deepEqual(receiveEngineeringDesign({
+    stage:'high-level',sources,plan,deliveryText:duplicate,
+  }),{type:'EngineeringDesignDerivationRefusal',reason:'invalid-design'});
+
+  const escaped = valid.replace('Retain comp-a','Retain \\u' + 'd800 comp-a');
+  assert.equal(escaped.isWellFormed(),true,
+    'raw source Unicode checks do not catch escaped isolated surrogate scalars');
+  assert.equal(JSON.parse(escaped).components[0].responsibility.isWellFormed(),false);
+  assert.deepEqual(receiveEngineeringDesign({
+    stage:'high-level',sources,plan,deliveryText:escaped,
+  }),{type:'EngineeringDesignDerivationRefusal',reason:'invalid-design'});
+});
+
 test('malformed UTF-16 in an original source cut refuses before lossy UTF-8 addressing', () => {
   const sources = sourcesFixture();
   // JSON.parse accepts a raw isolated surrogate in a JSON string, but Node's
