@@ -6,6 +6,8 @@
  * This is an input resource boundary, not an authorization, source
  * authentication, standards-conformance certificate, or fabrication proof.
  */
+import { admitCanonicalJson, UNBOUNDED_JSON_ENVELOPE } from "@red-cup-engineering/json-services-section/canonical-json";
+
 export const MAX_SOURCE_JSON_BYTES = 8 * 1024 * 1024;
 
 /** @param {AsyncIterable<Uint8Array>} input Original byte stream. */
@@ -26,5 +28,11 @@ export async function readSourceJsonStdin(input, { maxBytes = MAX_SOURCE_JSON_BY
   // One allocation and one decode after the full byte cap; no quadratic
   // chunk-by-chunk string concatenation, lossy UTF-8, or partial parse.
   const decoded = new TextDecoder("utf-8", { fatal: true }).decode(Buffer.concat(pieces, size));
-  return JSON.parse(decoded);
+  // The original JSON owner strictly admits every source member before the
+  // Requirement/Specification/Architecture makers see a parsed value. Bare
+  // JSON.parse discards duplicate keys and accepts escaped lone surrogates,
+  // which can silently delete claims from their source trace. The existing
+  // eight-megabyte host entrance remains the resource limit for this command;
+  // do not substitute the JSON transformation seller's smaller envelope.
+  return admitCanonicalJson(decoded, UNBOUNDED_JSON_ENVELOPE).value;
 }

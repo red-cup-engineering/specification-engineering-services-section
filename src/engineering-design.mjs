@@ -1,6 +1,9 @@
 import { createHash } from 'node:crypto';
 import { readRequirementArchitectureTrace } from './architecture-description.mjs';
 import { semanticIdOf } from '@red-cup-engineering/computer-data-engineering-services-section/semiotic-expression-notation/semantic-content-identity';
+import { admitCanonicalJson, UNBOUNDED_JSON_ENVELOPE } from '@red-cup-engineering/json-services-section/canonical-json';
+import { createSchema } from '@red-cup-engineering/json-schema-services-section';
+import { indexJavaScriptModuleBindings } from './javascript-module-bindings.mjs';
 
 /*
  * engineering-design-generator-bootstrap; selected artifact src/engineering-design.mjs.
@@ -78,8 +81,11 @@ function equal(a, b) {
   return keys.length === Object.keys(b).length && keys.every(k => Object.hasOwn(b, k) && equal(a[k], b[k]));
 }
 function parseObject(text) {
-  let value;
-  try { value = JSON.parse(text); } catch { throw new TypeError('Malformed source JSON'); }
+  // The original JSON supplier is the only syntax/duplicate-key admission
+  // authority: JSON.parse alone silently discards earlier normative clauses.
+  // Keep the incumbent host's source-size admission unchanged; do not impose
+  // the JSON transformation seller's narrower 64 KiB policy on Engineering.
+  const value = admitCanonicalJson(text, UNBOUNDED_JSON_ENVELOPE).value;
   requireThat(object(value));
   return value;
 }
@@ -118,7 +124,11 @@ function envelope(input, receiving) {
   requireThat(input.stage === 'high-level' || input.stage === 'low-level');
   requireThat(Array.isArray(input.sources) && input.sources.length >= 1);
   for (const source of input.sources) {
-    requireThat(exact(source, ['kind', 'text']) && ORDER.includes(source.kind) && typeof source.text === 'string' && source.text.length >= 1);
+    requireThat(exact(source, ['kind', 'text']) && ORDER.includes(source.kind) &&
+      typeof source.text === 'string' && source.text.length >= 1 &&
+      // Node UTF-8 encoding replaces isolated UTF-16 surrogates with U+FFFD.
+      // Accepting them gives distinct authored source strings one digest.
+      source.text.isWellFormed());
   }
   if (receiving) requireThat(object(input.plan) && typeof input.deliveryText === 'string');
 }
@@ -288,11 +298,26 @@ function validHld(design, context) {
   return traceValid(design.traceability, components, context, false);
 }
 
+// An embedded LLD interface schema is normative source, not an opaque JSON
+// string. JSON.parse silently erases earlier duplicate keys and changes the
+// prospective Code contract, so share the original strict JSON admission.
+function parseSchemaText(text) {
+  const value = admitCanonicalJson(text, UNBOUNDED_JSON_ENVELOPE).value;
+  if (typeof value !== 'boolean' && !object(value))
+    throw new TypeError('Invalid Engineering Design interface schema JSON');
+  // JSON syntax is not Schema vocabulary syntax: preserve the original source
+  // text, but ask the incumbent bounded Draft 2020-12 supplier to refuse
+  // malformed keyword contracts before projecting prospective Code Work.
+  // This temporary validation address is never returned as source identity,
+  // admitted Design, independent Proof or a native Code effect.
+  if (object(value)) createSchema(value,
+    value.$id ?? 'urn:engineering-design:unadmitted-interface',
+    { allowUnknownAnnotations: true });
+  return value;
+}
 function schemaTextValid(text) {
-  try {
-    const value = JSON.parse(text);
-    return typeof value === 'boolean' || object(value);
-  } catch { return false; }
+  try { parseSchemaText(text); return true; }
+  catch { return false; }
 }
 function validLld(design, context) {
   if (!exact(design, ['operations', 'traceability', 'openQuestions']) || !strings(design.openQuestions)) return false;
@@ -369,8 +394,18 @@ export function receiveEngineeringDesign(input) {
   const context = sourceContext(input.stage, input.sources);
   const plan = makePlan(input.stage, context);
   if (!equal(plan, input.plan)) return { type: 'EngineeringDesignDerivationRefusal', reason: 'source-cut-mismatch' };
+  // A delivered raw string must have a one-to-one UTF-8 representation
+  // before parsing: JSON.parse tolerates lone surrogates even though hashing
+  // or materializing them silently changes the authored source bytes.
+  if (!input.deliveryText.isWellFormed())
+    return { type: 'EngineeringDesignDerivationRefusal', reason: 'invalid-design' };
   let design;
-  try { design = JSON.parse(input.deliveryText); } catch {
+  try {
+    // Reuse identical strict JSON admission for the provider's delivered
+    // design: duplicate operations or escaped lone surrogates cannot disappear
+    // between raw delivery and the original source-owned candidate.
+    design = admitCanonicalJson(input.deliveryText, UNBOUNDED_JSON_ENVELOPE).value;
+  } catch {
     return { type: 'EngineeringDesignDerivationRefusal', reason: 'invalid-design' };
   }
   if (!validDesign(input.stage, design, context)) return { type: 'EngineeringDesignDerivationRefusal', reason: 'invalid-design' };
@@ -447,15 +482,12 @@ export function readEngineeringCodeWork({
   const views = new Map();
   let bytes = 0;
   for (const view of sourceViews) {
-    const qualified = exact(view, ['owner', 'path', 'text', 'expectedSha256']);
-    const legacy = exact(view, ['path', 'text', 'expectedSha256']);
-    requireThat(qualified || legacy);
-    // Legacy path-only views remain meaningful for exactly ONE HLD owner.
-    // A second original owner with the same relative path MUST name its
-    // distinct source owner in every view to prevent cross-repository alias.
+    // Source identity is always the original HLD owner and exact path. An
+    // ownerless view cannot borrow authority even when only one owner is
+    // visible in this particular candidate; source revisions may add another.
+    requireThat(exact(view, ['owner', 'path', 'text', 'expectedSha256']));
     const owners = ownersByPath.get(view.path);
-    const owner = qualified ? view.owner :
-      owners?.size === 1 ? [...owners][0] : null;
+    const owner = view.owner;
     const key = keyOf(owner, view.path);
     requireThat(nonblank(owner) && owners?.has(owner) &&
       plannedSources.has(key) && !views.has(key) &&
@@ -466,6 +498,7 @@ export function readEngineeringCodeWork({
     const actualSha256 =
       'sha256:' + createHash('sha256').update(view.text, 'utf8').digest('hex');
     views.set(key, {
+      owner, path: view.path, text: view.text,
       actualSha256, expectedSha256: view.expectedSha256,
       matchesExpectedSource: actualSha256 === view.expectedSha256,
     });
@@ -488,6 +521,14 @@ export function readEngineeringCodeWork({
   const gap = (code, operationId, module, detail) =>
     ({ code, operationId, module, detail });
   const discrepancies = [];
+  // Only exact custodian-addressed bytes may enter the existing nonexecuting
+  // ECMAScript grammar reader. Unobserved and mismatched source remains
+  // unknown; imported modules outside this finite original target cut cannot
+  // be guessed from the consumer's installed node_modules.
+  const syntax = indexJavaScriptModuleBindings(
+    [...views.values()].filter(v => v.matchesExpectedSource)
+      .map(({owner,path,text}) => ({owner,path,text})),
+    {maxBytes:2_097_152,maxModules:64});
   const targets = [...designCandidate.design.operations]
     .sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0)
     .map(operation => {
@@ -501,6 +542,15 @@ export function readEngineeringCodeWork({
       if (status === 'source-cut-disagreement')
         discrepancies.push(gap('SOURCE_DIGEST_DISAGREEMENT', operation.id,
           operation.module, 'Source bytes differ from the custodian-addressed digest'));
+      const bindingObservation = status === 'source-present-unassayed'
+        ? syntax.inspect({owner:originalOwners.get(operation.componentId),
+          path:operation.module,exportName:operation.exportName}) : null;
+      if (bindingObservation?.status === 'absent')
+        discrepancies.push(gap('CODE_EXPORT_NOT_OBSERVED', operation.id,
+          operation.module, 'Selected named export is absent in the complete supplied ECMAScript module'));
+      if (bindingObservation?.status === 'contested')
+        discrepancies.push(gap('CODE_EXPORT_CONTESTED', operation.id,
+          operation.module, 'Distinct or duplicated ECMAScript export claims are contested'));
       // This is a ready-to-route *plan*, not an executable WorkCell. Treat
       // qualitative test obligations as independently unreceived, never
       // automatically generated behavioral assertions or passing tests.
@@ -511,12 +561,15 @@ export function readEngineeringCodeWork({
         sourceStatus: status,
         observedSha256: source?.actualSha256 ?? null,
         expectedSha256: source?.expectedSha256 ?? null,
+        // Syntax-only reading, never a semantic implementation/Proof verdict.
+        // Unknown imports and parser refusals cannot become a clean code assay.
+        bindingObservation,
         originalTrace: traced.get(operation.id)
           .sort((a,b) => a.requirementCellId < b.requirementCellId ? -1 :
             a.requirementCellId > b.requirementCellId ? 1 : 0),
         interface: {
-          inputSchema: JSON.parse(operation.inputSchemaJson),
-          outputSchema: JSON.parse(operation.outputSchemaJson),
+          inputSchema: parseSchemaText(operation.inputSchemaJson),
+          outputSchema: parseSchemaText(operation.outputSchemaJson),
         },
         testObligations: {
           behavior: operation.behavior,
@@ -530,11 +583,13 @@ export function readEngineeringCodeWork({
         },
       };
     });
-  const designSource = 'sha256:' + createHash('sha256')
-    .update(JSON.stringify(designCandidate), 'utf8').digest('hex');
+  // Reuse the original Data semantic-content identity rather than hashing
+  // JSON.stringify's caller-controlled property order. Source text digests
+  // remain byte-exact; the parsed Design identity is semantic and stable.
+  const designSource = semanticIdOf('metroplat.artifact')(designCandidate);
   const readout = {
     type: 'EngineeringDesignCodeWorkReadout', version: 1,
-    designCarrierSha256: designSource,
+    designCarrierId: designSource,
     sourceCut: designCandidate.sources.map(({ kind, digest }) => ({ kind, digest })),
     codeSnapshotScope: 'supplied-target-views-only',
     status: discrepancies.length ? 'source-disagreement' : 'source-present-unassayed',

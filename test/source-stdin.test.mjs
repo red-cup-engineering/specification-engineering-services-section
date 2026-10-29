@@ -26,13 +26,42 @@ test("source stdin uses a sharp byte cap: exact limit accepted, one additional b
 
 test("missing, malformed and lossy-decoded input cannot become fabricated source records", async () => {
   await assert.rejects(readSourceJsonStdin(chunks()), /empty source/u);
-  await assert.rejects(readSourceJsonStdin(chunks(Buffer.from('{"a":}'))), SyntaxError);
+  await assert.rejects(readSourceJsonStdin(chunks(Buffer.from('{"a":}'))),
+    {code:"malformed-json"});
   await assert.rejects(readSourceJsonStdin(chunks(Buffer.from([0x7b,0x22,0x78,0x22,0x3a,0x22,0xc3,0x28,0x22,0x7d]))), TypeError);
   await assert.rejects(readSourceJsonStdin(Readable.from(['{"predecoded":true}'])), /raw byte chunks/u);
   for (const maxBytes of [0,-1,1.5,MAX_SOURCE_JSON_BYTES + 1]) {
     await assert.rejects(readSourceJsonStdin(chunks(Buffer.from("{}")), {maxBytes}), /maxBytes/u);
   }
   await assert.rejects(readSourceJsonStdin(chunks(Buffer.from("{}")), {maxBytes:1}), /input exceeds/u);
+});
+
+test("original JSON source entrance refuses duplicate claims before every producing command", async () => {
+  const duplicate = '{"requirement":"retain source","requirement":"discard source"}';
+  assert.equal(JSON.parse(duplicate).requirement,'discard source',
+    'negative control: ordinary JSON parsing drops the first source instruction');
+  await assert.rejects(readSourceJsonStdin(chunks(Buffer.from(duplicate))),
+    {code:'duplicate-key'});
+  for (const name of [
+    'derive-specification.mjs','render-specification.mjs',
+    'render-specification-rfcxml.mjs','render-architecture-description.mjs',
+  ]) {
+    const command=fileURLToPath(new URL('../scripts/'+name,import.meta.url));
+    const result=spawnSync(process.execPath,[command],{
+      input:duplicate,encoding:'utf8',timeout:15_000,maxBuffer:2*1024*1024,
+    });
+    assert.equal(result.status,1,name+' '+result.stderr);
+    assert.equal(result.stdout,'',name+' emitted a partial product before JSON admission');
+    assert.match(result.stderr,/duplicate-key/u,name+' must expose the first failed source boundary');
+  }
+});
+
+test("escaped Unicode surrogate refuses before source semantics or output", async () => {
+  const escaped = '{"claim":"' + String.fromCharCode(92) + 'ud800"}';
+  assert.equal(JSON.parse(escaped).claim.isWellFormed(),false,
+    'negative control: escaped surrogates survive the raw UTF-8 byte gate');
+  await assert.rejects(readSourceJsonStdin(chunks(Buffer.from(escaped))),
+    {code:'unicode-scalar'});
 });
 
 test("all four actual original producer CLIs reject oversized byte input without partial product", () => {

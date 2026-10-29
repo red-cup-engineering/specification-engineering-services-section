@@ -15,10 +15,12 @@
     "@red-cup-engineering/computer-filepath-engineering-services-section": "0.1.0",
     "@red-cup-engineering/computer-file-engineering-services-section": "0.4.0",
     "@red-cup-engineering/json-schema-services-section": "0.5.0",
+    "@red-cup-engineering/json-services-section": "0.4.0",
     "@red-cup-engineering/xml-document-rendering-service": "0.1.7",
     "@red-cup-engineering/semiotic-eavt-services-section": "0.1.0",
     "@red-cup-engineering/markdown-engineering-services-section": "0.5.2",
-    "@red-cup-engineering/computer-data-engineering-services-section": "0.6.0"
+    "@red-cup-engineering/computer-data-engineering-services-section": "0.6.0",
+    "@red-cup-engineering/javascript-parser-service": "0.1.0"
   },
   "keywords": [
     "engineering"
@@ -28,7 +30,8 @@
     "./specification": "./src/specification.mjs",
     "./specification-rfcxml": "./src/specification-rfcxml.mjs",
     "./architecture-description": "./src/architecture-description.mjs",
-    "./engineering-design": "./src/engineering-design.mjs"
+    "./engineering-design": "./src/engineering-design.mjs",
+    "./javascript-module-bindings": "./src/javascript-module-bindings.mjs"
   },
   "private": false,
   "files": [
