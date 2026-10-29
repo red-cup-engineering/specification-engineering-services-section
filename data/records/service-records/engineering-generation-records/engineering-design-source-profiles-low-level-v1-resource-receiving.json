@@ -1,0 +1,362 @@
+{
+  "kind": "OriginalSourceProfileLowLevelWholeJobReceiving",
+  "version": 1,
+  "observedBy": "Codex /root/koios_release_finish",
+  "at": "2026-10-29T06:01:31.259Z",
+  "operatorSource": {
+    "commit": "d031a066413dce6b956dc4e31c459d49de7c333f",
+    "sha256": "7005e9462bb2373328c798e7bd25c46133222be3208ebaf95d3350cabe64c455"
+  },
+  "planSHA256": "472d5fcd187b589024e3acb11cec93ffeba3dee12538d44b068ceb4a4c7af87e",
+  "commandSHA256": "0b74d93096654803824dee926ab72e3344ad7a58dab92fbc66cf7368e005a8c7",
+  "originalObserverReturnCode": 0,
+  "beforeAnyNode": {
+    "phase": "memory-admitted-before-any-node-allocation",
+    "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/design-source-profile-lld-whole-job-v1.scope",
+    "controllerPid": 2938251,
+    "availableKiB": 312740,
+    "requiredKiB": 262144,
+    "memoryMaxBytes": 134217728,
+    "memorySwapMaxBytes": 0,
+    "tasksMax": 32,
+    "cpuQuotaPercent": 25,
+    "preflightHelperScopeCurrentBytes": 1867776,
+    "hostFloorIsFixedConservativeWholeJobPlusReserve": true,
+    "ancestorReadingsAreSnapshotNotReservation": true
+  },
+  "actualDomain": {
+    "phase": "whole-job-domain-received-before-model-intent",
+    "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/design-source-profile-lld-whole-job-v1.scope",
+    "controllerPid": 2938251,
+    "modelPid": 2938264,
+    "parentAndChildSameDomain": true,
+    "memoryMaxBytes": 134217728,
+    "memorySwapMaxBytes": 0,
+    "tasksMax": 32,
+    "cpuQuotaPercent": 25,
+    "admittedBeforeAnyNodeAvailableKiB": 312740
+  },
+  "enclosingMemory": [
+    {
+      "phase": "memory-enclosure-before-any-node",
+      "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/design-source-profile-lld-whole-job-v1.scope",
+      "limitKind": "memory.max",
+      "limitBytes": 134217728,
+      "currentBytes": 1986560,
+      "ownScopeCurrentBytes": 1986560,
+      "remainingJobBytes": 132231168,
+      "requiredAdditionalBytes": 132231168,
+      "admitted": true
+    },
+    {
+      "phase": "memory-enclosure-before-any-node",
+      "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice/design-source-profile-lld-whole-job-v1.scope",
+      "limitKind": "memory.high",
+      "limitBytes": "max",
+      "currentBytes": 1986560,
+      "ownScopeCurrentBytes": 1986560,
+      "remainingJobBytes": 132231168,
+      "requiredAdditionalBytes": 132231168,
+      "admitted": true
+    },
+    {
+      "phase": "memory-enclosure-before-any-node",
+      "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice",
+      "limitKind": "memory.max",
+      "limitBytes": "max",
+      "currentBytes": 1301303296,
+      "ownScopeCurrentBytes": 1986560,
+      "remainingJobBytes": 132231168,
+      "requiredAdditionalBytes": 266448896,
+      "admitted": true
+    },
+    {
+      "phase": "memory-enclosure-before-any-node",
+      "cgroup": "/user.slice/user-1001.slice/user@1001.service/app.slice",
+      "limitKind": "memory.high",
+      "limitBytes": "max",
+      "currentBytes": 1301303296,
+      "ownScopeCurrentBytes": 1986560,
+      "remainingJobBytes": 132231168,
+      "requiredAdditionalBytes": 266448896,
+      "admitted": true
+    },
+    {
+      "phase": "memory-enclosure-before-any-node",
+      "cgroup": "/user.slice/user-1001.slice/user@1001.service",
+      "limitKind": "memory.max",
+      "limitBytes": "max",
+      "currentBytes": 1306075136,
+      "ownScopeCurrentBytes": 1986560,
+      "remainingJobBytes": 132231168,
+      "requiredAdditionalBytes": 266448896,
+      "admitted": true
+    },
+    {
+      "phase": "memory-enclosure-before-any-node",
+      "cgroup": "/user.slice/user-1001.slice/user@1001.service",
+      "limitKind": "memory.high",
+      "limitBytes": "max",
+      "currentBytes": 1306075136,
+      "ownScopeCurrentBytes": 1986560,
+      "remainingJobBytes": 132231168,
+      "requiredAdditionalBytes": 266448896,
+      "admitted": true
+    },
+    {
+      "phase": "memory-enclosure-before-any-node",
+      "cgroup": "/user.slice/user-1001.slice",
+      "limitKind": "memory.max",
+      "limitBytes": "max",
+      "currentBytes": 1340657664,
+      "ownScopeCurrentBytes": 1986560,
+      "remainingJobBytes": 132231168,
+      "requiredAdditionalBytes": 266448896,
+      "admitted": true
+    },
+    {
+      "phase": "memory-enclosure-before-any-node",
+      "cgroup": "/user.slice/user-1001.slice",
+      "limitKind": "memory.high",
+      "limitBytes": "max",
+      "currentBytes": 1340657664,
+      "ownScopeCurrentBytes": 1986560,
+      "remainingJobBytes": 132231168,
+      "requiredAdditionalBytes": 266448896,
+      "admitted": true
+    },
+    {
+      "phase": "memory-enclosure-before-any-node",
+      "cgroup": "/user.slice",
+      "limitKind": "memory.max",
+      "limitBytes": "max",
+      "currentBytes": 1341403136,
+      "ownScopeCurrentBytes": 1986560,
+      "remainingJobBytes": 132231168,
+      "requiredAdditionalBytes": 266448896,
+      "admitted": true
+    },
+    {
+      "phase": "memory-enclosure-before-any-node",
+      "cgroup": "/user.slice",
+      "limitKind": "memory.high",
+      "limitBytes": "max",
+      "currentBytes": 1341403136,
+      "ownScopeCurrentBytes": 1986560,
+      "remainingJobBytes": 132231168,
+      "requiredAdditionalBytes": 266448896,
+      "admitted": true
+    },
+    {
+      "phase": "memory-enclosure-before-any-node",
+      "cgroup": "/",
+      "budget": "explicit-host-MemAvailable-floor",
+      "memoryControllerRootInterfaces": "non-applicable-per-native-kernel-contract",
+      "unlimitedCapacityAssumed": false
+    }
+  ],
+  "nativeCde": {
+    "executed": true,
+    "state": "completed",
+    "reason": null,
+    "before": {
+      "admitted": true,
+      "filesystems": [
+        {
+          "device": "64770",
+          "bytes": "63824756736",
+          "availableBytes": "4110417920",
+          "inodes": "16597376",
+          "freeInodes": "12942916",
+          "blockSize": "4096",
+          "peakBytes": "17825792",
+          "peakInodes": "2304",
+          "paths": [
+            "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/design-source-profile-generation-state/48f6ed16/low-level-v1-whole-job",
+            "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/design-source-profile-generation-state/48f6ed16/high-level-v2-whole-job/feedback"
+          ],
+          "requiresBacking": false,
+          "reserveBytes": "1914742703",
+          "requiredBytes": "1949345711",
+          "requiredInodes": "104352",
+          "admitted": true
+        }
+      ],
+      "admissionKind": "snapshot-not-reservation",
+      "concurrency": "Owner growth allowance is charged; unrelated concurrent activity can change capacity after this observation.",
+      "backing": null
+    },
+    "after": {
+      "admitted": true,
+      "filesystems": [
+        {
+          "device": "64770",
+          "bytes": "63824756736",
+          "availableBytes": "3197485056",
+          "inodes": "16597376",
+          "freeInodes": "12848664",
+          "blockSize": "4096",
+          "peakBytes": "0",
+          "peakInodes": "0",
+          "paths": [
+            "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/design-source-profile-generation-state/48f6ed16/low-level-v1-whole-job",
+            "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/design-source-profile-generation-state/48f6ed16/high-level-v2-whole-job/feedback"
+          ],
+          "requiresBacking": false,
+          "reserveBytes": "1914742703",
+          "requiredBytes": "1931519919",
+          "requiredInodes": "102048",
+          "admitted": true
+        }
+      ],
+      "admissionKind": "snapshot-not-reservation",
+      "concurrency": "Owner growth allowance is charged; unrelated concurrent activity can change capacity after this observation.",
+      "backing": null
+    },
+    "filesystemDrift": [],
+    "observationError": null,
+    "commandResult": {
+      "code": 0,
+      "signal": null,
+      "interrupted": false
+    },
+    "error": null
+  },
+  "aggregateFilesystemChange": {
+    "beforeAvailableBytes": "4110417920",
+    "afterAvailableBytes": "3197485056",
+    "availableBytesDecrease": "912932864",
+    "freeInodesDecrease": "94252",
+    "attribution": "UNOBSERVED; filesystem-wide concurrent observation, not an attributed allocation by this stage or proof that the16MiB estimate was obeyed"
+  },
+  "unitManager": {
+    "command": [
+      "/usr/bin/systemctl",
+      "--user",
+      "show",
+      "design-source-profile-lld-whole-job-v1.scope",
+      "--no-pager",
+      "--property=LoadState,ActiveState,SubState,Result,ControlGroup,MemoryPeak"
+    ],
+    "code": 0,
+    "stdout": "Result=success\nControlGroup=\nMemoryPeak=[not set]\nLoadState=not-found\nActiveState=inactive\nSubState=dead\n",
+    "stderr": "",
+    "notHistoricalKernelCounters": true
+  },
+  "cgroupPresentAtPostterminalRead": false,
+  "kernel": null,
+  "numericPeakAndOomCounters": null,
+  "unavailableReason": "Original scope/cgroup already collected at exact postterminal read. Default manager success/not-set values are not historical kernel counters. No zero-OOM/peak claim.",
+  "modelDelivery": {
+    "raw": {
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/design-source-profile-generation-state/48f6ed16/low-level-v1-whole-job/receiving/review-delivery.txt",
+      "bytes": 21583,
+      "sha256": "164a07f27b6de39aab5a417a13736fe304eaff164f3cfb02a2e791906f39843c"
+    },
+    "lot": {
+      "workLot": "urn:work-lot:inference:W_VUqW2cDa-7GOc7-yDI-jMh1kgi4L53hRayhxd3C8U",
+      "provider": "urn:ame:nvidia-inference-team",
+      "taskClass": "code-fabrication",
+      "selectedOffer": "urn:offer:direct-endpoint:urn:ame:nvidia-inference-team:2fUXmpnthgNbciM9wayHgJGw1vwg7JkTMjaUeQmU24g:code-fabrication",
+      "receipt": "ni:///sha-256;9i8cjyAlgm-d4iPQRSoVbLavVmyPfLxhcgmsuectbtk",
+      "receiver": "actor:WWOM5azg-fTrn1Id0YVbz5AhppbnFny_W5Xl-rKgSs4",
+      "model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+      "configurationIdentity": "ni:///sha-256;2fUXmpnthgNbciM9wayHgJGw1vwg7JkTMjaUeQmU24g"
+    },
+    "metadata": {
+      "configurationReasoningEffort": null,
+      "configurationModel": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "nativeOutcome": "candidate-pending-codex-acceptance",
+      "durationMs": 136596,
+      "resources": [
+        {
+          "resource": "requests",
+          "unit": "request",
+          "amount": {
+            "numerator": "1",
+            "denominator": "1"
+          }
+        },
+        {
+          "resource": "input-tokens",
+          "unit": "token",
+          "amount": {
+            "numerator": "147051",
+            "denominator": "1"
+          }
+        },
+        {
+          "resource": "output-tokens",
+          "unit": "token",
+          "amount": {
+            "numerator": "10744",
+            "denominator": "1"
+          }
+        },
+        {
+          "resource": "total-tokens",
+          "unit": "token",
+          "amount": {
+            "numerator": "157795",
+            "denominator": "1"
+          }
+        },
+        {
+          "resource": "cached-input-tokens",
+          "unit": "token",
+          "amount": {
+            "numerator": "0",
+            "denominator": "1"
+          }
+        },
+        {
+          "resource": "reasoning-output-tokens",
+          "unit": "token",
+          "amount": {
+            "numerator": "5841",
+            "denominator": "1"
+          }
+        },
+        {
+          "resource": "duration",
+          "unit": "millisecond",
+          "amount": {
+            "numerator": "136596",
+            "denominator": "1"
+          }
+        }
+      ],
+      "resourceProjectionComplete": true,
+      "unselectedResourceCount": 0,
+      "originalCieJournalOwnsFullDelivery": true,
+      "providerEvidenceOrRequestTreeCopied": false
+    },
+    "requestedReasoningEffort": "low"
+  },
+  "originalHldFeedback": {
+    "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/design-source-profile-generation-state/48f6ed16/high-level-v2-whole-job/feedback/receiving/received.json",
+    "sha256": "d8edf70b465327d4991babd701117c01a862ea1ce9ef694672700b7bf649d7e1",
+    "value": {
+      "kind": "engineering-design.original-hld-feedback-receiving/v1",
+      "at": "2026-10-29T05:40:31.415Z",
+      "isError": false,
+      "matchedOriginalInput": true,
+      "outcome": "receiver-outcome-recorded",
+      "observationId": "ni:///sha-256;g_p4II0W5a-w5KwrGWZ6v2OUQE6JSaCBPrgoudmlEzo",
+      "originalCieJournalOwnsFullObservation": true
+    }
+  },
+  "sourceBeforePhysicalCutover": {
+    "physicalMigrationPerformed": false,
+    "pendingOriginalPathDebt": true,
+    "rootSqlObservation": "Root separately observed SQL40960B inode4704942/dev64770/UID1001/mode600 alongside journal4755291 at03:53; preparer-scope unobserved statements are not global absence or a fresh-history claim.",
+    "rootInputReceivingSHA256": "c2bf9bd8c2cf81cfbec9bc6c823994df2d2544adb6e65514f049e303dfb68db4",
+    "originalConfiguredAccountAndCoordinationInputsRetained": true,
+    "noAccountHistoryMoveResetOrReplacementByThisOperator": true,
+    "persistentSqlOrJournalWritesNotInferredFromDelivery": true,
+    "newPerTaskRecordsRemainOwnerData": true
+  },
+  "nativeDesignAccepted": false,
+  "codeGenerated": false,
+  "productionActivated": false
+}
