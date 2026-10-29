@@ -39,6 +39,58 @@ valid HLD/LLD paths. This source correctness check is not independently
 admitted Engineering Design, proof of program behavior, fabrication, or
 installed MetroPlat/Koios operation.
 
+## Original ECMAScript named-binding evidence for Code Work
+
+The existing `readEngineeringCodeWork` now uses a **nonexecuting original
+ECMAScript parser**, `@red-cup-engineering/javascript-parser-service@0.1.0`,
+through the Specification Engineering-owned
+`./javascript-module-bindings` export. This is the JavaScript half of the
+existing source-language-validation prerequisite; it does **not** implement
+Guile Scheme analysis or complete the explicit-profile cutover.
+
+`indexJavaScriptModuleBindings(sources,{maxBytes,maxModules})` reads only
+the caller's original `{owner,path,text}` source views and requires explicit
+finite bounds within the incumbent Design Code Work maximum of **2,097,152
+UTF-8 bytes** and **64 modules**. Missing limits, extra/ambiguous source
+views, invalid or noncanonical paths, and exceeded bounds refuse before
+parsing. The caller still owns actual host time/memory/isolation and the
+authority to supply source; parameter shape alone grants neither.
+
+`inspect({owner,path,exportName})` returns `observed`, `absent`,
+`unknown`, or `contested`, with an original resolved module-and-binding
+identity and parser source offsets where derivable. Direct named exports,
+local import bindings, explicit re-exports, namespace exports and transitive
+export-star relations preserve source paths: multiple ways of reaching the
+**same** target do not create a false conflict, while distinct star targets
+and duplicate explicit exports remain contested. Source not supplied, parser
+refusal, invalid local bindings, unsupported external paths and cyclic
+export-star routes remain unknown rather than being promoted to absence or
+proof. The original parser does not execute any submitted JavaScript.
+
+The incumbent `EngineeringDesignCodeWorkReadout.targets[].bindingObservation`
+exposes this syntax evidence only for custodian-digest-matching source bytes.
+When an exact selected export is absent, it emits
+`CODE_EXPORT_NOT_OBSERVED`; conflicting exports emit
+`CODE_EXPORT_CONTESTED`. Unknown source remains unresolved. Even with
+a syntactically observed binding, `status:source-present-unassayed`,
+`originalDesignAdmitted:false`, `independentProof:unreceived`,
+`executableWork:false` and `beneficiaryReceived:false` remain
+**unchanged**. Nothing in this reading verifies runtime behavior, actual
+contract satisfaction, source licensing, human/Actor authority or release.
+
+The original regression suite checks convergent and conflicting source
+graphs, repeated and invalid lexical bindings, negative source inputs, and
+the **actual current Design source** in addition to fixtures. The separate
+cleanly installed package consumer imports the public reader and checks
+a wrong implementation export against the original LLD. Its parser package
+source is separately compared to the original Git blob
+`5ca0fa15caab57032cfab43f0cfba3000f7704b9` in the current native
+tests. These are necessary source-level assays, not qualified native
+Fabrication maker provenance, source-independent behavioral Proof, a
+published new edition, or a deployed/operating service. The original
+Engineering #137 and Design-profile PR #19 retain the unfinished
+Guile-qualified and downstream receiving obligations.
+
 ## Source-bound HLD and LLD candidate generation
 
 The existing `./engineering-design` public export supplies
