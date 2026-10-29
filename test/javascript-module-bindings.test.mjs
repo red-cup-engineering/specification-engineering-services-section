@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { readFileSync } from 'node:fs';
 import { indexJavaScriptModuleBindings } from '../src/javascript-module-bindings.mjs';
 
 const LIMITS=Object.freeze({maxBytes:2_097_152,maxModules:64});
@@ -180,4 +181,17 @@ test('caller must supply checked finite existing source limits before any syntax
   assert.equal(indexJavaScriptModuleBindings(views,
     {maxBytes:Buffer.byteLength(views[0].text,'utf8'),maxModules:1})
     .inspect({owner,path:'src/small.mjs',exportName:'x'}).status,'observed');
+});
+
+test('real original Design module is source-observed, without executing its source',()=>{
+  const path='src/engineering-design.mjs';
+  const text=readFileSync(new URL('../src/engineering-design.mjs',import.meta.url),'utf8');
+  const parser=index([source(path,text)]);
+  for(const exportName of ['planEngineeringDesign','receiveEngineeringDesign','readEngineeringCodeWork']){
+    const result=parser.inspect({owner,path,exportName});
+    assert.equal(result.status,'observed',exportName+' '+result.reason);
+    assert.deepEqual(result.resolved,{owner,path,binding:exportName});
+  }
+  assert.equal(parser.inspect({owner,path,exportName:'fabricateVerifiedProgram'}).status,
+    'absent','source readout cannot invent a manufacturing capability');
 });
