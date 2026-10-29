@@ -9,6 +9,88 @@
 
 Fabricates Specification records from journaled rulings and semantic-record-journal rows into topic-sectioned, BCP14-clause Markdown carriers, never handwritten.
 
+## Strict source JSON admission across Specification and Design
+
+The original four Specification stdin commands share `readSourceJsonStdin`:
+a bounded, fatal UTF-8 byte entrance (at most 8 MiB) followed by the **existing**
+`@red-cup-engineering/json-services-section/canonical-json`
+`admitCanonicalJson` supplier. The Design generator's original
+Requirement/Specification/Architecture/HLD source cuts and provider Design
+deliveries use that same strict JSON admission before semantic trace matching.
+
+This is necessary source preservation, not merely pretty printing. Plain
+`JSON.parse` accepts duplicate object names and keeps only the last member,
+which can erase an earlier customer requirement, design operation, refusal
+obligation, or witness before downstream validation. It also admits escaped
+lone Unicode surrogates that lack a well-defined UTF-8 scalar identity.
+The original strict supplier refuses these inputs, including nested duplicates
+and escaped malformed Unicode; the Design receiving surface returns its
+existing `invalid-design` refusal for malformed provider delivery.
+
+The original literal source texts and their SHA-256 cuts remain as authored,
+rather than being silently rewritten into canonical text. The strict parser's
+admitted JSON value is used for subsequent source-dependent calculations,
+without inventing a second parser or changing the separate source-authority
+and Code/Work/Proof/recipient gates. The existing host byte bound is unchanged;
+the JSON paid-transformation envelope does not override the Specification
+source capacity. Original source tests and a clean installed package consumer
+check all four CLI entrances, malformed source and delivery, and unchanged
+valid HLD/LLD paths. This source correctness check is not independently
+admitted Engineering Design, proof of program behavior, fabrication, or
+installed MetroPlat/Koios operation.
+
+## Original ECMAScript named-binding evidence for Code Work
+
+The existing `readEngineeringCodeWork` now uses a **nonexecuting original
+ECMAScript parser**, `@red-cup-engineering/javascript-parser-service@0.1.0`,
+through the Specification Engineering-owned
+`./javascript-module-bindings` export. This is the JavaScript half of the
+existing source-language-validation prerequisite; it does **not** implement
+Guile Scheme analysis or complete the explicit-profile cutover.
+
+`indexJavaScriptModuleBindings(sources,{maxBytes,maxModules})` reads only
+the caller's original `{owner,path,text}` source views and requires explicit
+finite bounds within the incumbent Design Code Work maximum of **2,097,152
+UTF-8 bytes** and **64 modules**. Missing limits, extra/ambiguous source
+views, invalid or noncanonical paths, and exceeded bounds refuse before
+parsing. The caller still owns actual host time/memory/isolation and the
+authority to supply source; parameter shape alone grants neither.
+
+`inspect({owner,path,exportName})` returns `observed`, `absent`,
+`unknown`, or `contested`, with an original resolved module-and-binding
+identity and parser source offsets where derivable. Direct named exports,
+local import bindings, explicit re-exports, namespace exports and transitive
+export-star relations preserve source paths: multiple ways of reaching the
+**same** target do not create a false conflict, while distinct star targets
+and duplicate explicit exports remain contested. Source not supplied, parser
+refusal, invalid local bindings, unsupported external paths and cyclic
+export-star routes remain unknown rather than being promoted to absence or
+proof. The original parser does not execute any submitted JavaScript.
+
+The incumbent `EngineeringDesignCodeWorkReadout.targets[].bindingObservation`
+exposes this syntax evidence only for custodian-digest-matching source bytes.
+When an exact selected export is absent, it emits
+`CODE_EXPORT_NOT_OBSERVED`; conflicting exports emit
+`CODE_EXPORT_CONTESTED`. Unknown source remains unresolved. Even with
+a syntactically observed binding, `status:source-present-unassayed`,
+`originalDesignAdmitted:false`, `independentProof:unreceived`,
+`executableWork:false` and `beneficiaryReceived:false` remain
+**unchanged**. Nothing in this reading verifies runtime behavior, actual
+contract satisfaction, source licensing, human/Actor authority or release.
+
+The original regression suite checks convergent and conflicting source
+graphs, repeated and invalid lexical bindings, negative source inputs, and
+the **actual current Design source** in addition to fixtures. The separate
+cleanly installed package consumer imports the public reader and checks
+a wrong implementation export against the original LLD. Its parser package
+source is separately compared to the original Git blob
+`5ca0fa15caab57032cfab43f0cfba3000f7704b9` in the current native
+tests. These are necessary source-level assays, not qualified native
+Fabrication maker provenance, source-independent behavioral Proof, a
+published new edition, or a deployed/operating service. The original
+Engineering #137 and Design-profile PR #19 retain the unfinished
+Guile-qualified and downstream receiving obligations.
+
 ## Source-bound HLD and LLD candidate generation
 
 The existing `./engineering-design` public export supplies
@@ -79,15 +161,24 @@ Each projected Code-work target now carries `originalComponentOwner` copied
 from the **source-verified HLD**. The original Design still owns that
 attribution; this reader does not infer, appoint or authenticate an Office.
 
-For multiple owners, provide exact source views as
-`{owner, path, text, expectedSha256}`. Their key is the pair of original
-HLD owner and relative module path, never the path alone. A legacy source
-view `{path, text, expectedSha256}` is accepted only when that path
-has **exactly one original owner** in the current LLD. Two different
-original owners claiming the same path require separate owner-qualified
-views and separate SHA-256 identities; a foreign or duplicate owner/path
-refuses before constructing Code-work readout. The total supplied source
-view remains capped at 2 MiB.
+Every source view **must** name its original owner:
+`{owner, path, text, expectedSha256}`. Its key is the pair of original
+HLD owner and relative source path, never the path alone. Even a single
+observed owner does **not** authorize an ownerless `{path, text,
+expectedSha256}` view: a later source revision can add another owner
+without granting authority to a former path-only claimant. Distinct
+original owners with the same path retain separate SHA-256 source views;
+foreign, duplicate, unqualified or ownerless views refuse before Code-work
+projection. The total supplied source view remains capped at 2 MiB.
+
+`designCarrierId` is computed by the existing Data
+`semanticIdOf('metroplat.artifact')` provider over the complete,
+source-received design candidate. It is stable under irrelevant JavaScript
+object-property ordering and changes with a genuine normative Design
+revision. It is **not** the raw-byte SHA-256 of the provider's delivery,
+nor a signed or independently accepted proof; the original byte-exact
+source hashes are retained in `sourceCut` and the original delivery
+remains independently required.
 
 The source digest only establishes equality with the supplied custodian
 address. Neither an HLD owner string nor a hash comparison authenticates

@@ -63,6 +63,74 @@ function hldReceipt(sources) {
   return received;
 }
 
+test('duplicate normative Requirement member cannot be erased before Design source tracing', () => {
+  const sources = sourcesFixture();
+  const original = sources[0].text;
+  const duplicate = original.replace('"met-when":',
+    '"met-when":[{"cell":"source-req:hidden","target":"held","says":"Keep a denied action denied."}],"met-when":');
+  assert.notEqual(duplicate, original);
+  assert.deepEqual(JSON.parse(duplicate), JSON.parse(original),
+    'negative control: ordinary JSON.parse silently discards the first normative member');
+  sources[0].text = duplicate;
+  assert.throws(() => planEngineeringDesign({stage:'high-level',sources}), TypeError,
+    'the original strict JSON admission must refuse conflicting source members');
+});
+
+test('duplicate HLD operations and escaped isolated Unicode cannot become received Design', () => {
+  const sources = sourcesFixture();
+  const plan = planEngineeringDesign({stage:'high-level',sources});
+  const valid = JSON.stringify(hldFixture());
+  const duplicate = valid.replace('"components":','"components":[],"components":');
+  assert.deepEqual(JSON.parse(duplicate),JSON.parse(valid),
+    'negative control: JSON.parse makes a different delivery indistinguishable');
+  assert.deepEqual(receiveEngineeringDesign({
+    stage:'high-level',sources,plan,deliveryText:duplicate,
+  }),{type:'EngineeringDesignDerivationRefusal',reason:'invalid-design'});
+
+  const escaped = valid.replace('Retain comp-a','Retain \\u' + 'd800 comp-a');
+  assert.equal(escaped.isWellFormed(),true,
+    'raw source Unicode checks do not catch escaped isolated surrogate scalars');
+  assert.equal(JSON.parse(escaped).components[0].responsibility.isWellFormed(),false);
+  assert.deepEqual(receiveEngineeringDesign({
+    stage:'high-level',sources,plan,deliveryText:escaped,
+  }),{type:'EngineeringDesignDerivationRefusal',reason:'invalid-design'});
+});
+
+test('malformed UTF-16 in an original source cut refuses before lossy UTF-8 addressing', () => {
+  const sources = sourcesFixture();
+  // JSON.parse accepts a raw isolated surrogate in a JSON string, but Node's
+  // UTF-8 encoder replaces it with U+FFFD. Without source admission these two
+  // distinct authored texts would acquire the same source-content digest.
+  const ill = sources[2].text.replace('Synthetic original design',
+    'Synthetic ' + String.fromCharCode(0xD800) + ' original design');
+  const replacement = sources[2].text.replace('Synthetic original design',
+    'Synthetic ' + String.fromCharCode(0xFFFD) + ' original design');
+  assert.notEqual(ill, replacement);
+  assert.equal(codeDigest(ill), codeDigest(replacement),
+    'negative control: hashing before well-formed Unicode admission loses source identity');
+  assert.doesNotThrow(() => JSON.parse(ill));
+  const changed = sources.map(source => ({ ...source }));
+  changed[2].text = ill;
+  assert.throws(() => planEngineeringDesign({stage:'high-level', sources: changed}),
+    TypeError, 'non-representable raw source is not a distinct admitted source cut');
+  assert.equal(planEngineeringDesign({stage:'high-level',sources}).type,
+    'EngineeringDesignDerivationPlan');
+});
+
+test('malformed UTF-16 in received HLD refuses as invalid Design before minting a candidate', () => {
+  const sources = sourcesFixture();
+  const plan = planEngineeringDesign({stage:'high-level', sources});
+  const original = JSON.stringify(hldFixture());
+  const delivered = original.replace('Retain comp-a',
+    'Retain ' + String.fromCharCode(0xD800) + ' comp-a');
+  assert.notEqual(delivered, original);
+  assert.doesNotThrow(() => JSON.parse(delivered));
+  assert.deepEqual(receiveEngineeringDesign({
+    stage:'high-level',sources,plan,deliveryText:delivered,
+  }),{type:'EngineeringDesignDerivationRefusal',reason:'invalid-design'},
+  'a structurally plausible delivery must not gain an ambiguous source identity');
+});
+
 test('accept exact independently source-traced HLD and LLD as unadmitted candidates', () => {
   const sources = sourcesFixture();
   const highLevel = hldReceipt(sources);
@@ -73,6 +141,87 @@ test('accept exact independently source-traced HLD and LLD as unadmitted candida
   assert.equal(received.type, 'EngineeringDesignCandidate');
   assert.equal(received.admitted, false);
   assert.equal(received.proof, 'unreceived');
+});
+
+test('LLD embedded interface schemas cannot erase normative members before Code projection', () => {
+  const sources = sourcesFixture();
+  const high = hldReceipt(sources);
+  const lowSources = [...sources, {kind:'high-level', text:JSON.stringify(high)}];
+  const plan = planEngineeringDesign({stage:'low-level', sources:lowSources});
+  const original = lldFixture();
+  const ambiguousSchemas = [
+    '{"type":"object","required":["preserve"],"required":[]}',
+    '{"type":"object","properties":{"x":{"type":"string"},"x":{"type":"null"}}}',
+    '{"type":"object","required":["preserve"],"\\u0072equired":[]}',
+    '{"description":"\\ud800"}',
+  ];
+  for (const raw of ambiguousSchemas) {
+    // Before this correction JSON.parse made these source-distinct contracts
+    // appear ordinary. It is intentionally not an acceptance oracle.
+    assert.doesNotThrow(() => JSON.parse(raw));
+    for (const field of ['inputSchemaJson','outputSchemaJson']) {
+      const design = structuredClone(original);
+      design.operations[0][field] = raw;
+      assert.deepEqual(receiveEngineeringDesign({
+        stage:'low-level', sources:lowSources, plan,
+        deliveryText:JSON.stringify(design),
+      }), {type:'EngineeringDesignDerivationRefusal', reason:'invalid-design'},
+      'nested normative source must refuse rather than become a Code interface: '+field);
+    }
+  }
+
+  const unambiguous = structuredClone(original);
+  unambiguous.operations[0].inputSchemaJson = 'false';
+  unambiguous.operations[0].outputSchemaJson =
+    '{"type":"object","required":["preserved"],"properties":{"preserved":{"type":"string"}},"additionalProperties":false}';
+  const deliveryText = JSON.stringify(unambiguous);
+  const candidate = receiveEngineeringDesign({
+    stage:'low-level', sources:lowSources, plan, deliveryText,
+  });
+  assert.equal(candidate.type,'EngineeringDesignCandidate');
+  assert.equal(candidate.admitted,false);
+  assert.equal(candidate.proof,'unreceived');
+  const result = readSourceOwnedEngineeringCodeWork({
+    designCandidate:candidate, originalPlan:plan,
+    originalDeliveryText:deliveryText, sourceViews:[],
+  });
+  assert.equal(result.executableWork,false);
+  assert.equal(result.independentProof,'unreceived');
+  const target = result.targets.find(x => x.operationId === 'op-a');
+  assert.equal(target.interface.inputSchema,false);
+  assert.deepEqual(target.interface.outputSchema,{
+    type:'object', required:['preserved'],
+    properties:{preserved:{type:'string'}}, additionalProperties:false,
+  });
+});
+
+test('LLD interface contracts must satisfy the declared JSON Schema dialect, not merely parse', () => {
+  const sources = sourcesFixture();
+  const high = hldReceipt(sources);
+  const lowSources = [...sources, {kind:'high-level', text:JSON.stringify(high)}];
+  const plan = planEngineeringDesign({stage:'low-level', sources:lowSources});
+  // Real JSON text can carry a nonsensical schema. A valid JSON *document*
+  // does not establish a valid Draft 2020-12 interface contract.
+  const invalidSchemas = [
+    '{"type":23}',
+    '{"type":"not-a-json-schema-type"}',
+    '{"required":"source"}',
+    '{"properties":{"source":{"type":23}}}',
+    '{"$schema":"http://json-schema.org/draft-07/schema#","type":"object"}',
+    '{"type":"object","pattern":"["}',
+  ];
+  for (const raw of invalidSchemas) {
+    assert.doesNotThrow(()=>JSON.parse(raw));
+    for (const field of ['inputSchemaJson','outputSchemaJson']) {
+      const candidate = lldFixture();
+      candidate.operations[0][field] = raw;
+      assert.deepEqual(receiveEngineeringDesign({
+        stage:'low-level', sources:lowSources, plan,
+        deliveryText:JSON.stringify(candidate),
+      }),{type:'EngineeringDesignDerivationRefusal',reason:'invalid-design'},
+      'a malformed normative '+field+' cannot become a Code contract: '+raw);
+    }
+  }
 });
 
 test('refuse Architecture candidate with stale original Requirement revision', () => {
@@ -242,7 +391,97 @@ function lowLevelCandidateFixture() {
   assert.equal(candidate.type,'EngineeringDesignCandidate');
   return candidate;
 }
-const exactView = (path, text) => ({path,text,expectedSha256:codeDigest(text)});
+const exactView = (path, text) => ({owner:'fixture-data-owner',path,text,expectedSha256:codeDigest(text)});
+
+test('original Data semantic Design identity survives property ordering but changes for new obligations; source owner is mandatory', () => {
+  const candidate = lowLevelCandidateFixture();
+  const first = readEngineeringCodeWork({designCandidate:candidate,sourceViews:[]});
+  assert.match(first.designCarrierId, /^ni:\/\/\/sha-256;/u);
+  const reordered = {
+    proof:candidate.proof, admitted:candidate.admitted,
+    design:{openQuestions:candidate.design.openQuestions,
+      traceability:candidate.design.traceability,operations:candidate.design.operations},
+    sources:candidate.sources,stage:candidate.stage,type:candidate.type,
+  };
+  const same = readEngineeringCodeWork({designCandidate:reordered,sourceViews:[]});
+  assert.equal(same.designCarrierId, first.designCarrierId,
+    'a property order in an untrusted JS object is not a new semantic Design');
+
+  const changed = structuredClone(candidate);
+  changed.design.operations[0].failureCases.push('An additional independently required refusal');
+  const changedRead = readEngineeringCodeWork({
+    designCandidate:changed,sourceViews:[],
+    originalDeliveryText:JSON.stringify(changed.design),
+  });
+  assert.notEqual(changedRead.designCarrierId,first.designCarrierId,
+    'a changed original normative test obligation must change the Design source cut');
+  assert.equal(changedRead.independentProof,'unreceived');
+  assert.equal(changedRead.executableWork,false);
+
+  const valid = exactView('src/op-a.mjs','export const retainA = x => x;');
+  const {owner, ...ownerless} = valid;
+  assert.equal(owner,'fixture-data-owner');
+  assert.throws(()=>readEngineeringCodeWork({
+    designCandidate:candidate,sourceViews:[ownerless],
+  }),TypeError,'even one possible owner is not permission to invent its identity');
+  assert.equal(readEngineeringCodeWork({
+    designCandidate:candidate,sourceViews:[valid],
+  }).targets[0].sourceStatus,'source-present-unassayed');
+});
+
+test('Design→Code observes actual original named ESM export, without asserting behavior or Proof',()=>{
+  const candidate=lowLevelCandidateFixture();
+  const a=exactView('src/op-a.mjs','export const retainA = x => x;');
+  const b=exactView('src/op-b.mjs','export const retainB = x => x;');
+  const result=readEngineeringCodeWork({designCandidate:candidate,sourceViews:[a,b]});
+  assert.deepEqual(result.discrepancies,[]);
+  assert.deepEqual(result.targets[0].bindingObservation.resolved,{
+    owner:'fixture-data-owner',path:'src/op-a.mjs',binding:'retainA',
+  });
+  assert.equal(result.targets[0].bindingObservation.status,'observed');
+  assert.ok(result.targets[0].bindingObservation.evidence[0].end>0);
+  assert.equal(result.status,'source-present-unassayed');
+  assert.equal(result.independentProof,'unreceived');
+  assert.equal(result.executableWork,false);
+});
+
+test('implementation source with missing original Design export produces a typed disagreement',()=>{
+  const candidate=lowLevelCandidateFixture();
+  const source=exactView('src/op-a.mjs','export const otherName = () => 1;');
+  const result=readEngineeringCodeWork({designCandidate:candidate,sourceViews:[source]});
+  assert.equal(result.targets[0].sourceStatus,'source-present-unassayed');
+  assert.equal(result.targets[0].bindingObservation.status,'absent');
+  assert.equal(result.discrepancies[0].code,'CODE_EXPORT_NOT_OBSERVED');
+  assert.equal(result.status,'source-disagreement');
+  assert.equal(result.independentProof,'unreceived');
+  assert.equal(result.executableWork,false);
+});
+
+test('Design→Code follows an authored reexport to a distinct original source target',()=>{
+  const candidate=lowLevelCandidateFixture();
+  const a=exactView('src/op-a.mjs','export { retainA } from "./op-b.mjs";');
+  const b=exactView('src/op-b.mjs',
+    'export const retainA = value => value; export const retainB = value => value;');
+  const result=readEngineeringCodeWork({designCandidate:candidate,sourceViews:[a,b]});
+  assert.equal(result.targets[0].bindingObservation.status,'observed');
+  assert.deepEqual(result.targets[0].bindingObservation.resolved,{
+    owner:'fixture-data-owner',path:'src/op-b.mjs',binding:'retainA',
+  });
+  assert.deepEqual(result.discrepancies,[]);
+  assert.equal(result.codeApplied,false);
+  assert.equal(result.beneficiaryReceived,false);
+});
+
+test('unobserved ESM reexport cannot be called absent or executable Work',()=>{
+  const candidate=lowLevelCandidateFixture();
+  const a=exactView('src/op-a.mjs','export * from "./not-in-source-cut.mjs";');
+  const result=readEngineeringCodeWork({designCandidate:candidate,sourceViews:[a]});
+  assert.equal(result.targets[0].bindingObservation.status,'unknown');
+  assert.equal(result.targets[0].bindingObservation.reason,'source-not-provided');
+  assert.equal(result.targets[0].sourceStatus,'source-present-unassayed');
+  assert.equal(result.independentProof,'unreceived');
+  assert.equal(result.executableWork,false);
+});
 
 test('original Design→Code reader yields actionable per-operation tests and exact Requirement-cell trace, not fabrication', () => {
   const candidate=lowLevelCandidateFixture();
@@ -304,7 +543,7 @@ test('missing Code source is an unobserved target, never a claim of absent repos
 test('Code material and the custodian-addressed digest must match even when LLD module spelling matches',()=>{
   const candidate=lowLevelCandidateFixture();
   const actual='export const retainA = () => "changed";';
-  const sourceViews=[{path:'src/op-a.mjs',text:actual,
+  const sourceViews=[{owner:'fixture-data-owner',path:'src/op-a.mjs',text:actual,
     expectedSha256:codeDigest('export const retainA = () => "old";')}];
   const read=readEngineeringCodeWork({designCandidate:candidate,sourceViews});
   assert.equal(read.status,'source-disagreement');
@@ -337,7 +576,7 @@ test('unreviewed extra source path, duplicate snapshot, malformed digest and inv
     [exactView('src/surprise.mjs','export const x=1;')],
     [{...valid,expectedSha256:'not-a-source-digest'}],
     [{...valid,text:'const forbidden = "'+String.fromCharCode(0xD800)+'";'}],
-    [{path:valid.path,text:'x'.repeat(2_097_153),expectedSha256:valid.expectedSha256}],
+    [{owner:valid.owner,path:valid.path,text:'x'.repeat(2_097_153),expectedSha256:valid.expectedSha256}],
   ]){
     assert.throws(()=>readEngineeringCodeWork({designCandidate:original,sourceViews}),TypeError);
   }

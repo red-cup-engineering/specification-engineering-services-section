@@ -3,12 +3,50 @@
 // export, never ../src, and preserves source/Proof/admission boundaries.
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
+import { spawnSync } from 'node:child_process';
 import {
   planEngineeringDesign,
   receiveEngineeringDesign,
   readEngineeringCodeWork,
 } from '@red-cup-engineering/specification-engineering-services-section/engineering-design';
+import { indexJavaScriptModuleBindings } from '@red-cup-engineering/specification-engineering-services-section/javascript-module-bindings';
 import { sourcesFixture, clausesSplitAcrossModels } from './engineering-design-source-cut.fixture.mjs';
+
+// The installed package's four original source producers must share STRICT
+// JSON intake. Source bytes that hide an earlier claim cannot reach any
+// later Specification renderer or Design generator.
+const duplicateInput='{"claim":"preserved","claim":"silently erased"}';
+for (const name of [
+  'derive-specification','render-specification',
+  'render-specification-rfcxml','render-architecture-description',
+]) {
+  const command='node_modules/@red-cup-engineering/specification-engineering-services-section/scripts/'+name+'.mjs';
+  const result=spawnSync(process.execPath,[command],{
+    input:duplicateInput,encoding:'utf8',maxBuffer:2*1024*1024,timeout:15_000,
+  });
+  assert.equal(result.status,1,name+' '+result.stderr);
+  assert.equal(result.stdout,'',name+' emitted a partial product from ambiguous source');
+  assert.match(result.stderr,/duplicate-key/u,name+' did not use the shared JSON source admission');
+}
+
+// Resolve original semantic ESM bindings through the exact installed package
+// export. No module under analysis is imported or executed.
+const runtimeBindings=indexJavaScriptModuleBindings([
+  {owner:'fixture-only',path:'src/leaf.mjs',text:'export const original=1;'},
+  {owner:'fixture-only',path:'src/forward.mjs',
+    text:'export {original as publicName} from "./leaf.mjs";'},
+],{maxBytes:2_097_152,maxModules:64});
+const reading=runtimeBindings.inspect({
+  owner:'fixture-only',path:'src/forward.mjs',exportName:'publicName',
+});
+assert.equal(reading.status,'observed');
+assert.deepEqual(reading.resolved,{
+  owner:'fixture-only',path:'src/leaf.mjs',binding:'original',
+});
+assert.equal(runtimeBindings.inspect({
+  owner:'fixture-only',path:'src/forward.mjs',exportName:'absent',
+}).status,'absent');
+assert.throws(()=>indexJavaScriptModuleBindings([],{}),RangeError);
 
 const original = sourcesFixture();
 const plan = planEngineeringDesign({ stage: 'high-level', sources: original });
@@ -32,6 +70,43 @@ const high = receiveEngineeringDesign({ stage: 'high-level',
 assert.equal(high.type, 'EngineeringDesignCandidate');
 assert.equal(high.admitted, false);
 assert.equal(high.proof, 'unreceived');
+
+// Independent packed consumer must refuse lossy UTF-8 source views before
+// a plan acquires its source addresses, even when raw JSON parses successfully.
+const malformedArchitecture = original.map(source => ({...source}));
+malformedArchitecture[2].text = original[2].text.replace('Synthetic original design',
+  'Synthetic ' + String.fromCharCode(0xD800) + ' original design');
+assert.doesNotThrow(() => JSON.parse(malformedArchitecture[2].text));
+assert.throws(() => planEngineeringDesign({
+  stage:'high-level', sources:malformedArchitecture,
+}),TypeError,'original source owner cannot be re-addressed through lossy UTF-8');
+const malformedDelivery=JSON.stringify(hld).replace('Retain A and B',
+  'Retain ' + String.fromCharCode(0xD800) + ' A and B');
+assert.doesNotThrow(() => JSON.parse(malformedDelivery));
+assert.deepEqual(receiveEngineeringDesign({
+  stage:'high-level',sources:original,plan,deliveryText:malformedDelivery,
+}),{type:'EngineeringDesignDerivationRefusal',reason:'invalid-design'});
+
+
+// Independent package consumer: no normative clause may disappear via a
+// duplicate JSON member, and no delivered Design may hide an earlier operation.
+const duplicateRequirement=original.map(row=>({...row}));
+duplicateRequirement[0].text=original[0].text.replace('"met-when":',
+  '"met-when":[{"cell":"source-req:hidden","target":"held","says":"Never silently erase this requirement."}],"met-when":');
+assert.deepEqual(JSON.parse(duplicateRequirement[0].text),JSON.parse(original[0].text));
+assert.throws(()=>planEngineeringDesign({
+  stage:'high-level',sources:duplicateRequirement,
+}),TypeError);
+const duplicateDesign=JSON.stringify(hld).replace('"components":','"components":[],"components":');
+assert.deepEqual(JSON.parse(duplicateDesign),hld);
+assert.deepEqual(receiveEngineeringDesign({
+  stage:'high-level',sources:original,plan,deliveryText:duplicateDesign,
+}),{type:'EngineeringDesignDerivationRefusal',reason:'invalid-design'});
+const escapedUnicode=JSON.stringify(hld).replace('Retain A and B','Retain \\u'+'d800 A and B');
+assert.equal(escapedUnicode.isWellFormed(),true);
+assert.deepEqual(receiveEngineeringDesign({
+  stage:'high-level',sources:original,plan,deliveryText:escapedUnicode,
+}),{type:'EngineeringDesignDerivationRefusal',reason:'invalid-design'});
 
 const lowSources = [...original, { kind: 'high-level', text: JSON.stringify(high) }];
 const lowPlan = planEngineeringDesign({ stage: 'low-level', sources: lowSources });
@@ -61,6 +136,68 @@ assert.equal(low.type, 'EngineeringDesignCandidate');
 assert.equal(low.admitted, false);
 assert.equal(low.proof, 'unreceived');
 
+// The distinct, independently installed npm consumer must exercise the
+// shared strict JSON reader INSIDE both original Design interface schemas.
+// The provider's raw outer JSON remains valid; only the nested, normative
+// Code schema is ambiguous. Never silently project a last-key-wins contract.
+for (const nested of [
+  '{"type":"object","required":["keep"],"required":[]}',
+  '{"type":"object","properties":{"x":{"type":"string"},"x":{"type":"null"}}}',
+  '{"type":"object","required":["keep"],"\\u0072equired":[]}',
+  '{"description":"\\ud800"}',
+]) {
+  assert.doesNotThrow(()=>JSON.parse(nested),
+    'negative control: ordinary JSON.parse does not preserve normative source');
+  for (const interfaceKey of ['inputSchemaJson','outputSchemaJson']) {
+    const ambiguousInterface=structuredClone(low.design);
+    ambiguousInterface.operations[0][interfaceKey]=nested;
+    assert.deepEqual(receiveEngineeringDesign({
+      stage:'low-level',sources:lowSources,plan:lowPlan,
+      deliveryText:JSON.stringify(ambiguousInterface),
+    }),{type:'EngineeringDesignDerivationRefusal',reason:'invalid-design'},
+    'an installed Design reader must refuse ambiguous Code schema: '+interfaceKey);
+  }
+}
+// The packed Design interfaces must use the incumbent Draft 2020-12
+// supplier, not accept a JSON-parsable but invalid normative contract.
+for (const invalidSchema of [
+  '{"type":23}', '{"required":"source"}',
+  '{"properties":{"source":{"type":23}}}',
+  '{"$schema":"http://json-schema.org/draft-07/schema#","type":"object"}',
+]) {
+  assert.doesNotThrow(()=>JSON.parse(invalidSchema));
+  for (const field of ['inputSchemaJson','outputSchemaJson']) {
+    const invalidDesign=structuredClone(low.design);
+    invalidDesign.operations[0][field]=invalidSchema;
+    assert.deepEqual(receiveEngineeringDesign({
+      stage:'low-level',sources:lowSources,plan:lowPlan,
+      deliveryText:JSON.stringify(invalidDesign),
+    }),{type:'EngineeringDesignDerivationRefusal',reason:'invalid-design'},
+    'a clean installed npm consumer must refuse malformed '+field);
+  }
+}
+const concreteInterface=structuredClone(low.design);
+concreteInterface.operations[0].inputSchemaJson='false';
+concreteInterface.operations[0].outputSchemaJson=
+  '{"type":"object","required":["value"],"properties":{"value":{"type":"string"}},"additionalProperties":false}';
+const concreteDelivery=JSON.stringify(concreteInterface);
+const concreteCandidate=receiveEngineeringDesign({
+  stage:'low-level',sources:lowSources,plan:lowPlan,
+  deliveryText:concreteDelivery,
+});
+assert.equal(concreteCandidate.type,'EngineeringDesignCandidate');
+const concreteWork=readEngineeringCodeWork({
+  designCandidate:concreteCandidate,originalPlan:lowPlan,
+  originalDeliveryText:concreteDelivery,sourceViews:[],
+});
+assert.equal(concreteWork.targets[0].interface.inputSchema,false);
+assert.deepEqual(concreteWork.targets[0].interface.outputSchema,{
+  type:'object',required:['value'],properties:{value:{type:'string'}},
+  additionalProperties:false,
+});
+assert.equal(concreteWork.executableWork,false);
+assert.equal(concreteWork.independentProof,'unreceived');
+
  // Canonical-equivalent module paths may alias after materialization. The
  // installed consumer must see a source refusal, not normalize the Design
  // silently or inherit the previous output identity.
@@ -88,7 +225,7 @@ const canonicalText='export const retainSourceValue = x => x;';
 const canonicalReadout=readEngineeringCodeWork({
   designCandidate:canonicalReceipt,originalPlan:lowPlan,
   originalDeliveryText:JSON.stringify(canonicalLLD),
-  sourceViews:[{path:canonicalName,text:canonicalText,
+  sourceViews:[{owner:'fixture-only',path:canonicalName,text:canonicalText,
     expectedSha256:'sha256:'+createHash('sha256').update(canonicalText,'utf8').digest('hex')}],
 });
 assert.equal(canonicalReadout.status,'source-present-unassayed');
@@ -105,7 +242,7 @@ const codeSourceText='export const retainSourceValue = x => x;' + '\n';
 const codeSourceSha256='sha256:' + createHash('sha256')
   .update(codeSourceText,'utf8').digest('hex');
 const sourceCut=[{
-  path:'src/source-operation.mjs',text:codeSourceText,
+  owner:'fixture-only',path:'src/source-operation.mjs',text:codeSourceText,
   expectedSha256:codeSourceSha256,
 }];
 const work=readEngineeringCodeWork({
@@ -113,6 +250,30 @@ const work=readEngineeringCodeWork({
   originalDeliveryText:JSON.stringify(low.design),sourceViews:sourceCut,
 });
 assert.equal(work.type,'EngineeringDesignCodeWorkReadout');
+assert.equal(work.targets[0].bindingObservation.status,'observed');
+assert.deepEqual(work.targets[0].bindingObservation.resolved,{
+  owner:'fixture-only',path:'src/source-operation.mjs',binding:'retainSourceValue',
+});
+// Deliberately clean source bytes with the WRONG export must disagree with the
+// original LLD; passing a digest proves no obligation of its implementation.
+const wrongText='export const differentOperation = () => 42;\n';
+const wrongView={
+  owner:'fixture-only',path:'src/source-operation.mjs',text:wrongText,
+  expectedSha256:'sha256:'+createHash('sha256').update(wrongText,'utf8').digest('hex'),
+};
+const wrongReadout=readEngineeringCodeWork({
+  designCandidate:low,originalPlan:lowPlan,
+  originalDeliveryText:JSON.stringify(low.design),sourceViews:[wrongView],
+});
+assert.equal(wrongReadout.targets[0].bindingObservation.status,'absent');
+assert.equal(wrongReadout.discrepancies[0].code,'CODE_EXPORT_NOT_OBSERVED');
+assert.equal(wrongReadout.status,'source-disagreement');
+assert.equal(wrongReadout.executableWork,false);
+assert.equal(wrongReadout.independentProof,'unreceived');
+
+assert.match(work.designCarrierId,/^ni:\/\/\/sha-256;/u);
+assert.equal(work.designCarrierSha256,undefined,
+  'the Code Work reader no longer hashes caller-ordered JSON serialization');
 assert.equal(work.status,'source-present-unassayed');
 assert.equal(work.targets.length,1);
 assert.equal(work.targets[0].operationId,'source-operation');
