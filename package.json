@@ -30,7 +30,8 @@
     "./specification": "./src/specification.mjs",
     "./specification-rfcxml": "./src/specification-rfcxml.mjs",
     "./architecture-description": "./src/architecture-description.mjs",
-    "./engineering-design": "./src/engineering-design.mjs"
+    "./engineering-design": "./src/engineering-design.mjs",
+    "./javascript-module-bindings": "./src/javascript-module-bindings.mjs"
   },
   "private": false,
   "files": [
