@@ -61,15 +61,25 @@ function relative(from, specifier) {
  * envelope. The index does not read files, resolve npm, execute source or
  * import code. Re-export source paths must be present within this same cut.
  */
-export function indexJavaScriptModuleBindings(sources) {
-  if (!Array.isArray(sources) || sources.length > 64) throw new TypeError('source-view-count');
+export function indexJavaScriptModuleBindings(sources, {maxBytes,maxModules}={}) {
+  // The host must name the checked original Code Work envelope; untrusted
+  // profile data cannot enlarge its existing 2 MiB / 64-view boundary.
+  if (!Number.isSafeInteger(maxBytes)||maxBytes<1||maxBytes>2_097_152||
+      !Number.isSafeInteger(maxModules)||maxModules<1||maxModules>64)
+    throw new RangeError('source-binding-envelope-not-admitted');
+  if (!Array.isArray(sources)||sources.length>maxModules)
+    throw new TypeError('source-view-count');
   const views = new Map();
+  let bytes=0;
   for (const v of sources) {
     if (!plain(v) || !scalar(v.owner) || !scalar(v.path) || typeof v.text !== 'string' ||
         !v.text.isWellFormed() || !v.path.endsWith('.mjs') ||
         v.path.includes('\\') || v.path.normalize('NFC') !== v.path ||
         v.path.startsWith('/') || v.path.split('/').some(x=>!x||x==='.'||x==='..'))
       throw new TypeError('malformed-original-source-view');
+    bytes+=Buffer.byteLength(v.text,'utf8');
+    if (!Number.isSafeInteger(bytes)||bytes>maxBytes)
+      throw new RangeError('source-binding-byte-bound-exceeded');
     const key=token(v.owner,v.path);
     if (views.has(key)) throw new TypeError('duplicate-original-source-view');
     views.set(key,v);
