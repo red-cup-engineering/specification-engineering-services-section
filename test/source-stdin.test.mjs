@@ -56,7 +56,7 @@ test("original JSON source entrance refuses duplicate claims before every produc
 });
 
 test("escaped Unicode surrogate refuses before source semantics or output", async () => {
-  const escaped = '{"claim":"\\\\ud800"}';
+  const escaped = '{"claim":"' + String.fromCharCode(92) + 'ud800"}';
   assert.equal(JSON.parse(escaped).claim.isWellFormed(),false,
     'negative control: escaped surrogates survive the raw UTF-8 byte gate');
   await assert.rejects(readSourceJsonStdin(chunks(Buffer.from(escaped))),
