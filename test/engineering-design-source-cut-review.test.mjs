@@ -2,6 +2,8 @@
 // HLD/LLD bootstrap. These cases were not supplied to the v27 generator writer.
 // No source permission, production result, or Proof follows from a passing test.
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { semanticIdOf } from '@red-cup-engineering/computer-data-engineering-services-section/semiotic-expression-notation/semantic-content-identity';
 import { planEngineeringDesign, receiveEngineeringDesign } from '../src/engineering-design.mjs';
@@ -150,4 +152,42 @@ test('preserve authored model identity into low-level operations for both cells'
   const crossed=clone(lowLevel);
   crossed.traceability[0].architectureModelIds=['model-beta'];
   assert.equal(derive('low-level',lowSources(),crossed).reason,'invalid-design');
+});
+
+test('the original refused LLD provider delivery remains refused at the current exact source cut', () => {
+  // These are original recorded sources, not synthetic examples or repaired
+  // model output. Reconstruct a NEW read-only plan at today's source parser,
+  // without impersonating or replaying the original paid CIE work lot.
+  const hld = JSON.parse(readFileSync(new URL(
+    '../data/records/service-records/high-level-design-service-records/engineering-design-explicit-source-profiles.json',
+    import.meta.url), 'utf8'));
+  const raw = readFileSync(new URL(
+    '../data/records/service-records/engineering-generation-records/engineering-design-source-profiles-low-level-v1-raw-delivery.txt',
+    import.meta.url), 'utf8');
+  const receivedRefusal = JSON.parse(readFileSync(new URL(
+    '../data/records/service-records/engineering-generation-records/engineering-design-source-profiles-low-level-v1-native-refusal.json',
+    import.meta.url), 'utf8'));
+  assert.equal(createHash('sha256').update(raw, 'utf8').digest('hex'),
+    '164a07f27b6de39aab5a417a13736fe304eaff164f3cfb02a2e791906f39843c',
+    'real immutable rejected supplier bytes must not be silently rewritten');
+  const delivered = JSON.parse(raw);
+  assert.deepEqual(Object.keys(delivered),
+    ['type','additionalProperties','required','properties',
+      'operations','traceability','openQuestions']);
+  assert.equal(delivered.operations.length, 7);
+  assert.equal(delivered.traceability.length, 13);
+  assert.equal(hld.stage, 'high-level');
+  assert.equal(hld.admitted, false);
+  assert.equal(hld.proof, 'unreceived');
+  const sources = [
+    ...hld.sources.map(({kind,text}) => ({kind,text})),
+    {kind:'high-level',text:JSON.stringify(hld)},
+  ];
+  const plan = planEngineeringDesign({stage:'low-level',sources});
+  const next = receiveEngineeringDesign({
+    stage:'low-level',sources,plan,deliveryText:raw,
+  });
+  assert.deepEqual(next, receivedRefusal,
+    'a later Design receiver may not silently accept a known refused source');
+  assert.equal(next.reason, 'invalid-design');
 });
