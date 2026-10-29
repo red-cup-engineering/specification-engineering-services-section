@@ -1,0 +1,131 @@
+{
+  "identity": {
+    "version": "0.1.0",
+    "stability": "draft",
+    "status": "requires-independent-requirement-and-interpretation-admission",
+    "date-created": "2026-10-29",
+    "id": "design-source-language-validation-prerequisites-specification",
+    "title": "Shared source-language validation prerequisites",
+    "seat": "specification-engineering-services-section",
+    "carrier": "data/records/specification-records/design-source-language-validation-prerequisites.json",
+    "authors": [
+      "Codex engineering session /root"
+    ],
+    "profile": "prose"
+  },
+  "whatThisIs": "An unadmitted candidate reading of Requirement design-source-language-validation-prerequisites at ni:///sha-256;_pBf9tzLEWw2z1CMPixjCeRGh-NaYsIgBWba_gA6l9s. External authority and specification acceptance remain open.",
+  "topics": [
+    {
+      "heading": "Source-owned requirement conditions",
+      "body": "{{clause:prerequisite-shared}}\n\n{{clause:prerequisite-syntax}}\n\n{{clause:prerequisite-parameters}}\n\n{{clause:prerequisite-custody}}\n\n{{clause:prerequisite-qualification}}\n\n{{clause:prerequisite-construction}}\n\n{{clause:prerequisite-complete-interface-contract}}\n\n{{clause:prerequisite-implementable-analysis}}\n\n{{clause:prerequisite-fabrication-completeness}}\n\n{{clause:prerequisite-esm-resolved-identity}}",
+      "clauses": [
+        {
+          "id": "prerequisite-shared",
+          "keyword": "MUST",
+          "actor": "Specification Engineering shared source-analysis capability",
+          "statement": "Build one reusable JavaScript ESM source-analysis capability and one reusable nonexecuting Guile Scheme source-analysis capability as Specification Engineering source-owned JavaScript modules. They are shared prerequisites for the existing design engine, not forwarding implementations of Scheme programs.",
+          "backedBy": [
+            "Original Requirement design-source-language-validation-prerequisites (ni:///sha-256;_pBf9tzLEWw2z1CMPixjCeRGh-NaYsIgBWba_gA6l9s), cell design-source-language-validation-prerequisites:shared"
+          ]
+        },
+        {
+          "id": "prerequisite-syntax",
+          "keyword": "MUST",
+          "actor": "Specification Engineering shared source-analysis capability",
+          "statement": "Recognize actual top-level named ESM exports and actual Guile 3.0.9 top-level define and define* bindings from selected source text without evaluating that source; retain exact identifier and path spelling, reject malformed or ambiguous syntax, and do not treat an arbitrary regular expression or caller assertion as proof.",
+          "backedBy": [
+            "Original Requirement design-source-language-validation-prerequisites (ni:///sha-256;_pBf9tzLEWw2z1CMPixjCeRGh-NaYsIgBWba_gA6l9s), cell design-source-language-validation-prerequisites:syntax"
+          ]
+        },
+        {
+          "id": "prerequisite-parameters",
+          "keyword": "MUST",
+          "actor": "Specification Engineering shared source-analysis capability",
+          "statement": "Receive the source text, selected dialect and owner identity, exact requested binding, and all byte, time, memory and worker limits through checked explicit host-admitted parameters. Never allow caller inputs to grant execution authority or weaken the parent engine source-view and aggregate bounds.",
+          "backedBy": [
+            "Original Requirement design-source-language-validation-prerequisites (ni:///sha-256;_pBf9tzLEWw2z1CMPixjCeRGh-NaYsIgBWba_gA6l9s), cell design-source-language-validation-prerequisites:parameters"
+          ]
+        },
+        {
+          "id": "prerequisite-custody",
+          "keyword": "MUST",
+          "actor": "Specification Engineering shared source-analysis capability",
+          "statement": "Treat trusted immutable source custody, dialect selection and host admission as external contracts supplied by the actual host; do not invent a host owner, authority, receipt, callback path or wrapper. Return deterministic analysis evidence bound to the exact selected source and parameters, with explicit failure and uncertainty.",
+          "backedBy": [
+            "Original Requirement design-source-language-validation-prerequisites (ni:///sha-256;_pBf9tzLEWw2z1CMPixjCeRGh-NaYsIgBWba_gA6l9s), cell design-source-language-validation-prerequisites:custody"
+          ]
+        },
+        {
+          "id": "prerequisite-qualification",
+          "keyword": "MUST",
+          "actor": "Specification Engineering shared source-analysis capability",
+          "statement": "Independently qualify the shared implementations against actual selected ESM source, the real Guile maintenance source and safe Guile 3.0.9 syntax fixtures, including malformed, changed, ambiguous and denied inputs. Qualification itself must not execute submitted source.",
+          "backedBy": [
+            "Original Requirement design-source-language-validation-prerequisites (ni:///sha-256;_pBf9tzLEWw2z1CMPixjCeRGh-NaYsIgBWba_gA6l9s), cell design-source-language-validation-prerequisites:qualification"
+          ]
+        },
+        {
+          "id": "prerequisite-construction",
+          "keyword": "MUST",
+          "actor": "Specification Engineering shared source-analysis capability",
+          "statement": "Use the existing JavaScript-only native generation and fabrication chain for this bounded prerequisite, retain the original full thirteen-condition parent requirement, and deliver source, package and actual host consumption before using these capabilities to admit Scheme planning. No compatibility modes or hand-written code.",
+          "backedBy": [
+            "Original Requirement design-source-language-validation-prerequisites (ni:///sha-256;_pBf9tzLEWw2z1CMPixjCeRGh-NaYsIgBWba_gA6l9s), cell design-source-language-validation-prerequisites:construction"
+          ]
+        },
+        {
+          "id": "prerequisite-complete-interface-contract",
+          "keyword": "MUST",
+          "actor": "Specification Engineering shared source-analysis capability",
+          "statement": "The derived design specifies complete closed machine-readable input and output schemas for every implemented operation, including all nested source selections, graph entries, requested bindings, admitted parameters, limits, checked targets, evidence identities, ordered results, ranges, diagnostic codes, failure and unavailable cases. Define field types, requiredness, allowed values, units, invariants and exact status transitions; an unconstrained object or promise to decide later is not a fabricable contract.",
+          "backedBy": [
+            "Original Requirement design-source-language-validation-prerequisites (ni:///sha-256;_pBf9tzLEWw2z1CMPixjCeRGh-NaYsIgBWba_gA6l9s), cell design-source-language-validation-prerequisites:complete-interface-contract"
+          ]
+        },
+        {
+          "id": "prerequisite-implementable-analysis",
+          "keyword": "MUST",
+          "actor": "Specification Engineering shared source-analysis capability",
+          "statement": "The derived design selects an implementable nonexecuting analysis procedure and conservative supported grammar for the actual selected dialects, including static binding recognition, lexical and syntactic ambiguity, re-export resolution, Unicode and source byte ranges, exact deterministic resource accounting and defined refusal for unsupported input. Explain how the selected original ESM parser is qualified or instrumented for every required bound; do not assume its current API supplies counters or host isolation.",
+          "backedBy": [
+            "Original Requirement design-source-language-validation-prerequisites (ni:///sha-256;_pBf9tzLEWw2z1CMPixjCeRGh-NaYsIgBWba_gA6l9s), cell design-source-language-validation-prerequisites:implementable-analysis"
+          ]
+        },
+        {
+          "id": "prerequisite-fabrication-completeness",
+          "keyword": "MUST",
+          "actor": "Specification Engineering shared source-analysis capability",
+          "statement": "Before native fabrication, source-bound design and independent source-free assays specify all behavior and adverse cases needed to implement each selected module without inventing normative fields, algorithms, authority, counters, effect boundaries or always-unavailable stubs. Actual host resource values, parser-release selection, independent qualification results and live authority remain external receiving conditions rather than fabricated facts.",
+          "backedBy": [
+            "Original Requirement design-source-language-validation-prerequisites (ni:///sha-256;_pBf9tzLEWw2z1CMPixjCeRGh-NaYsIgBWba_gA6l9s), cell design-source-language-validation-prerequisites:fabrication-completeness"
+          ]
+        },
+        {
+          "id": "prerequisite-esm-resolved-identity",
+          "keyword": "MUST",
+          "actor": "Specification Engineering shared source-analysis capability",
+          "statement": "ESM re-export analysis preserves the selected dialect standard semantic resolved module-and-binding identity separately from declaration occurrence and diagnostic ranges. Different paths resolving to the same namespace target are not falsely ambiguous; distinct semantic targets, unresolvable paths and actual conflicting stars are handled according to the selected qualified dialect. Specify deterministic evidence selection across equivalent routes and include direct and transitive namespace re-export counterexamples in independent qualification.",
+          "backedBy": [
+            "Original Requirement design-source-language-validation-prerequisites (ni:///sha-256;_pBf9tzLEWw2z1CMPixjCeRGh-NaYsIgBWba_gA6l9s), cell design-source-language-validation-prerequisites:esm-resolved-identity"
+          ]
+        }
+      ]
+    }
+  ],
+  "implementations": [],
+  "openQuestions": [
+    {
+      "question": "Has the original source Requirement and each BCP 14 interpretation been independently admitted?",
+      "blockedBy": "An original competent Office and external reviewer; no approval is inferred from this record"
+    }
+  ],
+  "laws": [],
+  "standards": [],
+  "provenance": {
+    "derivedAt": "2026-10-29T03:37:45.999Z",
+    "derivedBy": "codex-engineering-session-root",
+    "derivedFrom": [
+      "design-source-language-validation-prerequisites@ni:///sha-256;_pBf9tzLEWw2z1CMPixjCeRGh-NaYsIgBWba_gA6l9s"
+    ]
+  }
+}
