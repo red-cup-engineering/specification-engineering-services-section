@@ -91,10 +91,20 @@ export function indexJavaScriptModuleBindings(sources, {maxBytes,maxModules}={})
     if (!view) return null;
     let program;
     try { program=parseJavaScript(view.text,{sourceType:'module'}); }
-    catch { const result={invalid:true}; documents.set(key,result); return result; }
+    catch { const result={invalid:'ecmascript-parser-refused'}; documents.set(key,result); return result; }
     const locals=new Map(),direct=new Map(),stars=[];
+    let duplicateTopLevel=false;
     const bind=(name,value)=>{
-      if (typeof name==='string') locals.set(name,value);
+      if(typeof name!=='string') return;
+      const existing=locals.get(name);
+      // ECMAScript module top-level lexical names cannot collide with
+      // imports or other declarations. Repeated var declarations are one
+      // legal binding; a naive Map overwrite would otherwise manufacture a
+      // valid export from an invalid source module.
+      if(existing && !(existing.declarationKind==='var' &&
+                       value.declarationKind==='var'))
+        duplicateTopLevel=true;
+      else locals.set(name,value);
     };
     const offer=(name,entry)=>{
       if (typeof name!=='string') return;
@@ -105,14 +115,17 @@ export function indexJavaScriptModuleBindings(sources, {maxBytes,maxModules}={})
     // Independent declaration/lexical binding pass: exports can refer to a
     // declaration later in the module, but an invented name isn't a binding.
     for (const node of program.body) {
-      const decl=node.type==='ExportNamedDeclaration' ? node.declaration : node;
+      const decl=node.type==='ExportNamedDeclaration' ||
+        node.type==='ExportDefaultDeclaration' ? node.declaration : node;
+      const declarationKind=decl?.type==='VariableDeclaration' ? decl.kind : decl?.type;
       for (const name of declarationsOf(decl))
-        bind(name,{kind:'local'});
+        bind(name,{kind:'local',declarationKind});
       if (node.type==='ImportDeclaration')
         for (const s of node.specifiers) {
           const imported=s.type==='ImportDefaultSpecifier' ? 'default' :
             s.type==='ImportNamespaceSpecifier' ? '*' : nameOf(s.imported);
-          bind(nameOf(s.local),{kind:'import',from:node.source?.value,imported});
+          bind(nameOf(s.local),{kind:'import',declarationKind:'import',
+            from:node.source?.value,imported});
         }
     }
     for (const node of program.body) {
@@ -133,7 +146,8 @@ export function indexJavaScriptModuleBindings(sources, {maxBytes,maxModules}={})
           });
       }
     }
-    const doc={locals,direct,stars};
+    const doc={locals,direct,stars,
+      ...(duplicateTopLevel?{invalid:'duplicate-top-level-binding'}:{})};
     documents.set(key,doc);
     return doc;
   }
@@ -145,7 +159,7 @@ export function indexJavaScriptModuleBindings(sources, {maxBytes,maxModules}={})
       return out('unknown',null,[],'source-not-provided');
     const doc=documentOf(key);
     if (doc.invalid)
-      return out('unknown',null,[],'ecmascript-parser-refused');
+      return out('unknown',null,[],doc.invalid);
     const next=new Set(visited);next.add(coordinate);
     const direct=doc.direct.get(exportedName)||[];
     if (direct.length>1)
@@ -169,9 +183,10 @@ export function indexJavaScriptModuleBindings(sources, {maxBytes,maxModules}={})
         if (!resolvedPath || !views.has(token(owner,resolvedPath)))
           return out('unknown',null,[note(path,exportedName,entry.node)],
             'namespace-source-not-provided');
-        if (documentOf(token(owner,resolvedPath)).invalid)
+        const namespaceDocument=documentOf(token(owner,resolvedPath));
+        if (namespaceDocument.invalid)
           return out('unknown',null,[note(path,exportedName,entry.node)],
-            'ecmascript-parser-refused');
+            namespaceDocument.invalid);
         return out('observed',target(owner,resolvedPath,'*'),
           [note(path,exportedName,entry.node)]);
       }
@@ -187,9 +202,10 @@ export function indexJavaScriptModuleBindings(sources, {maxBytes,maxModules}={})
           if (!resolvedPath || !views.has(token(owner,resolvedPath)))
             return out('unknown',null,[note(path,exportedName,entry.node)],
               'namespace-source-not-provided');
-          if (documentOf(token(owner,resolvedPath)).invalid)
+          const namespaceDocument=documentOf(token(owner,resolvedPath));
+          if (namespaceDocument.invalid)
             return out('unknown',null,[note(path,exportedName,entry.node)],
-              'ecmascript-parser-refused');
+              namespaceDocument.invalid);
           return out('observed',target(owner,resolvedPath,'*'),
             [note(path,exportedName,entry.node)]);
         }
