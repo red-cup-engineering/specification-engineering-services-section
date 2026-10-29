@@ -348,6 +348,60 @@ test('original Data semantic Design identity survives property ordering but chan
   }).targets[0].sourceStatus,'source-present-unassayed');
 });
 
+test('Design→Code observes actual original named ESM export, without asserting behavior or Proof',()=>{
+  const candidate=lowLevelCandidateFixture();
+  const a=exactView('src/op-a.mjs','export const retainA = x => x;');
+  const b=exactView('src/op-b.mjs','export const retainB = x => x;');
+  const result=readEngineeringCodeWork({designCandidate:candidate,sourceViews:[a,b]});
+  assert.deepEqual(result.discrepancies,[]);
+  assert.deepEqual(result.targets[0].bindingObservation.resolved,{
+    owner:'fixture-data-owner',path:'src/op-a.mjs',binding:'retainA',
+  });
+  assert.equal(result.targets[0].bindingObservation.status,'observed');
+  assert.ok(result.targets[0].bindingObservation.evidence[0].end>0);
+  assert.equal(result.status,'source-present-unassayed');
+  assert.equal(result.independentProof,'unreceived');
+  assert.equal(result.executableWork,false);
+});
+
+test('implementation source with missing original Design export produces a typed disagreement',()=>{
+  const candidate=lowLevelCandidateFixture();
+  const source=exactView('src/op-a.mjs','export const otherName = () => 1;');
+  const result=readEngineeringCodeWork({designCandidate:candidate,sourceViews:[source]});
+  assert.equal(result.targets[0].sourceStatus,'source-present-unassayed');
+  assert.equal(result.targets[0].bindingObservation.status,'absent');
+  assert.equal(result.discrepancies[0].code,'CODE_EXPORT_NOT_OBSERVED');
+  assert.equal(result.status,'source-disagreement');
+  assert.equal(result.independentProof,'unreceived');
+  assert.equal(result.executableWork,false);
+});
+
+test('Design→Code follows an authored reexport to a distinct original source target',()=>{
+  const candidate=lowLevelCandidateFixture();
+  const a=exactView('src/op-a.mjs','export { retainA } from "./op-b.mjs";');
+  const b=exactView('src/op-b.mjs',
+    'export const retainA = value => value; export const retainB = value => value;');
+  const result=readEngineeringCodeWork({designCandidate:candidate,sourceViews:[a,b]});
+  assert.equal(result.targets[0].bindingObservation.status,'observed');
+  assert.deepEqual(result.targets[0].bindingObservation.resolved,{
+    owner:'fixture-data-owner',path:'src/op-b.mjs',binding:'retainA',
+  });
+  assert.deepEqual(result.discrepancies,[]);
+  assert.equal(result.codeApplied,false);
+  assert.equal(result.beneficiaryReceived,false);
+});
+
+test('unobserved ESM reexport cannot be called absent or executable Work',()=>{
+  const candidate=lowLevelCandidateFixture();
+  const a=exactView('src/op-a.mjs','export * from "./not-in-source-cut.mjs";');
+  const result=readEngineeringCodeWork({designCandidate:candidate,sourceViews:[a]});
+  assert.equal(result.targets[0].bindingObservation.status,'unknown');
+  assert.equal(result.targets[0].bindingObservation.reason,'source-not-provided');
+  assert.equal(result.targets[0].sourceStatus,'source-present-unassayed');
+  assert.equal(result.independentProof,'unreceived');
+  assert.equal(result.executableWork,false);
+});
+
 test('original Design→Code reader yields actionable per-operation tests and exact Requirement-cell trace, not fabrication', () => {
   const candidate=lowLevelCandidateFixture();
   const sourceViews=[
