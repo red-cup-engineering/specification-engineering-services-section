@@ -242,7 +242,43 @@ function lowLevelCandidateFixture() {
   assert.equal(candidate.type,'EngineeringDesignCandidate');
   return candidate;
 }
-const exactView = (path, text) => ({path,text,expectedSha256:codeDigest(text)});
+const exactView = (path, text) => ({owner:'fixture-data-owner',path,text,expectedSha256:codeDigest(text)});
+
+test('original Data semantic Design identity survives property ordering but changes for new obligations; source owner is mandatory', () => {
+  const candidate = lowLevelCandidateFixture();
+  const first = readEngineeringCodeWork({designCandidate:candidate,sourceViews:[]});
+  assert.match(first.designCarrierId, /^ni:\/\/\/sha-256;/u);
+  const reordered = {
+    proof:candidate.proof, admitted:candidate.admitted,
+    design:{openQuestions:candidate.design.openQuestions,
+      traceability:candidate.design.traceability,operations:candidate.design.operations},
+    sources:candidate.sources,stage:candidate.stage,type:candidate.type,
+  };
+  const same = readEngineeringCodeWork({designCandidate:reordered,sourceViews:[]});
+  assert.equal(same.designCarrierId, first.designCarrierId,
+    'a property order in an untrusted JS object is not a new semantic Design');
+
+  const changed = structuredClone(candidate);
+  changed.design.operations[0].failureCases.push('An additional independently required refusal');
+  const changedRead = readEngineeringCodeWork({
+    designCandidate:changed,sourceViews:[],
+    originalDeliveryText:JSON.stringify(changed.design),
+  });
+  assert.notEqual(changedRead.designCarrierId,first.designCarrierId,
+    'a changed original normative test obligation must change the Design source cut');
+  assert.equal(changedRead.independentProof,'unreceived');
+  assert.equal(changedRead.executableWork,false);
+
+  const valid = exactView('src/op-a.mjs','export const retainA = x => x;');
+  const {owner, ...ownerless} = valid;
+  assert.equal(owner,'fixture-data-owner');
+  assert.throws(()=>readEngineeringCodeWork({
+    designCandidate:candidate,sourceViews:[ownerless],
+  }),TypeError,'even one possible owner is not permission to invent its identity');
+  assert.equal(readEngineeringCodeWork({
+    designCandidate:candidate,sourceViews:[valid],
+  }).targets[0].sourceStatus,'source-present-unassayed');
+});
 
 test('original Design→Code reader yields actionable per-operation tests and exact Requirement-cell trace, not fabrication', () => {
   const candidate=lowLevelCandidateFixture();
@@ -304,7 +340,7 @@ test('missing Code source is an unobserved target, never a claim of absent repos
 test('Code material and the custodian-addressed digest must match even when LLD module spelling matches',()=>{
   const candidate=lowLevelCandidateFixture();
   const actual='export const retainA = () => "changed";';
-  const sourceViews=[{path:'src/op-a.mjs',text:actual,
+  const sourceViews=[{owner:'fixture-data-owner',path:'src/op-a.mjs',text:actual,
     expectedSha256:codeDigest('export const retainA = () => "old";')}];
   const read=readEngineeringCodeWork({designCandidate:candidate,sourceViews});
   assert.equal(read.status,'source-disagreement');
@@ -337,7 +373,7 @@ test('unreviewed extra source path, duplicate snapshot, malformed digest and inv
     [exactView('src/surprise.mjs','export const x=1;')],
     [{...valid,expectedSha256:'not-a-source-digest'}],
     [{...valid,text:'const forbidden = "'+String.fromCharCode(0xD800)+'";'}],
-    [{path:valid.path,text:'x'.repeat(2_097_153),expectedSha256:valid.expectedSha256}],
+    [{owner:valid.owner,path:valid.path,text:'x'.repeat(2_097_153),expectedSha256:valid.expectedSha256}],
   ]){
     assert.throws(()=>readEngineeringCodeWork({designCandidate:original,sourceViews}),TypeError);
   }
