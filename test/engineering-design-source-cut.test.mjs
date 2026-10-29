@@ -63,6 +63,41 @@ function hldReceipt(sources) {
   return received;
 }
 
+test('malformed UTF-16 in an original source cut refuses before lossy UTF-8 addressing', () => {
+  const sources = sourcesFixture();
+  // JSON.parse accepts a raw isolated surrogate in a JSON string, but Node's
+  // UTF-8 encoder replaces it with U+FFFD. Without source admission these two
+  // distinct authored texts would acquire the same source-content digest.
+  const ill = sources[2].text.replace('Synthetic original design',
+    'Synthetic ' + String.fromCharCode(0xD800) + ' original design');
+  const replacement = sources[2].text.replace('Synthetic original design',
+    'Synthetic ' + String.fromCharCode(0xFFFD) + ' original design');
+  assert.notEqual(ill, replacement);
+  assert.equal(codeDigest(ill), codeDigest(replacement),
+    'negative control: hashing before well-formed Unicode admission loses source identity');
+  assert.doesNotThrow(() => JSON.parse(ill));
+  const changed = sources.map(source => ({ ...source }));
+  changed[2].text = ill;
+  assert.throws(() => planEngineeringDesign({stage:'high-level', sources: changed}),
+    TypeError, 'non-representable raw source is not a distinct admitted source cut');
+  assert.equal(planEngineeringDesign({stage:'high-level',sources}).type,
+    'EngineeringDesignDerivationPlan');
+});
+
+test('malformed UTF-16 in received HLD refuses as invalid Design before minting a candidate', () => {
+  const sources = sourcesFixture();
+  const plan = planEngineeringDesign({stage:'high-level', sources});
+  const original = JSON.stringify(hldFixture());
+  const delivered = original.replace('Retain comp-a',
+    'Retain ' + String.fromCharCode(0xD800) + ' comp-a');
+  assert.notEqual(delivered, original);
+  assert.doesNotThrow(() => JSON.parse(delivered));
+  assert.deepEqual(receiveEngineeringDesign({
+    stage:'high-level',sources,plan,deliveryText:delivered,
+  }),{type:'EngineeringDesignDerivationRefusal',reason:'invalid-design'},
+  'a structurally plausible delivery must not gain an ambiguous source identity');
+});
+
 test('accept exact independently source-traced HLD and LLD as unadmitted candidates', () => {
   const sources = sourcesFixture();
   const highLevel = hldReceipt(sources);
