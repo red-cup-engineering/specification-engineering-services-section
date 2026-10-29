@@ -54,7 +54,7 @@ Normative keywords follow RFC 2119:
 - **MAY**: explicitly permitted; not a requirement.
 
 Every MUST/MUST NOT claim for a mathematical object spec MUST be traceable to a math entity or proof.
-State the citation inline: "A nucleus MUST be idempotent — [nucleus](../../../../../../../../../philosophy-services-section/services/relationality-services-section/services/agency-services-section/content/text/documents/articles/research/predicated-agentic-orchestration-platform/library/relational-hyperverse-repository/math/nucleus.md)."
+State the citation inline: "A nucleus MUST be idempotent — [nucleus](../../../../../../../../../philosophy-services-section/services/relationality-services-section/content/text/glossary/concepts/nucleus.md)."
 
 ## Open questions
 
