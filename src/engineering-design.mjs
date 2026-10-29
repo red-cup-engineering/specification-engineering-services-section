@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { readRequirementArchitectureTrace } from './architecture-description.mjs';
 import { semanticIdOf } from '@red-cup-engineering/computer-data-engineering-services-section/semiotic-expression-notation/semantic-content-identity';
+import { admitCanonicalJson, UNBOUNDED_JSON_ENVELOPE } from '@red-cup-engineering/json-services-section/canonical-json';
 
 /*
  * engineering-design-generator-bootstrap; selected artifact src/engineering-design.mjs.
@@ -78,8 +79,11 @@ function equal(a, b) {
   return keys.length === Object.keys(b).length && keys.every(k => Object.hasOwn(b, k) && equal(a[k], b[k]));
 }
 function parseObject(text) {
-  let value;
-  try { value = JSON.parse(text); } catch { throw new TypeError('Malformed source JSON'); }
+  // The original JSON supplier is the only syntax/duplicate-key admission
+  // authority: JSON.parse alone silently discards earlier normative clauses.
+  // Keep the incumbent host's source-size admission unchanged; do not impose
+  // the JSON transformation seller's narrower 64 KiB policy on Engineering.
+  const value = admitCanonicalJson(text, UNBOUNDED_JSON_ENVELOPE).value;
   requireThat(object(value));
   return value;
 }
@@ -379,7 +383,12 @@ export function receiveEngineeringDesign(input) {
   if (!input.deliveryText.isWellFormed())
     return { type: 'EngineeringDesignDerivationRefusal', reason: 'invalid-design' };
   let design;
-  try { design = JSON.parse(input.deliveryText); } catch {
+  try {
+    // Reuse identical strict JSON admission for the provider's delivered
+    // design: duplicate operations or escaped lone surrogates cannot disappear
+    // between raw delivery and the original source-owned candidate.
+    design = admitCanonicalJson(input.deliveryText, UNBOUNDED_JSON_ENVELOPE).value;
+  } catch {
     return { type: 'EngineeringDesignDerivationRefusal', reason: 'invalid-design' };
   }
   if (!validDesign(input.stage, design, context)) return { type: 'EngineeringDesignDerivationRefusal', reason: 'invalid-design' };
