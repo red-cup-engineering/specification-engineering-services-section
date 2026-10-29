@@ -112,7 +112,13 @@
       "originalDeliveryEdited": false,
       "nativeCandidateGenerated": false
     },
-    "supplierOutcomeRecorded": false
+    "supplierOutcomeRecorded": true,
+    "supplierOutcome": {
+      "observation": "ni:///sha-256;UbzAyLgA0CpKsE-0w20NON3vna_ozp9WZ6NesKuZ4bw",
+      "outcome": "refused",
+      "receiving": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/design-source-profile-generation-state/48f6ed16/high-level-v1/feedback/receiving/received.json",
+      "originalNativeCieOperation": "record_inference_outcome"
+    }
   },
   "remaining": [
     "source-bound HLD request completion and actual independently accepted HLD",
