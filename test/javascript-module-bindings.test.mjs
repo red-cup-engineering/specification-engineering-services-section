@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { indexJavaScriptModuleBindings } from '../src/javascript-module-bindings.mjs';
 
 const LIMITS=Object.freeze({maxBytes:2_097_152,maxModules:64});
@@ -181,6 +182,22 @@ test('caller must supply checked finite existing source limits before any syntax
   assert.equal(indexJavaScriptModuleBindings(views,
     {maxBytes:Buffer.byteLength(views[0].text,'utf8'),maxModules:1})
     .inspect({owner,path:'src/small.mjs',exportName:'x'}).status,'observed');
+});
+
+test('original ECMAScript syntax supplier is the exact source-owned parser blob',()=>{
+  const packageFile=JSON.parse(readFileSync(new URL(
+    '../node_modules/@red-cup-engineering/javascript-parser-service/package.json',
+    import.meta.url),'utf8'));
+  assert.equal(packageFile.name,'@red-cup-engineering/javascript-parser-service');
+  assert.equal(packageFile.version,'0.1.0');
+  const bytes=readFileSync(new URL(
+    '../node_modules/@red-cup-engineering/javascript-parser-service/src/javascript-parser.mjs',
+    import.meta.url));
+  const blobSha=createHash('sha1')
+    .update(Buffer.from('blob '+bytes.byteLength+'\0')).update(bytes)
+    .digest('hex');
+  assert.equal(blobSha,'5ca0fa15caab57032cfab43f0cfba3000f7704b9',
+    'published original parser source must match the selected source-owned Git blob');
 });
 
 test('real original Design module is source-observed, without executing its source',()=>{
