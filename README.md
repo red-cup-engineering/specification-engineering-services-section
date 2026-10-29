@@ -9,6 +9,36 @@
 
 Fabricates Specification records from journaled rulings and semantic-record-journal rows into topic-sectioned, BCP14-clause Markdown carriers, never handwritten.
 
+## Strict source JSON admission across Specification and Design
+
+The original four Specification stdin commands share `readSourceJsonStdin`:
+a bounded, fatal UTF-8 byte entrance (at most 8 MiB) followed by the **existing**
+`@red-cup-engineering/json-services-section/canonical-json`
+`admitCanonicalJson` supplier. The Design generator's original
+Requirement/Specification/Architecture/HLD source cuts and provider Design
+deliveries use that same strict JSON admission before semantic trace matching.
+
+This is necessary source preservation, not merely pretty printing. Plain
+`JSON.parse` accepts duplicate object names and keeps only the last member,
+which can erase an earlier customer requirement, design operation, refusal
+obligation, or witness before downstream validation. It also admits escaped
+lone Unicode surrogates that lack a well-defined UTF-8 scalar identity.
+The original strict supplier refuses these inputs, including nested duplicates
+and escaped malformed Unicode; the Design receiving surface returns its
+existing `invalid-design` refusal for malformed provider delivery.
+
+The original literal source texts and their SHA-256 cuts remain as authored,
+rather than being silently rewritten into canonical text. The strict parser's
+admitted JSON value is used for subsequent source-dependent calculations,
+without inventing a second parser or changing the separate source-authority
+and Code/Work/Proof/recipient gates. The existing host byte bound is unchanged;
+the JSON paid-transformation envelope does not override the Specification
+source capacity. Original source tests and a clean installed package consumer
+check all four CLI entrances, malformed source and delivery, and unchanged
+valid HLD/LLD paths. This source correctness check is not independently
+admitted Engineering Design, proof of program behavior, fabrication, or
+installed MetroPlat/Koios operation.
+
 ## Source-bound HLD and LLD candidate generation
 
 The existing `./engineering-design` public export supplies
