@@ -297,11 +297,18 @@ function validHld(design, context) {
   return traceValid(design.traceability, components, context, false);
 }
 
+// An embedded LLD interface schema is normative source, not an opaque JSON
+// string. JSON.parse silently erases earlier duplicate keys and changes the
+// prospective Code contract, so share the original strict JSON admission.
+function parseSchemaText(text) {
+  const value = admitCanonicalJson(text, UNBOUNDED_JSON_ENVELOPE).value;
+  if (typeof value !== 'boolean' && !object(value))
+    throw new TypeError('Invalid Engineering Design interface schema JSON');
+  return value;
+}
 function schemaTextValid(text) {
-  try {
-    const value = JSON.parse(text);
-    return typeof value === 'boolean' || object(value);
-  } catch { return false; }
+  try { parseSchemaText(text); return true; }
+  catch { return false; }
 }
 function validLld(design, context) {
   if (!exact(design, ['operations', 'traceability', 'openQuestions']) || !strings(design.openQuestions)) return false;
@@ -552,8 +559,8 @@ export function readEngineeringCodeWork({
           .sort((a,b) => a.requirementCellId < b.requirementCellId ? -1 :
             a.requirementCellId > b.requirementCellId ? 1 : 0),
         interface: {
-          inputSchema: JSON.parse(operation.inputSchemaJson),
-          outputSchema: JSON.parse(operation.outputSchemaJson),
+          inputSchema: parseSchemaText(operation.inputSchemaJson),
+          outputSchema: parseSchemaText(operation.outputSchemaJson),
         },
         testObligations: {
           behavior: operation.behavior,

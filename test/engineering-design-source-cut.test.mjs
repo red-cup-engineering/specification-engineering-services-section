@@ -143,6 +143,58 @@ test('accept exact independently source-traced HLD and LLD as unadmitted candida
   assert.equal(received.proof, 'unreceived');
 });
 
+test('LLD embedded interface schemas cannot erase normative members before Code projection', () => {
+  const sources = sourcesFixture();
+  const high = hldReceipt(sources);
+  const lowSources = [...sources, {kind:'high-level', text:JSON.stringify(high)}];
+  const plan = planEngineeringDesign({stage:'low-level', sources:lowSources});
+  const original = lldFixture();
+  const ambiguousSchemas = [
+    '{"type":"object","required":["preserve"],"required":[]}',
+    '{"type":"object","properties":{"x":{"type":"string"},"x":{"type":"null"}}}',
+    '{"type":"object","required":["preserve"],"\\u0072equired":[]}',
+    '{"description":"\\ud800"}',
+  ];
+  for (const raw of ambiguousSchemas) {
+    // Before this correction JSON.parse made these source-distinct contracts
+    // appear ordinary. It is intentionally not an acceptance oracle.
+    assert.doesNotThrow(() => JSON.parse(raw));
+    for (const field of ['inputSchemaJson','outputSchemaJson']) {
+      const design = structuredClone(original);
+      design.operations[0][field] = raw;
+      assert.deepEqual(receiveEngineeringDesign({
+        stage:'low-level', sources:lowSources, plan,
+        deliveryText:JSON.stringify(design),
+      }), {type:'EngineeringDesignDerivationRefusal', reason:'invalid-design'},
+      'nested normative source must refuse rather than become a Code interface: '+field);
+    }
+  }
+
+  const unambiguous = structuredClone(original);
+  unambiguous.operations[0].inputSchemaJson = 'false';
+  unambiguous.operations[0].outputSchemaJson =
+    '{"type":"object","required":["preserved"],"properties":{"preserved":{"type":"string"}},"additionalProperties":false}';
+  const deliveryText = JSON.stringify(unambiguous);
+  const candidate = receiveEngineeringDesign({
+    stage:'low-level', sources:lowSources, plan, deliveryText,
+  });
+  assert.equal(candidate.type,'EngineeringDesignCandidate');
+  assert.equal(candidate.admitted,false);
+  assert.equal(candidate.proof,'unreceived');
+  const result = readSourceOwnedEngineeringCodeWork({
+    designCandidate:candidate, originalPlan:plan,
+    originalDeliveryText:deliveryText, sourceViews:[],
+  });
+  assert.equal(result.executableWork,false);
+  assert.equal(result.independentProof,'unreceived');
+  const target = result.targets.find(x => x.operationId === 'op-a');
+  assert.equal(target.interface.inputSchema,false);
+  assert.deepEqual(target.interface.outputSchema,{
+    type:'object', required:['preserved'],
+    properties:{preserved:{type:'string'}}, additionalProperties:false,
+  });
+});
+
 test('refuse Architecture candidate with stale original Requirement revision', () => {
   const sources = sourcesFixture();
   const architecture = JSON.parse(sources[2].text);
