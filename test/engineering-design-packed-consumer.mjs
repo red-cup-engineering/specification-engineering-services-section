@@ -50,6 +50,26 @@ assert.deepEqual(receiveEngineeringDesign({
 }),{type:'EngineeringDesignDerivationRefusal',reason:'invalid-design'});
 
 
+// Independent package consumer: no normative clause may disappear via a
+// duplicate JSON member, and no delivered Design may hide an earlier operation.
+const duplicateRequirement=original.map(row=>({...row}));
+duplicateRequirement[0].text=original[0].text.replace('"met-when":',
+  '"met-when":[{"cell":"source-req:hidden","target":"held","says":"Never silently erase this requirement."}],"met-when":');
+assert.deepEqual(JSON.parse(duplicateRequirement[0].text),JSON.parse(original[0].text));
+assert.throws(()=>planEngineeringDesign({
+  stage:'high-level',sources:duplicateRequirement,
+}),TypeError);
+const duplicateDesign=JSON.stringify(hld).replace('"components":','"components":[],"components":');
+assert.deepEqual(JSON.parse(duplicateDesign),hld);
+assert.deepEqual(receiveEngineeringDesign({
+  stage:'high-level',sources:original,plan,deliveryText:duplicateDesign,
+}),{type:'EngineeringDesignDerivationRefusal',reason:'invalid-design'});
+const escapedUnicode=JSON.stringify(hld).replace('Retain A and B','Retain \\u'+'d800 A and B');
+assert.equal(escapedUnicode.isWellFormed(),true);
+assert.deepEqual(receiveEngineeringDesign({
+  stage:'high-level',sources:original,plan,deliveryText:escapedUnicode,
+}),{type:'EngineeringDesignDerivationRefusal',reason:'invalid-design'});
+
 const lowSources = [...original, { kind: 'high-level', text: JSON.stringify(high) }];
 const lowPlan = planEngineeringDesign({ stage: 'low-level', sources: lowSources });
 const low = receiveEngineeringDesign({
