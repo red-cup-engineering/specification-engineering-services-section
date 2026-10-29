@@ -1,0 +1,139 @@
+{
+  "type": "SourceGenerationObservation",
+  "version": 1,
+  "recordedAt": "2026-10-29T04:51:42.234Z",
+  "requirement": {
+    "repository": "red-cup-engineering/specification-engineering-services-section",
+    "path": "data/records/service-records/requirements-service-records/engineering-design-accepts-explicit-source-profiles.json",
+    "semanticIdentity": "engineering-design-accepts-explicit-source-profiles@ni:///sha-256;K2sTfiQ-RyXTEaN3dwzvQqRzd1ZuL_uYvVzdh4MwZ4A"
+  },
+  "producer": {
+    "repository": "red-cup-engineering/specification-engineering-services-section",
+    "selectedRevision": "db52af5115ce9cc12e027d3ec23c42fe5a2a1aa2",
+    "path": "src/specification.mjs",
+    "moduleSHA256": "1a4a9dc71583f2481580a827b1070c3731aa3b2509a7385db65b23dd8ff18df0",
+    "operation": "deriveSpecificationFromRequirementReview"
+  },
+  "review": {
+    "identity": {
+      "id": "engineering-design-accepts-explicit-source-profiles",
+      "title": "Engineering Design accepts explicit source-language and artifact profiles",
+      "seat": "red-cup-engineering/specification-engineering-services-section",
+      "carrier": "content/text/documents/specifications/engineering-design-source-profiles.md",
+      "authors": [
+        "codex /root/koios_delivery",
+        "Codex /root/design_profile_fabrication"
+      ]
+    },
+    "interpretations": [
+      {
+        "cell": "engineering-design-accepts-explicit-source-profiles:original-owner",
+        "clauseId": "original-owner",
+        "keyword": "MUST",
+        "actor": "The original source-bound Engineering Design provider and its receiving owners"
+      },
+      {
+        "cell": "engineering-design-accepts-explicit-source-profiles:explicit-profile",
+        "clauseId": "explicit-profile",
+        "keyword": "MUST",
+        "actor": "The original source-bound Engineering Design provider and its receiving owners"
+      },
+      {
+        "cell": "engineering-design-accepts-explicit-source-profiles:data-policy",
+        "clauseId": "data-policy",
+        "keyword": "MUST",
+        "actor": "The original source-bound Engineering Design provider and its receiving owners"
+      },
+      {
+        "cell": "engineering-design-accepts-explicit-source-profiles:general-names",
+        "clauseId": "general-names",
+        "keyword": "MUST",
+        "actor": "The original source-bound Engineering Design provider and its receiving owners"
+      },
+      {
+        "cell": "engineering-design-accepts-explicit-source-profiles:profile-source-binding",
+        "clauseId": "profile-source-binding",
+        "keyword": "MUST",
+        "actor": "The original source-bound Engineering Design provider and its receiving owners"
+      },
+      {
+        "cell": "engineering-design-accepts-explicit-source-profiles:preserve-original-cut",
+        "clauseId": "preserve-original-cut",
+        "keyword": "MUST",
+        "actor": "The original source-bound Engineering Design provider and its receiving owners"
+      },
+      {
+        "cell": "engineering-design-accepts-explicit-source-profiles:preserve-traces",
+        "clauseId": "preserve-traces",
+        "keyword": "MUST",
+        "actor": "The original source-bound Engineering Design provider and its receiving owners"
+      },
+      {
+        "cell": "engineering-design-accepts-explicit-source-profiles:source-owner-custody",
+        "clauseId": "source-owner-custody",
+        "keyword": "MUST",
+        "actor": "The original source-bound Engineering Design provider and its receiving owners"
+      },
+      {
+        "cell": "engineering-design-accepts-explicit-source-profiles:candidate-limits",
+        "clauseId": "candidate-limits",
+        "keyword": "MUST",
+        "actor": "The original source-bound Engineering Design provider and its receiving owners"
+      },
+      {
+        "cell": "engineering-design-accepts-explicit-source-profiles:original-fabrication",
+        "clauseId": "original-fabrication",
+        "keyword": "MUST",
+        "actor": "The original source-bound Engineering Design provider and its receiving owners"
+      },
+      {
+        "cell": "engineering-design-accepts-explicit-source-profiles:whole-family-cutover",
+        "clauseId": "whole-family-cutover",
+        "keyword": "MUST",
+        "actor": "The original source-bound Engineering Design provider and its receiving owners"
+      },
+      {
+        "cell": "engineering-design-accepts-explicit-source-profiles:native-receiving",
+        "clauseId": "native-receiving",
+        "keyword": "MUST",
+        "actor": "The original source-bound Engineering Design provider and its receiving owners"
+      },
+      {
+        "cell": "engineering-design-accepts-explicit-source-profiles:source-and-operation-evidence",
+        "clauseId": "source-and-operation-evidence",
+        "keyword": "MUST",
+        "actor": "The original source-bound Engineering Design provider and its receiving owners"
+      }
+    ],
+    "at": "2026-10-29T04:51:42.234Z",
+    "reviewedBy": "Codex /root/design_profile_fabrication; source interpretation only, independent original admission unsettled"
+  },
+  "attribution": "Actual unchanged original db52 factory executed by Codex /root/design_profile_fabrication after source Requirement refinement. Native validation observed valid with zero issues. No native Office, construction, Proof or operational acceptance asserted.",
+  "actual": {
+    "exitCode": 0,
+    "validation": {
+      "valid": true,
+      "issues": []
+    },
+    "sourceConditions": 13,
+    "generatedClauses": 13,
+    "carrierBytes": 11034
+  },
+  "limits": {
+    "nodeOldSpaceMiB": 64,
+    "dependencyInstall": false
+  },
+  "receiving": {
+    "sourceInput": "awaiting independent parent source receiving of refined original Requirement/Spec",
+    "nativeOffice": false,
+    "constructionReview": false,
+    "proof": false,
+    "installedConsumer": false,
+    "productionActivated": false
+  },
+  "priorSourceCut": {
+    "requirement": "ni:///sha-256;oJBTBcQ8qRwN78ZGaPuAtLN1zTApV_geIhvgRZkrvhQ",
+    "specification": "ni:///sha-256;gujZhOB3i5vPRZ0D8XYH-ZlFi3INchXGRPcgxchQwDg",
+    "revision": "48f6ed16eade45cabc9d9348441fc11e8e2a4622"
+  }
+}
