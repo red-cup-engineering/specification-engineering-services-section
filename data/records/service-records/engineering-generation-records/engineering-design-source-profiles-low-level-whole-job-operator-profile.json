@@ -1,0 +1,566 @@
+{
+  "kind": "OriginalDesignSourceProfileLowLevelWholeJobOperatorProfile",
+  "version": 1,
+  "authoredBy": "Codex /root/koios_release_finish",
+  "status": "prepared-for-independent-and-root-review; no-execution-cleared",
+  "sourceRequirement": {
+    "repository": "red-cup-engineering/specification-engineering-services-section",
+    "commit": "48f6ed16eade45cabc9d9348441fc11e8e2a4622",
+    "requirement": "ni:///sha-256;oJBTBcQ8qRwN78ZGaPuAtLN1zTApV_geIhvgRZkrvhQ",
+    "specification": "ni:///sha-256;gujZhOB3i5vPRZ0D8XYH-ZlFi3INchXGRPcgxchQwDg",
+    "conditions": 13,
+    "originalStageSourcesUnchanged": true
+  },
+  "baselineQualification": {
+    "operatorCommit": "2a749311c711c8ce55885a815c117cfc32107669",
+    "operatorSHA256": "7858608fe9e0dea0fb0be29756254f3000540e89471a1296787be419689cc861",
+    "actualResourceReceivingSHA256": "9604b683935f6642e44adf7442027a1ca2f12110b72e1b111797c5b4a80536f3",
+    "scope": "Prior actual CDE48+directAPI64 in aggregate128/Swap0/Tasks32/CPU25 with128hostreserve completed0; numeric kernel peak/OOM counters unavailable after collection, not invented. This new first LLD still requires fresh native admission and actual terminal receiving."
+  },
+  "immutableOriginalDesignInputs": {
+    "producerCommit": "db52af5115ce9cc12e027d3ec23c42fe5a2a1aa2",
+    "producerModuleSHA256": "af06370da48f9cae5c82c58c8866798da4403667dad3a3811527f7cf8b27d7dd",
+    "nativeLowLevelPlan": {
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/design-source-profile-generation-state/48f6ed16/low-level-native-plan/b81a953ab983a609b97dc4940826f58401263d1211dfc6c78ff1957139205a18/native-plan.json",
+      "sha256": "b81a953ab983a609b97dc4940826f58401263d1211dfc6c78ff1957139205a18",
+      "bytes": 278455,
+      "unchanged": true
+    },
+    "sourceDigests": [
+      {
+        "kind": "requirement",
+        "digest": "sha256:a74820e71f3570a7c1df43a28ce98906e5283a120e97f1a60cfc29b3f3d63df1"
+      },
+      {
+        "kind": "specification",
+        "digest": "sha256:025e099dc1f918c5e02d1263d74d6b5c1e95265ed74d908ed1ce684cf0036912"
+      },
+      {
+        "kind": "architecture",
+        "digest": "sha256:91708bf4a7bdb80f58902ddf6b6c8163dffdab663b2900318cee9c2871a69837"
+      },
+      {
+        "kind": "high-level",
+        "digest": "sha256:bbde1ea9d7484ac99cfbd0061c1b69123bda2381087b93715d04651a4c913c69"
+      }
+    ],
+    "originalHld": {
+      "receivingPath": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/design-source-profile-generation-state/48f6ed16/high-level-v2-whole-job/receiving/received.json",
+      "rawDeliveryPath": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/design-source-profile-generation-state/48f6ed16/high-level-v2-whole-job/receiving/review-delivery.txt",
+      "rawDeliverySHA256": "56896b32f35a3be0705cfb1e013f68a4753e5b3f579f8474da8d2ea0298f5f9e",
+      "candidatePath": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/records/design-source-profile-generation-records/48f6ed16/high-level-v2-whole-job-native-receiving/high-level.candidate.json",
+      "candidateSHA256": "bbde1ea9d7484ac99cfbd0061c1b69123bda2381087b93715d04651a4c913c69",
+      "lot": {
+        "workLot": "urn:work-lot:inference:qO1uD-T_8hHUjjf4QUhrkVrUKaQkaAVJoACBT1iAanM",
+        "provider": "urn:ame:nvidia-inference-team",
+        "taskClass": "code-fabrication",
+        "selectedOffer": "urn:offer:direct-endpoint:urn:ame:nvidia-inference-team:2fUXmpnthgNbciM9wayHgJGw1vwg7JkTMjaUeQmU24g:code-fabrication",
+        "receipt": "ni:///sha-256;9r3IvwuzyRy0qoizEHl12JyHkEwSp34DMbk3Zl5yVvk",
+        "receiver": "actor:WWOM5azg-fTrn1Id0YVbz5AhppbnFny_W5Xl-rKgSs4",
+        "model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+        "configurationIdentity": "ni:///sha-256;2fUXmpnthgNbciM9wayHgJGw1vwg7JkTMjaUeQmU24g"
+      },
+      "feedbackBase": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/design-source-profile-generation-state/48f6ed16/high-level-v2-whole-job/feedback"
+    },
+    "independentHldReceiving": {
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/records/design-source-profile-generation-records/48f6ed16/high-level-v2-independent-root/received.json",
+      "sha256": "8b29acaeb610a250d127d118465d4576a1e334a32d345cb0e137ab9f27aec740",
+      "bytes": 3835,
+      "acceptance": "original-LLD-only"
+    },
+    "originalNativeContract": {
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/engineering-design-generation-contract-state/db52af5115ce/69c9b0714717907428b2754e9aa527160bfaf18da57fdfa22e634e33eeb9e621/source-contract.json",
+      "sha256": "69c9b0714717907428b2754e9aa527160bfaf18da57fdfa22e634e33eeb9e621"
+    },
+    "unallocatedPredecessors": [
+      {
+        "hostRequestSHA256": "8c5cf8dec0a66f40b8c4703c1859e8e684621d23dc9b6ff31fb2869cd2589a1a",
+        "bytes": 431616,
+        "effectAttempted": false
+      },
+      {
+        "hostRequestSHA256": "419967845ed33f42d29c4108e29424eb60c45be607d80d5a7d91332d9420839e",
+        "bytes": 597668,
+        "effectAttempted": false
+      }
+    ],
+    "hldCandidateClaimLimits": "admitted:false and proof:unreceived retained; root accepted semantic refinement for original LLD only, no Code/operation acceptance"
+  },
+  "finalHostInput": {
+    "request": {
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/design-source-profile-generation-state/48f6ed16/low-level-inputs/93efd0cc247bf9884deee65eb61af43fa101aba6407c3d40d7da34532ce4df91/request.json",
+      "sha256": "93efd0cc247bf9884deee65eb61af43fa101aba6407c3d40d7da34532ce4df91",
+      "bytes": 597697,
+      "reasoning_effort": "low",
+      "originalNativeResponseSchemaUnchanged": true
+    },
+    "manifest": {
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/design-source-profile-generation-state/48f6ed16/low-level-inputs/93efd0cc247bf9884deee65eb61af43fa101aba6407c3d40d7da34532ce4df91/input-manifest.json",
+      "sha256": "2d1213d304ad665746c5b44c91d27e89a8ccb25900166347bda7321b5c9560d8",
+      "bytes": 10564,
+      "value": {
+        "kind": "engineering-design.explicit-source-profile-low-level-source-completed-input-receiving/v1",
+        "preparedBy": "Codex /root/koios_release_finish",
+        "preparedAt": "2026-10-29T03:19:19.908Z",
+        "native": {
+          "host": "bare-cedar-fog",
+          "node": "v24.19.0",
+          "heapMiB": 48,
+          "semiSpaceMiB": 4,
+          "sourceCommit": "db52af5115ce9cc12e027d3ec23c42fe5a2a1aa2",
+          "module": "src/engineering-design.mjs",
+          "moduleSHA256": "af06370da48f9cae5c82c58c8866798da4403667dad3a3811527f7cf8b27d7dd",
+          "operation": "planEngineeringDesign",
+          "dependencyInstallPerformed": false
+        },
+        "sourceRequirementCommit": "48f6ed16eade45cabc9d9348441fc11e8e2a4622",
+        "originalHighLevelRequestSHA256": "71834b3b8c972e9ffeb1ad3a39759b0766f5c068cdf799ffda5c59d030e79c3d",
+        "originalHighLevelCandidateSHA256": "bbde1ea9d7484ac99cfbd0061c1b69123bda2381087b93715d04651a4c913c69",
+        "nativePlanUnmodified": true,
+        "nativePlanSHA256": "b81a953ab983a609b97dc4940826f58401263d1211dfc6c78ff1957139205a18",
+        "nativePlanBytes": 278455,
+        "requestSHA256": "93efd0cc247bf9884deee65eb61af43fa101aba6407c3d40d7da34532ce4df91",
+        "requestBytes": 597697,
+        "sourceDigests": [
+          {
+            "kind": "requirement",
+            "digest": "sha256:a74820e71f3570a7c1df43a28ce98906e5283a120e97f1a60cfc29b3f3d63df1"
+          },
+          {
+            "kind": "specification",
+            "digest": "sha256:025e099dc1f918c5e02d1263d74d6b5c1e95265ed74d908ed1ce684cf0036912"
+          },
+          {
+            "kind": "architecture",
+            "digest": "sha256:91708bf4a7bdb80f58902ddf6b6c8163dffdab663b2900318cee9c2871a69837"
+          },
+          {
+            "kind": "high-level",
+            "digest": "sha256:bbde1ea9d7484ac99cfbd0061c1b69123bda2381087b93715d04651a4c913c69"
+          }
+        ],
+        "originalNativeDesignContract": {
+          "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/engineering-design-generation-contract-state/db52af5115ce/69c9b0714717907428b2754e9aa527160bfaf18da57fdfa22e634e33eeb9e621/source-contract.json",
+          "sha256": "69c9b0714717907428b2754e9aa527160bfaf18da57fdfa22e634e33eeb9e621"
+        },
+        "independentHldReceiving": {
+          "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/records/design-source-profile-generation-records/48f6ed16/high-level-v2-independent-root/received.json",
+          "sha256": "8b29acaeb610a250d127d118465d4576a1e334a32d345cb0e137ab9f27aec740",
+          "bytes": 3835,
+          "acceptance": "original-LLD-only"
+        },
+        "inferencePerformed": false,
+        "lowLevelCandidateGenerated": false,
+        "sourceCut": {
+          "requirementRevision": "ni:///sha-256;oJBTBcQ8qRwN78ZGaPuAtLN1zTApV_geIhvgRZkrvhQ",
+          "specificationRevision": "ni:///sha-256;gujZhOB3i5vPRZ0D8XYH-ZlFi3INchXGRPcgxchQwDg",
+          "architectureRevision": "ni:///sha-256;m2Rx2rHUHqPNLo9G9SGU15N5Psc_jJppov4oH0SJsQU",
+          "architecturePath": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/records/design-source-profile-generation-records/48f6ed16/architecture-v1-native-receiving/architecture.candidate.json",
+          "architectureSHA256": "91708bf4a7bdb80f58902ddf6b6c8163dffdab663b2900318cee9c2871a69837",
+          "highLevelCandidatePath": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/records/design-source-profile-generation-records/48f6ed16/high-level-v2-whole-job-native-receiving/high-level.candidate.json",
+          "highLevelCandidateSHA256": "bbde1ea9d7484ac99cfbd0061c1b69123bda2381087b93715d04651a4c913c69"
+        },
+        "originalHld": {
+          "receivingPath": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/design-source-profile-generation-state/48f6ed16/high-level-v2-whole-job/receiving/received.json",
+          "rawDeliveryPath": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/design-source-profile-generation-state/48f6ed16/high-level-v2-whole-job/receiving/review-delivery.txt",
+          "rawDeliverySHA256": "56896b32f35a3be0705cfb1e013f68a4753e5b3f579f8474da8d2ea0298f5f9e",
+          "candidatePath": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/records/design-source-profile-generation-records/48f6ed16/high-level-v2-whole-job-native-receiving/high-level.candidate.json",
+          "candidateSHA256": "bbde1ea9d7484ac99cfbd0061c1b69123bda2381087b93715d04651a4c913c69",
+          "lot": {
+            "workLot": "urn:work-lot:inference:qO1uD-T_8hHUjjf4QUhrkVrUKaQkaAVJoACBT1iAanM",
+            "provider": "urn:ame:nvidia-inference-team",
+            "taskClass": "code-fabrication",
+            "selectedOffer": "urn:offer:direct-endpoint:urn:ame:nvidia-inference-team:2fUXmpnthgNbciM9wayHgJGw1vwg7JkTMjaUeQmU24g:code-fabrication",
+            "receipt": "ni:///sha-256;9r3IvwuzyRy0qoizEHl12JyHkEwSp34DMbk3Zl5yVvk",
+            "receiver": "actor:WWOM5azg-fTrn1Id0YVbz5AhppbnFny_W5Xl-rKgSs4",
+            "model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+            "configurationIdentity": "ni:///sha-256;2fUXmpnthgNbciM9wayHgJGw1vwg7JkTMjaUeQmU24g"
+          },
+          "feedbackBase": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/design-source-profile-generation-state/48f6ed16/high-level-v2-whole-job/feedback"
+        },
+        "hostRequestCompletion": {
+          "preparedAt": "2026-10-29T05:12:46.165Z",
+          "preparedBy": "Codex /root/koios_release_finish",
+          "node": "v24.18.0",
+          "heapMiB": 48,
+          "originalNativePlanReusedWithoutModification": true,
+          "originalHostRequestSHA256": "8c5cf8dec0a66f40b8c4703c1859e8e684621d23dc9b6ff31fb2869cd2589a1a",
+          "sourceContextSupplementSHA256": "d72c6d514ac928131cd9795cf347b87ea5d5341db3ef3ba79f498ad695aea7cf",
+          "sourceContextMessageIndex": 3,
+          "partialCorrectionCommit": "e548d7e32976c0868ed676a5289edac34c9c14bf",
+          "partialCorrectionFiles": [
+            {
+              "path": "src/engineering-design.mjs",
+              "sha256": "f4598a73ee0c65878ac90b60c761f7d882e6d51ef9c830dae15f061c602a77d1",
+              "bytes": 34188
+            },
+            {
+              "path": "README.md",
+              "sha256": "2a7c40ef012113d3ff185b30f96352d33cfe3437aba4f740d5fbbbc87b529c7a",
+              "bytes": 26984
+            },
+            {
+              "path": "test/engineering-design-packed-consumer.mjs",
+              "sha256": "9d7fbb104f050b16764e996af5b2e0ff7cda5b70dfb2a4838bb92c408da1e6b4",
+              "bytes": 15458
+            },
+            {
+              "path": "test/engineering-design-source-cut.test.mjs",
+              "sha256": "88a34a69ad840532f16c014850bc97f1df5fad8677a45901c61dbf1bff751a67",
+              "bytes": 28628
+            }
+          ],
+          "externalConsumerRepository": "red-cup-engineering/javascript-node-code-fabrication-engineering-services-section",
+          "externalConsumerCommit": "cbdebaa7b20b0f0e32472c9cd57cd556576d120a",
+          "externalConsumerFiles": [
+            {
+              "path": "scripts/project-engineering-design-code.mjs",
+              "sha256": "181ee91f868144c6c0fc1c8801bbe80309759c8d1a9fef5ea4427de37f2dd46c",
+              "bytes": 13137
+            },
+            {
+              "path": "test/source-reviewed-design-fabrication.test.mjs",
+              "sha256": "c1a5f96c0e1529357268df233846be250d9a376ed4f712638dcbac92b1356430",
+              "bytes": 20576
+            },
+            {
+              "path": "README.md",
+              "sha256": "9ef883fc5526e16a37903c157fb3448ecf25553910c92278b9b13e1c7fcb44ce",
+              "bytes": 14403
+            }
+          ],
+          "newCodeOrModelEffect": false
+        },
+        "originalNativePlan": {
+          "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/design-source-profile-generation-state/48f6ed16/low-level-native-plan/b81a953ab983a609b97dc4940826f58401263d1211dfc6c78ff1957139205a18/native-plan.json",
+          "sha256": "b81a953ab983a609b97dc4940826f58401263d1211dfc6c78ff1957139205a18",
+          "bytes": 278455
+        },
+        "existingOriginalInferenceCustody": {
+          "originalExecutionService": "CIE0.2.12 held original source-final supplier; unchanged original native API/customer/provider account and coordination",
+          "configuredSelectorName": "INFERENCE_ALLOWANCE_LEDGER_FILE",
+          "configuredSelectorValue": "/home/emsenn/.local/state/561-group/computer-inference-engine/allowance-ledger.sqlite",
+          "actualSourceMapping": "Held original source33a6 maps selector to sibling native allowance-ledger.journal; this is an opaque native journal/provider namespace, not an asserted SQLite file or invented filesystem journal layout.",
+          "sqlPhysicalFileAndNamespacePresence": "unobserved; not inferred",
+          "slotAndRateIdentities": "Original CIE-owned existing identities and histories preserved; exact opaque identities not replaced, initialized, copied, moved, symlinked or rekeyed.",
+          "newTaskRecords": "All new host request/manifest/nativeplan/intent/work-lot task/delivery/receiving/logging records use owning Cold Red Gate Data. Existing coordination history continues through its existing native owner.",
+          "physicalCutover": "Pending original writer handoff and actual native custody transfer; no completed migration or generic legacy mode is claimed.",
+          "allocationScope": "ONE original source-generation qualification before operating custody cutover, as explicitly allocated by parent; no new account/model authority, policy gate relaxation or response adapter."
+        },
+        "hostRequestParameterCompletion": {
+          "preparedAt": "2026-10-29T05:17:02.923Z",
+          "preparedBy": "Codex /root/koios_release_finish",
+          "node": "v24.18.0",
+          "previousUnallocatedHostRequestSHA256": "419967845ed33f42d29c4108e29424eb60c45be607d80d5a7d91332d9420839e",
+          "reasoning_effort": "low",
+          "source": "Original CIE33a6 remote-inference-market.mjs chatRequest lines30-45 projects reasoning_effort. Actual existing NVIDIA/Groq support low; native source/schema/meaning/tiers/accounts/budget unchanged.",
+          "unsupportedMaxTokensFieldAdded": false,
+          "inferenceOrFeedbackInvoked": false
+        }
+      }
+    },
+    "sourceSupplement": {
+      "sha256": "d72c6d514ac928131cd9795cf347b87ea5d5341db3ef3ba79f498ad695aea7cf",
+      "completeSourceViews": {
+        "preparedAt": "2026-10-29T05:12:46.165Z",
+        "preparedBy": "Codex /root/koios_release_finish",
+        "node": "v24.18.0",
+        "heapMiB": 48,
+        "originalNativePlanReusedWithoutModification": true,
+        "originalHostRequestSHA256": "8c5cf8dec0a66f40b8c4703c1859e8e684621d23dc9b6ff31fb2869cd2589a1a",
+        "sourceContextSupplementSHA256": "d72c6d514ac928131cd9795cf347b87ea5d5341db3ef3ba79f498ad695aea7cf",
+        "sourceContextMessageIndex": 3,
+        "partialCorrectionCommit": "e548d7e32976c0868ed676a5289edac34c9c14bf",
+        "partialCorrectionFiles": [
+          {
+            "path": "src/engineering-design.mjs",
+            "sha256": "f4598a73ee0c65878ac90b60c761f7d882e6d51ef9c830dae15f061c602a77d1",
+            "bytes": 34188
+          },
+          {
+            "path": "README.md",
+            "sha256": "2a7c40ef012113d3ff185b30f96352d33cfe3437aba4f740d5fbbbc87b529c7a",
+            "bytes": 26984
+          },
+          {
+            "path": "test/engineering-design-packed-consumer.mjs",
+            "sha256": "9d7fbb104f050b16764e996af5b2e0ff7cda5b70dfb2a4838bb92c408da1e6b4",
+            "bytes": 15458
+          },
+          {
+            "path": "test/engineering-design-source-cut.test.mjs",
+            "sha256": "88a34a69ad840532f16c014850bc97f1df5fad8677a45901c61dbf1bff751a67",
+            "bytes": 28628
+          }
+        ],
+        "externalConsumerRepository": "red-cup-engineering/javascript-node-code-fabrication-engineering-services-section",
+        "externalConsumerCommit": "cbdebaa7b20b0f0e32472c9cd57cd556576d120a",
+        "externalConsumerFiles": [
+          {
+            "path": "scripts/project-engineering-design-code.mjs",
+            "sha256": "181ee91f868144c6c0fc1c8801bbe80309759c8d1a9fef5ea4427de37f2dd46c",
+            "bytes": 13137
+          },
+          {
+            "path": "test/source-reviewed-design-fabrication.test.mjs",
+            "sha256": "c1a5f96c0e1529357268df233846be250d9a376ed4f712638dcbac92b1356430",
+            "bytes": 20576
+          },
+          {
+            "path": "README.md",
+            "sha256": "9ef883fc5526e16a37903c157fb3448ecf25553910c92278b9b13e1c7fcb44ce",
+            "bytes": 14403
+          }
+        ],
+        "newCodeOrModelEffect": false
+      },
+      "receiving": "Actual full e548 bounded four-file correction plus original JSNodecbdebaa source/test/docs are appended as source facts. No partial correction/CI artifact is washed as required native Code provenance."
+    }
+  },
+  "sourceOwnerHandoff": {
+    "externalRepository": "red-cup-engineering/javascript-node-code-fabrication-engineering-services-section",
+    "externalCommit": "cbdebaa7b20b0f0e32472c9cd57cd556576d120a",
+    "projectorSHA256": "181ee91f868144c6c0fc1c8801bbe80309759c8d1a9fef5ea4427de37f2dd46c",
+    "sourceCounterexample": "Actual old projector requires designCarrierSha256; e548 source returns designCarrierId. The deterministic source mismatch is retained; no runtime failure invented.",
+    "duty": "Finish this real consumer at its ORIGINAL owner through source-bound external handoff/design/native receiving; do not invent Specification ownership, drop HLD components, add fake src modules, old-property aliases or caller adapters. Current concurrent code is received before Fabrication and does not invalidate unchanged native b81.",
+    "laterBranchLease": "LLD uses these exact source snapshots. Later source edits remain unreceived until actual pre-Fabrication source receiving; no endless model serialization behind branch movement."
+  },
+  "existingCustody": {
+    "originalExecutionService": "CIE0.2.12 held original source-final supplier; unchanged original native API/customer/provider account and coordination",
+    "configuredSelectorName": "INFERENCE_ALLOWANCE_LEDGER_FILE",
+    "configuredSelectorValue": "/home/emsenn/.local/state/561-group/computer-inference-engine/allowance-ledger.sqlite",
+    "actualSourceMapping": "Held original source33a6 maps selector to sibling native allowance-ledger.journal; this is an opaque native journal/provider namespace, not an asserted SQLite file or invented filesystem journal layout.",
+    "sqlPhysicalFileAndNamespacePresence": "unobserved; not inferred",
+    "slotAndRateIdentities": "Original CIE-owned existing identities and histories preserved; exact opaque identities not replaced, initialized, copied, moved, symlinked or rekeyed.",
+    "newTaskRecords": "All new host request/manifest/nativeplan/intent/work-lot task/delivery/receiving/logging records use owning Cold Red Gate Data. Existing coordination history continues through its existing native owner.",
+    "physicalCutover": "Pending original writer handoff and actual native custody transfer; no completed migration or generic legacy mode is claimed.",
+    "allocationScope": "ONE original source-generation qualification before operating custody cutover, as explicitly allocated by parent; no new account/model authority, policy gate relaxation or response adapter."
+  },
+  "sourceBeforePhysicalCutover": {
+    "basis": "Parent explicitly corrects method sequencing: existing native source generation precedes operating custody cutover, so the generator can produce the implementation needed to repair that custody.",
+    "operation": "ONE first source-profile LLD using unchanged original CIE0.2.12/customer/held Groq-NVIDIA/account/pricing/coordination APIs and original state; no physical move, replacement ledger/store, modeallowLegacy, compatibility flag, alternate caller or response adapter.",
+    "originalConfiguredLedgerSelector": "/home/emsenn/.local/state/561-group/computer-inference-engine/allowance-ledger.sqlite",
+    "nativeJournalAndSql": "Original33a6 source maps selector to sibling native allowance-ledger.journal; opaque journal/provider namespace versus physical SQLite file presence remains unobserved. No invented file layout or fabricated migration receipt.",
+    "slotAndRate": "Original CIE-owned identities/history unchanged; unknown exact opaque identities not recreated, reset, copied, moved, symlinked or rekeyed.",
+    "newWorkingData": "All NEW host request/nativeplan/manifest/intent/worklot task/delivery/receiving/log records under original owning Cold Red Gate Data. Continuing existing shared account history is acknowledged path debt, not a new side ledger.",
+    "physicalWriterHandoff": "Still required before any actual original data migration; no current/old article/root state or private writer unknown effect is changed."
+  },
+  "reasoningParameter": {
+    "requested": "low",
+    "source": "Original33a6 remote-inference-market.mjs chatRequest lines30-45 projects reasoning_effort; original openai/chat-turn-contract.mjs91 admits low. No unsupported max_tokens field added; model/provider/quality/heap/reserve unchanged.",
+    "compactReceiving": "RequestedReasoningEffort recorded separately; optional native delivery.configuration.reasoning_effort received as finite configurationReasoningEffort if present, otherwise null. No requested-versus-served alias inference."
+  },
+  "resourceProfile": {
+    "memoryMaxBytes": 134217728,
+    "memorySwapMaxBytes": 0,
+    "cpuQuotaPercent": 25,
+    "tasksMax": 32,
+    "hostReserveKiB": 131072,
+    "preAnyNodeAdmissionKiB": 262144,
+    "controllerNodeHeapMiB": 48,
+    "modelNodeHeapMiB": 64,
+    "semiSpaceMiB": 4,
+    "nodeAllocationBeforeGate": false,
+    "controllerAndDirectChildSameManagedDomain": true,
+    "innerSystemdScope": false,
+    "nativeCdeStorageChecksUnchanged": true,
+    "noBudgetHeapOrReserveLowering": true,
+    "noPersistentWrapper": true,
+    "noServiceStop": true,
+    "noSourceIdentitySubstitution": true,
+    "enclosingMemoryAdmission": {
+      "rootHostMemAvailableFloorKiB": 262144,
+      "hostFloorCreditedWithCgroupCurrent": false,
+      "nonRootReadings": [
+        "memory.current",
+        "memory.max",
+        "memory.high"
+      ],
+      "ownScope": "Enforce128MiB job cap only; no host reserve charged inside the job scope. Use one same-snapshot own current for self comparison.",
+      "finiteAncestors": "For each finite memory.max and memory.high enclosure, require limit-current >= max(0,134217728-ownScope.memory.current)+134217728. Read own scope current before ancestor current; record each reading and result.",
+      "unlimitedAncestors": "Literal native max is recorded, not inferred from missing files.",
+      "unknownOrMalformed": "Refuse before any Node; numeric values beyond this operator's15-digit integer bound also refuse.",
+      "hierarchyBounds": "Canonical unified cgroup path; full-root cgroup2 mount at /sys/fs/cgroup; at most128 enclosures. Only true root missing both memory.max/current uses the explicit host MemAvailable budget under native kernel contract.",
+      "preflightHelper": "Record actual scope.memory.current for the helper. Keep fixed conservative whole-job plus reserve host floor without claiming identical host and cgroup metrics.",
+      "snapshotNotReservation": true
+    },
+    "tasksMaxSource": {
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/records/design-source-profile-generation-records/48f6ed16/high-level-v1/e1cddcb270e03852b179fce8368f103b0638b16652ddf7d1f6e762a78a999d76/plan.json",
+      "sha256": "e1cddcb270e03852b179fce8368f103b0638b16652ddf7d1f6e762a78a999d76",
+      "stage": "generate-original-design-source-profile-high-level",
+      "actualArgvPair": [
+        "-p",
+        "TasksMax=32"
+      ],
+      "originalExecutedProfileTerminalCode": 0,
+      "newBudgetLowering": false,
+      "checks": "Original complete profile file hash beforeNode; exact original stage argv TasksMax32 membership before model intent."
+    }
+  },
+  "exactNativeCdeExecutionPlan": {
+    "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/records/design-source-profile-generation-records/48f6ed16/low-level-v1-whole-job/472d5fcd187b589024e3acb11cec93ffeba3dee12538d44b068ceb4a4c7af87e/plan.json",
+    "sha256": "472d5fcd187b589024e3acb11cec93ffeba3dee12538d44b068ceb4a4c7af87e",
+    "bytes": 24393,
+    "commandSHA256": "0b74d93096654803824dee926ab72e3344ad7a58dab92fbc66cf7368e005a8c7",
+    "value": {
+      "version": 1,
+      "stages": [
+        {
+          "name": "generate-design-source-profile-lld-whole-job",
+          "lifecycle": {
+            "owner": "red-cup-engineering/specification-engineering-services-section",
+            "invocation": "https://github.com/red-cup-engineering/specification-engineering-services-section/pull/19",
+            "purpose": "ONE FIRST original source-profile LLD generation from unchanged native b81 and accepted original Req/Spec/Architecture/HLD/root8b29, with exact source-family-supplemented host93efd0 request. Reuse original CIE/account/coordination history; physical custody cutover pending, no compatibility mode or migration success claim. Native supported reasoning_effort low preserves final JSON budget; native schema/source design meaning and quality tiers unchanged.",
+            "kind": "unique",
+            "retention": "Keep exact original native plan, old unallocated host8c5, unallocated source-completed419967 and final low-reasoning93efd0 host and actual original HLD task/outcome. One first LLD effect, unknown/OOM/signal not pass, no automatic replay or cap increase. Existing original CIE/account/old coordination namespace retained honestly; all new task/input/intent/delivery/receiving/log records ownerData. No physical move, replacement ledger/store, response adapter, Code or operating acceptance.",
+            "source": [
+              {
+                "repository": "red-cup-engineering/specification-engineering-services-section",
+                "commit": "48f6ed16eade45cabc9d9348441fc11e8e2a4622",
+                "path": "data/records/service-records/requirements-service-records/engineering-design-accepts-explicit-source-profiles.json"
+              },
+              {
+                "repository": "red-cup-engineering/specification-engineering-services-section",
+                "commit": "db52af5115ce9cc12e027d3ec23c42fe5a2a1aa2",
+                "path": "src/engineering-design.mjs"
+              }
+            ],
+            "custody": [
+              {
+                "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/design-source-profile-generation-state/48f6ed16/low-level-inputs/93efd0cc247bf9884deee65eb61af43fa101aba6407c3d40d7da34532ce4df91/request.json",
+                "sha256": "93efd0cc247bf9884deee65eb61af43fa101aba6407c3d40d7da34532ce4df91",
+                "role": "creation"
+              },
+              {
+                "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/design-source-profile-generation-state/48f6ed16/low-level-inputs/93efd0cc247bf9884deee65eb61af43fa101aba6407c3d40d7da34532ce4df91/input-manifest.json",
+                "sha256": "2d1213d304ad665746c5b44c91d27e89a8ccb25900166347bda7321b5c9560d8",
+                "role": "creation"
+              },
+              {
+                "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/design-source-profile-generation-state/48f6ed16/low-level-native-plan/b81a953ab983a609b97dc4940826f58401263d1211dfc6c78ff1957139205a18/native-plan.json",
+                "sha256": "b81a953ab983a609b97dc4940826f58401263d1211dfc6c78ff1957139205a18",
+                "role": "product"
+              },
+              {
+                "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/records/design-source-profile-generation-records/48f6ed16/high-level-v2-independent-root/received.json",
+                "sha256": "8b29acaeb610a250d127d118465d4576a1e334a32d345cb0e137ab9f27aec740",
+                "role": "independent-receiving"
+              },
+              {
+                "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/engineering-design-generation-contract-state/db52af5115ce/69c9b0714717907428b2754e9aa527160bfaf18da57fdfa22e634e33eeb9e621/source-contract.json",
+                "sha256": "69c9b0714717907428b2754e9aa527160bfaf18da57fdfa22e634e33eeb9e621",
+                "role": "product"
+              },
+              {
+                "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/records/design-source-profile-generation-records/48f6ed16/high-level-v2-whole-job-native-receiving/high-level.candidate.json",
+                "sha256": "bbde1ea9d7484ac99cfbd0061c1b69123bda2381087b93715d04651a4c913c69",
+                "role": "product"
+              },
+              {
+                "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/design-source-profile-generation-state/48f6ed16/high-level-v2-whole-job/receiving/review-delivery.txt",
+                "sha256": "56896b32f35a3be0705cfb1e013f68a4753e5b3f579f8474da8d2ea0298f5f9e",
+                "role": "product"
+              },
+              {
+                "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/records/design-source-profile-generation-records/48f6ed16/high-level-v1/e1cddcb270e03852b179fce8368f103b0638b16652ddf7d1f6e762a78a999d76/plan.json",
+                "sha256": "e1cddcb270e03852b179fce8368f103b0638b16652ddf7d1f6e762a78a999d76",
+                "role": "product"
+              }
+            ],
+            "status": "planned"
+          },
+          "destinations": [
+            {
+              "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/design-source-profile-generation-state/48f6ed16/low-level-v1-whole-job",
+              "peakBytes": 16777216,
+              "peakInodes": 2048,
+              "basis": "One source-completed597697B LLD request/nativeplan278455B and original per-task CIE worklot/feedback/raw delivery/finite receiving. No source/dependency tree copy or new coordination namespace. Original CIE/account history and pricing/slot/rate custody retained; outsideData path debt not claimed repaired.",
+              "estimateKind": "upper-bound"
+            },
+            {
+              "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/design-source-profile-generation-state/48f6ed16/high-level-v2-whole-job/feedback",
+              "peakBytes": 1048576,
+              "peakInodes": 256,
+              "basis": "One original accepted HLD outcome intent and finite receiving through its original CIE worklot owner; existing intent refuses replay.",
+              "estimateKind": "upper-bound"
+            }
+          ],
+          "headroom": {
+            "minFreePercent": 3,
+            "minFreeInodes": 100000,
+            "growthBytes": 16777216,
+            "growthInodes": 2048
+          },
+          "command": [
+            "/gnu/store/kba00zrnc1d1cg9bkx0krpvc2sp7wzrh-node-24.18.0/bin/node",
+            "--max-old-space-size=64",
+            "--max-semi-space-size=4",
+            "--input-type=module",
+            "--eval",
+            "\nimport fs from'node:fs';import crypto from'node:crypto';import{pathToFileURL}from'node:url';\nimport{materializeFileProjection as project}from'/gnu/store/y24wikpqj6wmiiababd41p067nghi0ck-registry-runtime/node_modules/.pnpm/@red-cup-engineering+computer-file-engineering-services-section@0.8.0/node_modules/@red-cup-engineering/computer-file-engineering-services-section/src/infomaterial.mjs';\nimport{appendServiceLog}from'/gnu/store/9b6b8kvnm6c7mqbizca3mwkzblqyrwa6-native-publisher-runtime/node_modules/.pnpm/@red-cup-engineering+computer-systems-logging-engine@0.1.0/node_modules/@red-cup-engineering/computer-systems-logging-engine/src/append-service-log.mjs';\nconst root='/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section',D=root+'/data',base=D+'/state/design-source-profile-generation-state/48f6ed16/low-level-v1-whole-job',input=D+'/state/design-source-profile-generation-state/48f6ed16/low-level-inputs/93efd0cc247bf9884deee65eb61af43fa101aba6407c3d40d7da34532ce4df91',now=()=>new Date().toISOString(),sha=b=>crypto.createHash('sha256').update(b).digest('hex');\n\nconst currentCgroup=pid=>fs.readFileSync('/proc/'+pid+'/cgroup','utf8').split('\\n').find(line=>line.startsWith('0::'))?.slice(3);\nconst wholeJobCgroup=process.env.NATIVE_WHOLE_JOB_ADMITTED_CGROUP,controllerPid=Number(process.env.NATIVE_WHOLE_JOB_CONTROLLER_PID);\nif(typeof wholeJobCgroup!=='string'||!wholeJobCgroup.startsWith('/')||currentCgroup('self')!==wholeJobCgroup||!Number.isSafeInteger(controllerPid)||controllerPid!==process.ppid||currentCgroup(controllerPid)!==wholeJobCgroup)throw Error('Original CDE controller and model child are not in the one admitted domain');\nconst group='/sys/fs/cgroup'+wholeJobCgroup;\nif(fs.readFileSync(group+'/memory.max','utf8').trim()!=='134217728'||fs.readFileSync(group+'/memory.swap.max','utf8').trim()!=='0'||fs.readFileSync(group+'/pids.max','utf8').trim()!=='32'||(!Number.isSafeInteger(Number(process.env.NATIVE_WHOLE_JOB_ADMITTED_KIB))||Number(process.env.NATIVE_WHOLE_JOB_ADMITTED_KIB)<262144))throw Error('Original whole-job resource admission changed');\nconst [cpuQuota,cpuPeriod]=fs.readFileSync(group+'/cpu.max','utf8').trim().split(/\\s+/);\nif(!/^\\d+$/.test(cpuQuota)||!/^\\d+$/.test(cpuPeriod)||BigInt(cpuQuota)<=0n||BigInt(cpuPeriod)<=0n||BigInt(cpuQuota)*4n!==BigInt(cpuPeriod))throw Error('Original whole-job CPU bound changed');\nconst originalTaskProfileBytes=fs.readFileSync(\"/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/records/design-source-profile-generation-records/48f6ed16/high-level-v1/e1cddcb270e03852b179fce8368f103b0638b16652ddf7d1f6e762a78a999d76/plan.json\");if(sha(originalTaskProfileBytes)!=='e1cddcb270e03852b179fce8368f103b0638b16652ddf7d1f6e762a78a999d76')throw Error('Original TasksMax32 profile input changed');const originalTaskArgv=JSON.parse(originalTaskProfileBytes).stages.find(s=>s.name==='generate-original-design-source-profile-high-level')?.command;if(!Array.isArray(originalTaskArgv)||!originalTaskArgv.some((v,i)=>v==='-p'&&originalTaskArgv[i+1]==='TasksMax=32'))throw Error('TasksMax32 lacks its original source profile input');\nconsole.log(JSON.stringify({phase:'whole-job-domain-received-before-model-intent',cgroup:wholeJobCgroup,controllerPid,modelPid:process.pid,parentAndChildSameDomain:true,memoryMaxBytes:134217728,memorySwapMaxBytes:0,tasksMax:32,cpuQuotaPercent:25,admittedBeforeAnyNodeAvailableKiB:Number(process.env.NATIVE_WHOLE_JOB_ADMITTED_KIB)}));\n\nif(fs.existsSync(base+'/intent'))throw Error('Original low-level Design attempt has intent; receive original effect, never replay');\nconst requestBytes=fs.readFileSync(input+'/request.json');if(sha(requestBytes)!=='93efd0cc247bf9884deee65eb61af43fa101aba6407c3d40d7da34532ce4df91')throw Error('Original source request changed');const manifestBytes=fs.readFileSync(input+'/input-manifest.json');if(sha(manifestBytes)!==\"2d1213d304ad665746c5b44c91d27e89a8ccb25900166347bda7321b5c9560d8\")throw Error('Reviewed exact input manifest changed');const request=JSON.parse(requestBytes),manifest=JSON.parse(manifestBytes);if(request.reasoning_effort!=='low')throw Error('Reviewed original native reasoning_effort changed');\nconst originalNativePlanBytes=fs.readFileSync(manifest.originalNativePlan.path);if(sha(originalNativePlanBytes)!=='b81a953ab983a609b97dc4940826f58401263d1211dfc6c78ff1957139205a18')throw Error('Original native LLD plan changed');const originalNativePlan=JSON.parse(originalNativePlanBytes);if(originalNativePlan.stage!=='low-level'||JSON.stringify(originalNativePlan.request.schema)!==JSON.stringify(request.schema))throw Error('Original native LLD schema changed');const independentBytes=fs.readFileSync(manifest.independentHldReceiving.path);if(sha(independentBytes)!==manifest.independentHldReceiving.sha256)throw Error('Original independent Architecture receiving changed');\nconst contractBytes=fs.readFileSync(manifest.originalNativeDesignContract.path);if(sha(contractBytes)!==manifest.originalNativeDesignContract.sha256)throw Error('Original native low-level Design source contract changed');\nconst cie=fs.realpathSync(D+'/state/content-mill-source-qualification-state/04616823/source-final/node_modules/@red-cup-engineering/computer-inference-engine');\nconst environment={...process.env,INFERENCE_WORK_LOT_STATE_ROOT:base+'/market-state',INFERENCE_WORK_LOT_DATA_ROOT:base+'/market-state/data',EXPECTED_RESOLUTION_PRICING_ROOT:D+'/state/pnpm-native-generation-state/5ac433219799/architecture-gemini-v1/market-state/pricing',INFERENCE_ALLOWANCE_LEDGER_FILE:'/home/emsenn/.local/state/561-group/computer-inference-engine/allowance-ledger.sqlite'};\nconst credentialInput=fs.readFileSync('/run/user/1001/561-group-credentials/koios-news.env','utf8');for(const name of['API_KEY_GROQ','API_KEY_INFERENCE_NVIDIA']){const line=credentialInput.split('\\n').find(x=>x.startsWith(name+'='));if(line){let value=line.slice(name.length+1);if(value.startsWith('\"')&&value.endsWith('\"'))value=JSON.parse(value);environment[name]=value;}}\nif(!environment.API_KEY_GROQ&&!environment.API_KEY_INFERENCE_NVIDIA)throw Error('Original held credential unavailable');\nconst{inferenceDispatchPort}=await import(pathToFileURL(cie+'/src/dispatch/inference-dispatch-port.mjs'));\nconst{loadDirectEndpointProviderDescriptors}=await import(pathToFileURL(cie+'/src/dispatch/direct-endpoint-provider.mjs'));\nconst{remoteInferenceMarket,DISPATCH_TOOL,OUTCOME_TOOL}=await import(pathToFileURL(cie+'/src/dispatch/remote-inference-market.mjs'));\nconst allowedProviders=['urn:ame:groq-inference-team','urn:ame:nvidia-inference-team'],descriptors=loadDirectEndpointProviderDescriptors(environment),excluded=descriptors.filter(x=>!allowedProviders.includes(x.provider)).map(x=>x.provider),port=inferenceDispatchPort({environment,dataRoot:environment.INFERENCE_WORK_LOT_DATA_ROOT});\n\nconst originalHld=manifest.originalHld,originalHldBytes=fs.readFileSync(originalHld.candidatePath),originalHldRaw=fs.readFileSync(originalHld.rawDeliveryPath);\nif(sha(originalHldBytes)!==originalHld.candidateSHA256||sha(originalHldRaw)!==originalHld.rawDeliverySHA256)throw Error('Original accepted HLD candidate/delivery changed');\nconst originalHldReceiving=JSON.parse(fs.readFileSync(originalHld.receivingPath)),hldLot=originalHldReceiving.lot;\nif(Object.keys(originalHld.lot).some(k=>hldLot[k]!==originalHld.lot[k]))throw Error('Original HLD work-lot coordinates changed');\nconst feedbackBase=originalHld.feedbackBase;if(fs.existsSync(feedbackBase+'/intent'))throw Error('Original HLD feedback intent exists; receive original effect, never repeat');\nconst feedbackEvidence=manifest.independentHldReceiving.path+'#sha256:'+manifest.independentHldReceiving.sha256,feedbackInput={...Object.fromEntries(['workLot','provider','taskClass','selectedOffer','receipt','receiver','configurationIdentity'].filter(k=>hldLot[k]!==undefined).map(k=>[k,hldLot[k]])),outcome:'accepted',evidence:feedbackEvidence};\nconst feedbackEnvironment={...environment,INFERENCE_WORK_LOT_STATE_ROOT:\"/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/design-source-profile-generation-state/48f6ed16/high-level-v2-whole-job/market-state\",INFERENCE_WORK_LOT_DATA_ROOT:\"/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/design-source-profile-generation-state/48f6ed16/high-level-v2-whole-job/market-state/data\"},feedbackPort=inferenceDispatchPort({environment:feedbackEnvironment,dataRoot:feedbackEnvironment.INFERENCE_WORK_LOT_DATA_ROOT});\nif(feedbackInput.receiver!==feedbackPort.customer)throw Error('Original configured HLD receiver changed');\nawait project([{path:'intent.json',mode:0o100644n,bytes:Buffer.from(JSON.stringify({kind:'engineering-design.original-hld-feedback-intent/v1',at:now(),input:feedbackInput,acceptanceScope:'Original independently accepted HLD for LLD only; no Code or runtime acceptance'},null,2)+'\\n')}],{path:feedbackBase+'/intent'});\nconst feedbackResult=await feedbackPort.call('record_inference_outcome',feedbackInput),feedbackValue=feedbackResult.structuredContent??JSON.parse(feedbackResult.content.find(x=>x.type==='text').text),feedbackObservation=feedbackValue.observation;\nconst feedbackMatches=!feedbackResult.isError&&feedbackValue.outcome==='receiver-outcome-recorded'&&typeof feedbackObservation?.id==='string'&&feedbackObservation.id.length<=256&&Object.entries(feedbackInput).every(([k,v])=>feedbackObservation[k]===v);\nconst feedbackRecord={kind:'engineering-design.original-hld-feedback-receiving/v1',at:now(),isError:!!feedbackResult.isError,matchedOriginalInput:feedbackMatches,outcome:typeof feedbackValue.outcome==='string'?feedbackValue.outcome.slice(0,128):null,observationId:typeof feedbackObservation?.id==='string'?feedbackObservation.id.slice(0,256):null,originalCieJournalOwnsFullObservation:true};\nawait project([{path:'received.json',mode:0o100644n,bytes:Buffer.from(JSON.stringify(feedbackRecord,null,2)+'\\n')}],{path:feedbackBase+'/receiving'});\nawait appendServiceLog({root,hirer:'engineering-release-engineer',service:'engineering-design-source-profiles',at:feedbackRecord.at,entry:{subject:'Codex /root/koios_release_finish',entity:feedbackInput.workLot,attribute:'original-independent-hld-supplier-outcome',value:{outcome:'accepted',evidence:feedbackEvidence,feedbackReceiving:feedbackBase+'/receiving/received.json',matchedOriginalInput:feedbackMatches},time:feedbackRecord.at}});\nif(!feedbackMatches)throw Error('Original accepted HLD feedback not received; preserve original effect before LLD dispatch');\n\nconst intent={kind:'engineering-design.source-profile-low-level-intent/v1',at:now(),request:input+'/request.json',requestSHA256:sha(requestBytes),requestBytes:requestBytes.length,sourceCut:manifest.sourceCut,sourceCommit:'48f6ed16eade45cabc9d9348441fc11e8e2a4622',implementationSource:'db52af5115ce9cc12e027d3ec23c42fe5a2a1aa2',customer:port.customer,zeroCashOnly:true,requiredQualityTiers:['frontier-hosted'],requestedReasoningEffort:request.reasoning_effort,eligibleHeldProviders:allowedProviders,modelSelectedByOriginalMarket:true,fullOriginalSourceContract:manifest.originalNativeDesignContract,inferenceReceived:false,lowLevelDesignAccepted:false};\nawait project([{path:'intent.json',mode:0o100644n,bytes:Buffer.from(JSON.stringify(intent,null,2)+'\\n')}],{path:base+'/intent'});\nconst market=remoteInferenceMarket({call:async({tool,input})=>{const name=tool===DISPATCH_TOOL?'dispatch_inference':tool===OUTCOME_TOOL?'record_inference_outcome':undefined;if(!name)throw Error('Unsupported original inference operation');const r=await port.call(name,tool===DISPATCH_TOOL?{...input,zeroCashOnly:true,excludeProviders:[...new Set([...(input.excludeProviders??[]),...excluded])]}:input);const value=r.structuredContent??JSON.parse(r.content.find(x=>x.type==='text').text);if(r.isError)throw Error(value.reason??'Original native inference refusal',{cause:value});return value;}});\n\nfunction boundedLotCoordinates(lot){\n const keys=['workLot','provider','taskClass','selectedOffer','receipt','receiver','model','configurationIdentity'],out={};\n for(const key of keys){const value=lot?.[key];if(value===undefined&&key==='configurationIdentity')continue;if(typeof value!=='string'||!value.trim()||Buffer.byteLength(value)>2048)throw Error('Original lot coordinate is missing or exceeds operator receiving bound: '+key);out[key]=value;}return out;\n}\nfunction boundedDeliveryMetadata(delivery){\n const resources=delivery?.measuredResources?.resources,allowedResources=new Set(['requests','input-tokens','output-tokens','total-tokens','cached-input-tokens','cache-write-input-tokens','cache-creation-input-tokens','cache-read-input-tokens','reasoning-output-tokens','reported-cost','duration']),allowedUnits=new Set(['request','token','millisecond','provider-cost-unit']),selected=[];\n if(Array.isArray(resources)&&resources.length<=64)for(const value of resources){const numerator=value?.amount?.numerator,denominator=value?.amount?.denominator;if(!allowedResources.has(value?.resource)||!allowedUnits.has(value?.unit)||typeof numerator!=='string'||typeof denominator!=='string'||numerator.length>128||denominator.length>128||!/^\\d+$/.test(numerator)||!/^\\d+$/.test(denominator)||BigInt(denominator)<=0n)continue;const row={resource:value.resource,unit:value.unit,amount:{numerator,denominator}};if(typeof value.asset==='string'&&Buffer.byteLength(value.asset)<=2048)row.asset=value.asset;selected.push(row);}\n return {configurationReasoningEffort:typeof delivery?.configuration?.reasoning_effort==='string'&&Buffer.byteLength(delivery.configuration.reasoning_effort)<=64?delivery.configuration.reasoning_effort:null,configurationModel:typeof delivery?.configuration?.model==='string'&&Buffer.byteLength(delivery.configuration.model)<=2048?delivery.configuration.model:null,nativeOutcome:typeof delivery?.outcome==='string'?delivery.outcome.slice(0,128):null,durationMs:Number.isSafeInteger(delivery?.durationMs)&&delivery.durationMs>=0?delivery.durationMs:null,resources:selected,resourceProjectionComplete:Array.isArray(resources)&&resources.length===selected.length,unselectedResourceCount:Array.isArray(resources)&&resources.length<=64?resources.length-selected.length:null,originalCieJournalOwnsFullDelivery:true,providerEvidenceOrRequestTreeCopied:false};\n}\n\nlet outcome,files=[],deliveredTextObserved=false;try{const r=await market.chat(request);deliveredTextObserved=true;files.push({path:'review-delivery.txt',mode:0o100644n,bytes:Buffer.from(r.text)});outcome={kind:'engineering-design.source-profile-low-level-delivery/v1',at:now(),state:'provider-delivered-unreceived',requestSHA256:intent.requestSHA256,requestedReasoningEffort:request.reasoning_effort,sourceCut:intent.sourceCut,lot:boundedLotCoordinates(r.lot),deliveryMetadata:boundedDeliveryMetadata(r.lot.delivery),lowLevelDesignGenerated:false,independentSemanticReceiving:false,codeWritten:false};}catch(error){outcome={kind:'engineering-design.source-profile-low-level-delivery/v1',at:now(),state:deliveredTextObserved?'provider-delivered-metadata-refused':'refused',requestSHA256:intent.requestSHA256,requestedReasoningEffort:request.reasoning_effort,sourceCut:intent.sourceCut,error:{name:String(error.name).slice(0,128),code:typeof error.code==='string'?error.code.slice(0,128):null,message:String(error.message).slice(0,4096)},native:{outcome:typeof error.cause?.outcome==='string'?error.cause.outcome.slice(0,128):null,reason:typeof error.cause?.reason==='string'?error.cause.reason.slice(0,4096):null},lowLevelDesignGenerated:false,codeWritten:false};}\nfiles.push({path:'received.json',mode:0o100644n,bytes:Buffer.from(JSON.stringify(outcome,null,2)+'\\n')});await project(files,{path:base+'/receiving'});\nconst log=await appendServiceLog({root,hirer:'engineering-release-engineer',service:'engineering-design-source-profiles',at:outcome.at,entry:{subject:'Codex /root/koios_release_finish',entity:input+'/request.json',attribute:'low-level-provider-delivery',value:{state:outcome.state,requestSHA256:intent.requestSHA256,zeroCashOnly:true,sourceCut:intent.sourceCut,receiving:base+'/receiving/received.json',lowLevelDesignAccepted:false},time:outcome.at}});\nconsole.log(JSON.stringify({state:outcome.state,error:outcome.error??null,native:outcome.native??null,receiving:base+'/receiving/received.json',log:log.path}));\n"
+          ]
+        }
+      ]
+    }
+  },
+  "exactOuterArgv": [
+    "/usr/bin/systemd-run",
+    "--user",
+    "--scope",
+    "--quiet",
+    "--unit=design-source-profile-lld-whole-job-v1",
+    "-p",
+    "MemoryMax=128M",
+    "-p",
+    "MemorySwapMax=0",
+    "-p",
+    "CPUQuota=25%",
+    "-p",
+    "TasksMax=32",
+    "/usr/bin/sh",
+    "-c",
+    "set -eu\n[ \"$#\" -eq 3 ] || exit 64\nwhole_job_plan=$1\nwhole_job_plan_sha=$2\nwhole_job_stage=$3\nwhole_job_cgroup=\nwhile IFS=: read -r whole_job_hierarchy whole_job_controllers whole_job_path; do\n if [ \"$whole_job_hierarchy\" = 0 ]; then whole_job_cgroup=$whole_job_path; fi\ndone < /proc/self/cgroup\ncase \"$whole_job_cgroup\" in ''|*[!A-Za-z0-9_./@-]*|*'/../'*|*'/./'*|*'//'*) exit 64;; esac\n[ \"${whole_job_cgroup#/}\" != \"$whole_job_cgroup\" ] && [ \"$whole_job_cgroup\" != / ] || exit 64\nwhole_job_group=/sys/fs/cgroup$whole_job_cgroup\nwhole_job_decimal() {\n case \"$1\" in ''|*[!0-9]*) return 64;; esac\n [ \"${#1}\" -le 15 ] || return 64\n case \"$1\" in 0|[1-9]*) return 0;; *) return 64;; esac\n}\nwhole_job_read() {\n [ -r \"$1\" ] || return 64\n whole_job_value=\n IFS= read -r whole_job_value < \"$1\"\n [ \"${#whole_job_value}\" -le 128 ] || return 64\n}\nwhole_job_read \"$whole_job_group/memory.max\"\n[ \"$whole_job_value\" = 134217728 ] || exit 64\nwhole_job_read \"$whole_job_group/memory.swap.max\"\n[ \"$whole_job_value\" = 0 ] || exit 64\nwhole_job_read \"$whole_job_group/pids.max\"\n[ \"$whole_job_value\" = 32 ] || exit 64\nIFS=' ' read -r whole_job_cpu_quota whole_job_cpu_period < \"$whole_job_group/cpu.max\"\nwhole_job_decimal \"$whole_job_cpu_quota\"\nwhole_job_decimal \"$whole_job_cpu_period\"\n[ \"$whole_job_cpu_quota\" -gt 0 ] && [ \"$whole_job_cpu_period\" -gt 0 ] && [ \"$((whole_job_cpu_quota * 4))\" -eq \"$whole_job_cpu_period\" ] || exit 64\nprintf '%s\\n' '7524c8b5c3c8acee093e9bb63f6a0139b5985677868411bb951e69f65973eec0  /gnu/store/1b34vdsdqd7782y3x9imgnhq8snflih6-koios-news-deployment-1/node_modules/@red-cup-engineering/computer-deployment-engine/scripts/admit-fabrication-stage.mjs' '2a02e68e6f74be384e51cebca4e3e812beabd968a649e0e3e06c13f106cd399a  /gnu/store/1b34vdsdqd7782y3x9imgnhq8snflih6-koios-news-deployment-1/node_modules/@red-cup-engineering/computer-deployment-engine/src/fabrication-storage.mjs' 'e1cddcb270e03852b179fce8368f103b0638b16652ddf7d1f6e762a78a999d76  /home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/records/design-source-profile-generation-records/48f6ed16/high-level-v1/e1cddcb270e03852b179fce8368f103b0638b16652ddf7d1f6e762a78a999d76/plan.json' | /usr/bin/sha256sum --check --status\nwhole_job_mount_root=$(/usr/bin/awk 'NR > 2048 || length($0) > 8192 {bad=1;exit 64} index($0,\" - cgroup2 \") && $5 == \"/sys/fs/cgroup\" {n++;root=$4} END {if(bad||n!=1||root!=\"/\")exit 64;print root}' /proc/self/mountinfo)\n[ \"$whole_job_mount_root\" = / ] || exit 64\nwhole_job_cursor=$whole_job_cgroup\nwhole_job_depth=0\nwhile :; do\n whole_job_depth=$((whole_job_depth + 1))\n [ \"$whole_job_depth\" -le 128 ] || exit 64\n whole_job_at=/sys/fs/cgroup$whole_job_cursor\n if [ \"$whole_job_cursor\" = / ] && [ ! -e \"$whole_job_at/memory.max\" ] && [ ! -e \"$whole_job_at/memory.current\" ]; then\n  printf '{\"phase\":\"memory-enclosure-before-any-node\",\"cgroup\":\"/\",\"budget\":\"explicit-host-MemAvailable-floor\",\"memoryControllerRootInterfaces\":\"non-applicable-per-native-kernel-contract\",\"unlimitedCapacityAssumed\":false}\\n'\n  break\n fi\n whole_job_read \"$whole_job_group/memory.current\"\n whole_job_scope_current=$whole_job_value\n whole_job_decimal \"$whole_job_scope_current\"\n [ \"$whole_job_scope_current\" -le 134217728 ] || exit 64\n whole_job_remaining=$((134217728 - whole_job_scope_current))\n if [ \"$whole_job_cursor\" = \"$whole_job_cgroup\" ]; then\n  whole_job_current=$whole_job_scope_current\n else\n  whole_job_read \"$whole_job_at/memory.current\"\n  whole_job_current=$whole_job_value\n  whole_job_decimal \"$whole_job_current\"\n fi\n whole_job_required=$whole_job_remaining\n if [ \"$whole_job_cursor\" != \"$whole_job_cgroup\" ]; then whole_job_required=$((whole_job_remaining + 134217728)); fi\n for whole_job_limit_name in memory.max memory.high; do\n  whole_job_read \"$whole_job_at/$whole_job_limit_name\"\n  whole_job_limit=$whole_job_value\n  if [ \"$whole_job_limit\" = max ]; then\n   printf '{\"phase\":\"memory-enclosure-before-any-node\",\"cgroup\":\"%s\",\"limitKind\":\"%s\",\"limitBytes\":\"max\",\"currentBytes\":%s,\"ownScopeCurrentBytes\":%s,\"remainingJobBytes\":%s,\"requiredAdditionalBytes\":%s,\"admitted\":true}\\n' \"$whole_job_cursor\" \"$whole_job_limit_name\" \"$whole_job_current\" \"$whole_job_scope_current\" \"$whole_job_remaining\" \"$whole_job_required\"\n  else\n   whole_job_decimal \"$whole_job_limit\"\n   if [ \"$whole_job_limit\" -lt \"$whole_job_current\" ] || [ \"$((whole_job_limit - whole_job_current))\" -lt \"$whole_job_required\" ]; then\n    printf '{\"phase\":\"memory-enclosure-before-any-node\",\"cgroup\":\"%s\",\"limitKind\":\"%s\",\"limitBytes\":%s,\"currentBytes\":%s,\"ownScopeCurrentBytes\":%s,\"remainingJobBytes\":%s,\"requiredAdditionalBytes\":%s,\"admitted\":false}\\n' \"$whole_job_cursor\" \"$whole_job_limit_name\" \"$whole_job_limit\" \"$whole_job_current\" \"$whole_job_scope_current\" \"$whole_job_remaining\" \"$whole_job_required\"\n    exit 1\n   fi\n   printf '{\"phase\":\"memory-enclosure-before-any-node\",\"cgroup\":\"%s\",\"limitKind\":\"%s\",\"limitBytes\":%s,\"currentBytes\":%s,\"ownScopeCurrentBytes\":%s,\"remainingJobBytes\":%s,\"requiredAdditionalBytes\":%s,\"admitted\":true}\\n' \"$whole_job_cursor\" \"$whole_job_limit_name\" \"$whole_job_limit\" \"$whole_job_current\" \"$whole_job_scope_current\" \"$whole_job_remaining\" \"$whole_job_required\"\n  fi\n done\n [ \"$whole_job_cursor\" != / ] || break\n whole_job_cursor=${whole_job_cursor%/*}\n [ -n \"$whole_job_cursor\" ] || whole_job_cursor=/\ndone\nwhole_job_available=$(/usr/bin/awk '$1 == \"MemAvailable:\" {print $2;found=1;exit} END {if(!found)exit 1}' /proc/meminfo)\nwhole_job_decimal \"$whole_job_available\"\nif [ \"$whole_job_available\" -lt 262144 ]; then\n printf 'Original whole-job host admission refused before ANY Node: availableKiB=%s requiredKiB=262144\\n' \"$whole_job_available\" >&2\n exit 1\nfi\nwhole_job_read \"$whole_job_group/memory.current\"\nwhole_job_helper_current=$whole_job_value\nwhole_job_decimal \"$whole_job_helper_current\"\n[ \"$whole_job_helper_current\" -le 134217728 ] || exit 64\nexport NATIVE_WHOLE_JOB_ADMITTED_CGROUP=$whole_job_cgroup\nexport NATIVE_WHOLE_JOB_CONTROLLER_PID=$$\nexport NATIVE_WHOLE_JOB_ADMITTED_KIB=$whole_job_available\nprintf '{\"phase\":\"memory-admitted-before-any-node-allocation\",\"cgroup\":\"%s\",\"controllerPid\":%s,\"availableKiB\":%s,\"requiredKiB\":262144,\"memoryMaxBytes\":134217728,\"memorySwapMaxBytes\":0,\"tasksMax\":32,\"cpuQuotaPercent\":25,\"preflightHelperScopeCurrentBytes\":%s,\"hostFloorIsFixedConservativeWholeJobPlusReserve\":true,\"ancestorReadingsAreSnapshotNotReservation\":true}\\n' \"$whole_job_cgroup\" \"$$\" \"$whole_job_available\" \"$whole_job_helper_current\"\nexec /gnu/store/kba00zrnc1d1cg9bkx0krpvc2sp7wzrh-node-24.18.0/bin/node --max-old-space-size=48 --max-semi-space-size=4 /gnu/store/1b34vdsdqd7782y3x9imgnhq8snflih6-koios-news-deployment-1/node_modules/@red-cup-engineering/computer-deployment-engine/scripts/admit-fabrication-stage.mjs --plan \"$whole_job_plan\" --plan-sha256 \"$whole_job_plan_sha\" --stage \"$whole_job_stage\"\n",
+    "original-cde-whole-job-preflight",
+    "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/records/design-source-profile-generation-records/48f6ed16/low-level-v1-whole-job/472d5fcd187b589024e3acb11cec93ffeba3dee12538d44b068ceb4a4c7af87e/plan.json",
+    "472d5fcd187b589024e3acb11cec93ffeba3dee12538d44b068ceb4a4c7af87e",
+    "generate-design-source-profile-lld-whole-job"
+  ],
+  "sourcePreparation": {
+    "node": "v24.18.0",
+    "plan": {
+      "sha256": "472d5fcd187b589024e3acb11cec93ffeba3dee12538d44b068ceb4a4c7af87e",
+      "bytes": 24393
+    },
+    "commandSHA256": "0b74d93096654803824dee926ab72e3344ad7a58dab92fbc66cf7368e005a8c7",
+    "sourceCheckerSHA256": "2a02e68e6f74be384e51cebca4e3e812beabd968a649e0e3e06c13f106cd399a",
+    "sourceCheckerGitCommit": "eed32c0009dadb2b9b4ec47785127908e0b8f562",
+    "sourceCheckerBytesEqualInstalledOriginal": true,
+    "nativeValidateStoragePlan": true,
+    "nodeSyntaxCode": 0,
+    "nodeSyntaxStderr": "",
+    "sourceScope": "Exact old source2a02 from original Git eed32 equals installed0.4.16; new BCF e717/67c checker is not substituted.",
+    "outerShellByteIdenticalToQualified2a": true,
+    "sourceInputsNotYetMaterialized": true,
+    "rawPayloadKeptOnlyInExistingPreparationCarrier": true,
+    "newDependencyInstallOrClone": false,
+    "crgNodeModelFeedbackOrDataMoveEffect": false
+  },
+  "effectOrdering": [
+    "One serial originalFile0.8 preparation writes only missing exact finalrequest/manifest and originalb81 nativeplan once by reference, plus actual independent/root source receiving. No input tree clone/recursive product copy; no mutable mkdir through Fileprojection.",
+    "After preparer terminal, invoke exact reviewed outerargv ONCE in one held128M domain. Same before-ANY-Node host262144KiB/ancestor checks, source hashes, Tasks32 provenance and original before/after CDE storage/inode/backing/custody/destination receiving.",
+    "Direct child checks exact domain+PPID+kernel caps, request/manifest/native schema and original actual HLD/root/contract bytes BEFORE credentials/native market composition.",
+    "Original accepted HLD feedback is recorded once through its original CIE owner, pinned to9r3/root8b29; existing feedback intent refuses replay. All consumed original lot coordinates matched; no quality/Code/Office acceptance invented.",
+    "One original LLD intent precedes original market.chat; unknown/OOM/signal/refusal is not pass and grants no automatic retry. Retain original native account/history and source identities.",
+    "Raw provider text retained exactly once before bounded IDs/configurationModel/separate returned model/finite resources/outcome projection. No recursive lot/delivery/providerEvidence/request tree copying. Original CIE journal owns full lot.",
+    "Hold slot through original handle terminal plus exact delivery/native receiving; source candidate still requires structural original receiveEngineeringDesign and independent semantic review before original generic Fabrication."
+  ],
+  "remaining": "This one source stage does not qualify genericFabrication supplier/authority/history, source Code, native Scheme receiving, branch integration, CDE/root migration/activation or20newarticles/day.",
+  "effects": {
+    "model": false,
+    "feedback": false,
+    "physicalMigration": false,
+    "packageEdition": false,
+    "sourceImplementation": false,
+    "production": false
+  }
+}

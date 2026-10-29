@@ -1,0 +1,488 @@
+{
+  "kind": "OriginalGenericSupplierWholeJobOperatorProfile",
+  "version": 1,
+  "authoredBy": "Codex /root/koios_release_finish",
+  "status": "prepared-for-independent-source-and-root-execution-review; not-cleared-or-executed",
+  "purpose": "ONE FIRST ordinary frozen receiving of original Generic259 dependency context through unchanged genuine Code17 and rawPNPM11.28.5; independently receive pinned CIEclient2.11 members and all59 runtime dependency pins. No model, feedback, account migration or generated source effect.",
+  "sourceRequirement": {
+    "repository": "red-cup-engineering/specification-engineering-services-section",
+    "commit": "48f6ed16eade45cabc9d9348441fc11e8e2a4622",
+    "revision": "ni:///sha-256;oJBTBcQ8qRwN78ZGaPuAtLN1zTApV_geIhvgRZkrvhQ",
+    "controllingCells": [
+      "original-owner",
+      "original-fabrication",
+      "whole-family-cutover",
+      "source-and-operation-evidence"
+    ]
+  },
+  "originalSupplier": {
+    "repository": "red-cup-engineering/computer-systems-fabrication-engineering-services-section",
+    "commit": "b82906a94e8bc144a90d66688fe65a3753ea78c3",
+    "name": "@red-cup-engineering/computer-systems-fabrication-engineering-services-section",
+    "version": "0.4.15-dev.259",
+    "canonicalIntegrity": "sha512-1zlxqDC70r59Eb514PJrilS/IuNiHQXob0Ry9tuI7c893oja8YWPH+PKu/nbDZyD6/r4uxxeRf9aXyioixgtRw==",
+    "sourceFiles": [
+      {
+        "path": "package.json",
+        "sha256": "af4e394ab00158dc7f71a2a129a85a7fd28bd07f5f46822ac2e58025326be04b",
+        "bytes": 18171
+      },
+      {
+        "path": "pnpm-lock.yaml",
+        "sha256": "d51c6cea93a79aa56704c3566e9d1f67732a35bad5b53d5198ff3d12793fc774",
+        "bytes": 595103
+      },
+      {
+        "path": ".npmrc",
+        "sha256": "7e220a09039bf101b1f5e5f21ae4aab701893a29dd6d754f5cd91468ee400627",
+        "bytes": 727
+      },
+      {
+        "path": "pnpm-workspace.yaml",
+        "sha256": "9bda76bcbd2d4031a7431d20b19356612ff3d87ad224121c7e494b529fd4b261",
+        "bytes": 515
+      }
+    ]
+  },
+  "originalCode": {
+    "root": "/gnu/store/b2vckbg7j60w8fzhvf8bl45f6x5d3ia8-native-publisher-runtime/node_modules/.pnpm/@red-cup-engineering+npm-workspace-publication-service@0.17.0/node_modules/@red-cup-engineering/npm-workspace-publication-service",
+    "version": "0.17.0",
+    "gitHead": "18ca88eef99a07859fc86a28b29b1bc4cb78630c",
+    "sourceRegistryClosureSHA256": "548bc969d149e691511ce1335843a807e11634c8dbcc54b3e460aeec2f526677",
+    "manifestSHA256": "c5b699f83611488c6a372f8acf063936dedded48d19625bdc343360f901e265c"
+  },
+  "originalPnpm": {
+    "entry": "/gnu/store/9b6b8kvnm6c7mqbizca3mwkzblqyrwa6-native-publisher-runtime/node_modules/.pnpm/pnpm@11.28.5/node_modules/pnpm/bin/pnpm.mjs",
+    "entrySHA256": "ff3224d46b47fbb24a7e9fe15fededef7e00892d07d4e376b6762d4899906bfd",
+    "distSHA256": "e3738fda08262f74611d7a1ffc11b3e87fa52b466c07eb73211d179ebcb98810",
+    "version": "11.28.5",
+    "storeVersion": "v11",
+    "sourceEvidence": {
+      "storeVersionLine": 267,
+      "getStorePathLines": [
+        189509,
+        189524
+      ],
+      "explicitBaseSelectsBasePlusVersion": true,
+      "alreadyVersionedSuffixIsReturnedUnchanged": true
+    }
+  },
+  "existingStoreReceiving": {
+    "base": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/publisher-runtime-build-20261029/pnpm-store",
+    "directory": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/publisher-runtime-build-20261029/pnpm-store/v11",
+    "device": "64770",
+    "baseInode": "3217254",
+    "inode": "3217255",
+    "uid": 1001,
+    "reference": {
+      "path": "/gnu/store/b2vckbg7j60w8fzhvf8bl45f6x5d3ia8-native-publisher-runtime/node_modules/.modules.yaml",
+      "sha256": "5eee23d057f71eae832b3dd138efdfea45410c9cbff8017297cc232d0d31c07b",
+      "bytes": 72667,
+      "packageManager": "pnpm@12.15.0"
+    },
+    "lifetime": "Preserve this same source-owned Data store and immutable operating-consumer reference. This operation adds a real consumer reference; it never copies, replaces, clears, renames or retires the shared store. Format compatibility is first-qualified by original raw11.28.5 receiving; v11 name alone grants no qualification.",
+    "sourceReaderTerminalCode": 0,
+    "defaultPnpmOrStoreInitExecuted": false,
+    "basePassedToNativePnpm": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/publisher-runtime-build-20261029/pnpm-store",
+    "derivedPathFromExactHeldSource": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/publisher-runtime-build-20261029/pnpm-store/v11",
+    "originalGetStorePathSourceCompleteThroughFallbackRead": true,
+    "storeFormatLabelAloneIsNotQualification": true,
+    "firstNativeOriginalOperationWillQualifyActualReuse": true
+  },
+  "newImmutableProductReuseReceiving": {
+    "root": "/gnu/store/b2vckbg7j60w8fzhvf8bl45f6x5d3ia8-native-publisher-runtime",
+    "readerTerminalCode": 0,
+    "exactSelectedPackageMatches": {
+      "generic259": 0,
+      "cieClient211": 0,
+      "jsnodePackage051dev4": 0,
+      "data060": 0
+    },
+    "scope": "Only finite selected package/version prefixes in this one new immutable operating product; not a global supplier absence claim."
+  },
+  "operation": {
+    "module": "src/source-registry-closure.mjs",
+    "export": "receiveSourceRegistryConsumers",
+    "normalBranch": true,
+    "run": "original internal promisify(execFile); no custom runner/checkedRunProcess adapter",
+    "nativeInitialFrozen": false,
+    "nativeStoreAssembly": false,
+    "productionOnly": true,
+    "originalCommittedMetadataFiles": 4,
+    "sourceFilesRemainByteExact": true,
+    "singleCanonicalClientArtifactTransfer": "Original Code readRegistryPackageVersion + receiveRegistryTarball; exact original lock SRI, original installed member receiving, no synthesized artifactDownloaded flag",
+    "independentPins": "Original assertRootInstalledDependencyPins after original consumer receiving",
+    "fullGenericSourceOrRuntimeClaim": false,
+    "produceRegistryRuntimeInvoked": false,
+    "sourceTransformationAuthorityClaim": false
+  },
+  "resourceProfile": {
+    "wholeJobMemoryMaxBytes": 268435456,
+    "memorySwapMaxBytes": 0,
+    "cpuQuotaPercent": 25,
+    "tasksMax": 32,
+    "hostReserveBytes": 134217728,
+    "beforeAnyNodeHostFloorKiB": 393216,
+    "controllerHeapMiB": 48,
+    "receiverHeapMiB": 48,
+    "pnpmHeapMiB": 96,
+    "semiSpaceMiB": 4,
+    "scopeUnit": "generic-source-transformation-supplier-frozen-v1",
+    "budgetBasis": "New first-install qualification:48MiB controller+48MiB receiver+96MiB rawPNPM heaps with64MiB aggregate nonheap allowance; not evidence the maximum fits. No increase/replay of any prior model/writer.",
+    "beforeAnyNode": "Same qualified original POSIX whole-domain admission mechanism; exact source/input hashes, own domain and every applicable proper ancestor before first Node. Fixed host393216KiB floor gets no cgroup-current credit.",
+    "finiteAncestors": "Each finite memory.max or memory.high limit-current must cover max(0,268435456-ownScope.current)+134217728; own scope charges job cap only.",
+    "unknownOrMalformed": "Refuse before Node; root missing interfaces handled only by explicit qualified true-root host-budget case.",
+    "allNativeProcesses": "CDE exec-preserved controller and direct receiver share exact cgroup+PPID; unchanged original Code starts its serial PNPM inside same inherited domain. No sibling scope.",
+    "domainTerminal": "Original native operation return plus cgroup.procs check before private cache retirement; unknown extra processes retain work and refuse qualification.",
+    "signalsOomOrUnknown": "Never success, no automatic retry or cap increase; actual whole-domain/source receiving remains owed."
+  },
+  "installerState": {
+    "HOMEandCODEX_HOME": "Preserve values exactly; no home override or writes.",
+    "store": "One same existing Data store, actual dev/inode and immutable operating reference pinned; never retire, rename, replace or copy it.",
+    "releaseMetadata": "Original Code17 package-manager45–60 permits one release-specific metadata cache/pnpm-metadata while sharing content store. This is the first Generic259 receiving, not a replacement package/account store.",
+    "privatePaths": {
+      "consumer": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/source-transformation-supplier-state/b82906a94e8b/ordinary-frozen-v1/consumer",
+      "effect": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/source-transformation-supplier-state/b82906a94e8b/ordinary-frozen-v1/effect",
+      "staging": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/source-transformation-supplier-state/b82906a94e8b/ordinary-frozen-v1/effect/native-staging",
+      "artifactReceipts": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/source-transformation-supplier-state/b82906a94e8b/ordinary-frozen-v1/effect/artifact-receipts",
+      "metadataCache": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/source-transformation-supplier-state/b82906a94e8b/ordinary-frozen-v1/effect/release-metadata",
+      "temporary": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/source-transformation-supplier-state/b82906a94e8b/ordinary-frozen-v1/effect/temporary",
+      "clientArchive": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/source-transformation-supplier-state/b82906a94e8b/ordinary-frozen-v1/effect/artifacts/computer-inference-engine-0.2.11.tgz",
+      "receiving": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/source-transformation-supplier-state/b82906a94e8b/ordinary-frozen-v1/effect/received.json",
+      "intent": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/source-transformation-supplier-state/b82906a94e8b/ordinary-frozen-v1/effect/intent.json"
+    },
+    "cliWriteControls": [
+      "explicit --store-dir base",
+      "explicit --cache-dir ownerData release/pnpm-metadata",
+      "--userconfig=/dev/null",
+      "--globalconfig=/dev/null",
+      "--config.enable-global-virtual-store=false",
+      "--config.node-linker=isolated",
+      "--config.global=false",
+      "--config.manage-package-manager-versions=false",
+      "--config.update-notifier=false",
+      "--child-concurrency=1",
+      "--network-concurrency=1",
+      "original --ignore-scripts --frozen-lockfile"
+    ],
+    "environment": "TMPDIR and XDG_CACHE_HOME/XDG_CONFIG_HOME/XDG_DATA_HOME/PNPM_HOME point under newly owned effect paths; compile cache disabled; actual Node options explicit; ignored npm_config variables are not used as guards.",
+    "terminalDisposition": "After original successful receiving and no extra domain processes, remove only newly created exact dev/inode/realpath metadata and temporary roots. Native Code owns staging cleanup. Unknown/refusal retains its exact native evidence/private work; no independent manual store cleanup. Retain one installed context and genuinely needed CIE source artifact until original supplier/immutable-product receiving."
+  },
+  "exactInputManifest": {
+    "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/source-transformation-supplier-state/b82906a94e8b/ordinary-frozen-v1/inputs/fbbb226ec41761f64d41171c6aef3746c60aa9e58b20ad8ee71db49f91604ccd/input-manifest.json",
+    "bytes": 7871,
+    "sha256": "fbbb226ec41761f64d41171c6aef3746c60aa9e58b20ad8ee71db49f91604ccd",
+    "value": {
+      "kind": "OriginalGenericFrozenConsumerInput",
+      "version": 1,
+      "authoredBy": "Codex /root/koios_release_finish",
+      "ownerDataRoot": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data",
+      "selection": {
+        "repository": "red-cup-engineering/computer-systems-fabrication-engineering-services-section",
+        "commit": "b82906a94e8bc144a90d66688fe65a3753ea78c3",
+        "name": "@red-cup-engineering/computer-systems-fabrication-engineering-services-section",
+        "version": "0.4.15-dev.259",
+        "canonicalIntegrity": "sha512-1zlxqDC70r59Eb514PJrilS/IuNiHQXob0Ry9tuI7c893oja8YWPH+PKu/nbDZyD6/r4uxxeRf9aXyioixgtRw==",
+        "sourceFiles": [
+          {
+            "path": "package.json",
+            "sha256": "af4e394ab00158dc7f71a2a129a85a7fd28bd07f5f46822ac2e58025326be04b",
+            "bytes": 18171
+          },
+          {
+            "path": "pnpm-lock.yaml",
+            "sha256": "d51c6cea93a79aa56704c3566e9d1f67732a35bad5b53d5198ff3d12793fc774",
+            "bytes": 595103
+          },
+          {
+            "path": ".npmrc",
+            "sha256": "7e220a09039bf101b1f5e5f21ae4aab701893a29dd6d754f5cd91468ee400627",
+            "bytes": 727
+          },
+          {
+            "path": "pnpm-workspace.yaml",
+            "sha256": "9bda76bcbd2d4031a7431d20b19356612ff3d87ad224121c7e494b529fd4b261",
+            "bytes": 515
+          }
+        ]
+      },
+      "paths": {
+        "consumer": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/source-transformation-supplier-state/b82906a94e8b/ordinary-frozen-v1/consumer",
+        "effect": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/source-transformation-supplier-state/b82906a94e8b/ordinary-frozen-v1/effect",
+        "staging": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/source-transformation-supplier-state/b82906a94e8b/ordinary-frozen-v1/effect/native-staging",
+        "artifactReceipts": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/source-transformation-supplier-state/b82906a94e8b/ordinary-frozen-v1/effect/artifact-receipts",
+        "metadataCache": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/source-transformation-supplier-state/b82906a94e8b/ordinary-frozen-v1/effect/release-metadata",
+        "temporary": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/source-transformation-supplier-state/b82906a94e8b/ordinary-frozen-v1/effect/temporary",
+        "clientArchive": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/source-transformation-supplier-state/b82906a94e8b/ordinary-frozen-v1/effect/artifacts/computer-inference-engine-0.2.11.tgz",
+        "receiving": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/source-transformation-supplier-state/b82906a94e8b/ordinary-frozen-v1/effect/received.json",
+        "intent": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/source-transformation-supplier-state/b82906a94e8b/ordinary-frozen-v1/effect/intent.json"
+      },
+      "code": {
+        "root": "/gnu/store/b2vckbg7j60w8fzhvf8bl45f6x5d3ia8-native-publisher-runtime/node_modules/.pnpm/@red-cup-engineering+npm-workspace-publication-service@0.17.0/node_modules/@red-cup-engineering/npm-workspace-publication-service",
+        "version": "0.17.0",
+        "gitHead": "18ca88eef99a07859fc86a28b29b1bc4cb78630c",
+        "sourceRegistryClosureSHA256": "548bc969d149e691511ce1335843a807e11634c8dbcc54b3e460aeec2f526677",
+        "manifestSHA256": "c5b699f83611488c6a372f8acf063936dedded48d19625bdc343360f901e265c"
+      },
+      "pnpm": {
+        "entry": "/gnu/store/9b6b8kvnm6c7mqbizca3mwkzblqyrwa6-native-publisher-runtime/node_modules/.pnpm/pnpm@11.28.5/node_modules/pnpm/bin/pnpm.mjs",
+        "entrySHA256": "ff3224d46b47fbb24a7e9fe15fededef7e00892d07d4e376b6762d4899906bfd",
+        "distSHA256": "e3738fda08262f74611d7a1ffc11b3e87fa52b466c07eb73211d179ebcb98810",
+        "version": "11.28.5",
+        "storeVersion": "v11",
+        "sourceEvidence": {
+          "storeVersionLine": 267,
+          "getStorePathLines": [
+            189509,
+            189524
+          ],
+          "explicitBaseSelectsBasePlusVersion": true,
+          "alreadyVersionedSuffixIsReturnedUnchanged": true
+        }
+      },
+      "sharedStore": {
+        "base": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/publisher-runtime-build-20261029/pnpm-store",
+        "directory": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/publisher-runtime-build-20261029/pnpm-store/v11",
+        "device": "64770",
+        "baseInode": "3217254",
+        "inode": "3217255",
+        "uid": 1001,
+        "reference": {
+          "path": "/gnu/store/b2vckbg7j60w8fzhvf8bl45f6x5d3ia8-native-publisher-runtime/node_modules/.modules.yaml",
+          "sha256": "5eee23d057f71eae832b3dd138efdfea45410c9cbff8017297cc232d0d31c07b",
+          "bytes": 72667,
+          "packageManager": "pnpm@12.15.0"
+        },
+        "lifetime": "Preserve this same source-owned Data store and immutable operating-consumer reference. This operation adds a real consumer reference; it never copies, replaces, clears, renames or retires the shared store. Format compatibility is first-qualified by original raw11.28.5 receiving; v11 name alone grants no qualification."
+      },
+      "clientArtifact": {
+        "registry": "https://registry.561.group/",
+        "name": "@red-cup-engineering/computer-inference-engine",
+        "version": "0.2.11",
+        "integrity": "sha512-HU5/ysXSoMz6t8frG42DzHBM7NTkX/lvFDEJQCskvlQYNRXR53L0OLQ18ND28JX9+KZW8cBNui3iGSewAcLwLg==",
+        "limits": {
+          "members": 8192,
+          "bytes": 33554432,
+          "archiveBytes": 8388608,
+          "tarBytes": 33554432,
+          "metadataBytes": 1048576,
+          "sourcePaths": 65536,
+          "sourceRepositories": 128
+        }
+      },
+      "resources": {
+        "wholeJobMemoryMaxBytes": 268435456,
+        "memorySwapMaxBytes": 0,
+        "cpuQuotaPercent": 25,
+        "tasksMax": 32,
+        "hostReserveBytes": 134217728,
+        "beforeAnyNodeHostFloorKiB": 393216,
+        "controllerHeapMiB": 48,
+        "receiverHeapMiB": 48,
+        "pnpmHeapMiB": 96,
+        "semiSpaceMiB": 4
+      },
+      "operation": {
+        "name": "receiveSourceRegistryConsumers",
+        "productionOnly": true,
+        "admissionTimeout": 60000,
+        "installationTimeout": 300000,
+        "scriptExecution": false,
+        "packageManagerManagement": false,
+        "globalVirtualStore": false,
+        "initialFrozenFacade": false,
+        "storeAssemblyFacade": false
+      },
+      "receivingClaims": "One exact original Generic259 dependency context and independently compared CIEclient2.11 package members. Not full Generic source, operational sourceTransformation authority, qualified model/account, native Scheme, Code, deployment or20newarticles/day."
+    }
+  },
+  "exactNativeCdeExecutionPlan": {
+    "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/records/source-transformation-supplier-records/b82906a94e8b/ordinary-frozen-v1/dc627aaa7243889a4bd24cf20db2f607bb4089ea3e8f5c97531d4f10e4c144d4/plan.json",
+    "sha256": "dc627aaa7243889a4bd24cf20db2f607bb4089ea3e8f5c97531d4f10e4c144d4",
+    "bytes": 22690,
+    "commandSHA256": "2753a64a9f466638aeb730da0b7dea8efb54f239e870de2f8a5c57aed69415ac",
+    "value": {
+      "version": 1,
+      "stages": [
+        {
+          "name": "receive-original-generic-source-transformation-supplier",
+          "lifecycle": {
+            "owner": "red-cup-engineering/computer-systems-fabrication-engineering-services-section",
+            "invocation": "https://github.com/red-cup-engineering/specification-engineering-services-section/pull/19",
+            "purpose": "First original Code17 ordinary frozen Generic259 dependency-context receiving with actual CIEclient2.11 archive-member comparison; genuine rawPNPM11.28.5 and same existing Data store. No model, account, Code generation or operating sourceTransformation authority.",
+            "kind": "unique",
+            "retention": "One exact original operation, no automatic retry, cap increase, new store or alias. Original Code owns native staging and moves one received installation to consumer only on success. Keep actual unknown/refused state and source evidence; preserve existing shared store and operating-consumer reference. On known returned operation and no extra whole-job processes, retire only newly created private release metadata/cache and temporary roots after exact inode/realpath checks. Keep source four files, installation, original native receipts and the single client archive for following supplier/product receiving. Do not invoke runtime packing on metadata-only source or claim a complete Generic package.",
+            "source": [
+              {
+                "repository": "red-cup-engineering/computer-systems-fabrication-engineering-services-section",
+                "commit": "b82906a94e8bc144a90d66688fe65a3753ea78c3",
+                "path": "pnpm-lock.yaml"
+              },
+              {
+                "repository": "red-cup-engineering/npm-workspace-publication-service",
+                "commit": "18ca88eef99a07859fc86a28b29b1bc4cb78630c",
+                "path": "src/source-registry-closure.mjs"
+              },
+              {
+                "repository": "red-cup-engineering/npm-workspace-publication-service",
+                "commit": "18ca88eef99a07859fc86a28b29b1bc4cb78630c",
+                "path": "src/package-manager.mjs"
+              },
+              {
+                "repository": "red-cup-engineering/specification-engineering-services-section",
+                "commit": "48f6ed16eade45cabc9d9348441fc11e8e2a4622",
+                "path": "data/records/service-records/requirements-service-records/engineering-design-accepts-explicit-source-profiles.json"
+              }
+            ],
+            "custody": [
+              {
+                "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/source-transformation-supplier-state/b82906a94e8b/ordinary-frozen-v1/inputs/fbbb226ec41761f64d41171c6aef3746c60aa9e58b20ad8ee71db49f91604ccd/input-manifest.json",
+                "sha256": "fbbb226ec41761f64d41171c6aef3746c60aa9e58b20ad8ee71db49f91604ccd",
+                "role": "creation"
+              },
+              {
+                "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/source-transformation-supplier-state/b82906a94e8b/ordinary-frozen-v1/consumer/package.json",
+                "sha256": "af4e394ab00158dc7f71a2a129a85a7fd28bd07f5f46822ac2e58025326be04b",
+                "role": "creation"
+              },
+              {
+                "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/source-transformation-supplier-state/b82906a94e8b/ordinary-frozen-v1/consumer/pnpm-lock.yaml",
+                "sha256": "d51c6cea93a79aa56704c3566e9d1f67732a35bad5b53d5198ff3d12793fc774",
+                "role": "creation"
+              },
+              {
+                "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/source-transformation-supplier-state/b82906a94e8b/ordinary-frozen-v1/consumer/.npmrc",
+                "sha256": "7e220a09039bf101b1f5e5f21ae4aab701893a29dd6d754f5cd91468ee400627",
+                "role": "creation"
+              },
+              {
+                "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/source-transformation-supplier-state/b82906a94e8b/ordinary-frozen-v1/consumer/pnpm-workspace.yaml",
+                "sha256": "9bda76bcbd2d4031a7431d20b19356612ff3d87ad224121c7e494b529fd4b261",
+                "role": "creation"
+              },
+              {
+                "path": "/gnu/store/b2vckbg7j60w8fzhvf8bl45f6x5d3ia8-native-publisher-runtime/node_modules/.pnpm/@red-cup-engineering+npm-workspace-publication-service@0.17.0/node_modules/@red-cup-engineering/npm-workspace-publication-service/src/source-registry-closure.mjs",
+                "sha256": "548bc969d149e691511ce1335843a807e11634c8dbcc54b3e460aeec2f526677",
+                "role": "product"
+              },
+              {
+                "path": "/gnu/store/b2vckbg7j60w8fzhvf8bl45f6x5d3ia8-native-publisher-runtime/node_modules/.pnpm/@red-cup-engineering+npm-workspace-publication-service@0.17.0/node_modules/@red-cup-engineering/npm-workspace-publication-service/package.json",
+                "sha256": "c5b699f83611488c6a372f8acf063936dedded48d19625bdc343360f901e265c",
+                "role": "product"
+              },
+              {
+                "path": "/gnu/store/9b6b8kvnm6c7mqbizca3mwkzblqyrwa6-native-publisher-runtime/node_modules/.pnpm/pnpm@11.28.5/node_modules/pnpm/bin/pnpm.mjs",
+                "sha256": "ff3224d46b47fbb24a7e9fe15fededef7e00892d07d4e376b6762d4899906bfd",
+                "role": "product"
+              },
+              {
+                "path": "/gnu/store/b2vckbg7j60w8fzhvf8bl45f6x5d3ia8-native-publisher-runtime/node_modules/.modules.yaml",
+                "sha256": "5eee23d057f71eae832b3dd138efdfea45410c9cbff8017297cc232d0d31c07b",
+                "role": "product"
+              }
+            ],
+            "status": "planned"
+          },
+          "destinations": [
+            {
+              "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/source-transformation-supplier-state/b82906a94e8b/ordinary-frozen-v1",
+              "peakBytes": 2147483648,
+              "peakInodes": 200000,
+              "basis": "Estimate from original Generic259 installation-resource2GiB/200000entry default; includes910-lock-entry production dependency installation, original native staging, one client source archive, bounded release metadata, temporary state and native receipts. One native installation is moved, not copied.",
+              "estimateKind": "estimate"
+            },
+            {
+              "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/publisher-runtime-build-20261029/pnpm-store",
+              "peakBytes": 2147483648,
+              "peakInodes": 200000,
+              "basis": "Conservative same original installation-size allowance for additions to the already existing single standing store; existing payload is reused, no per-attempt store or tree copy.",
+              "estimateKind": "estimate"
+            },
+            {
+              "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/records/source-transformation-supplier-records/b82906a94e8b",
+              "peakBytes": 16777216,
+              "peakInodes": 2048,
+              "basis": "One exact native admission plan, source review, original stdout/stderr and finite terminal/receiving references; no source/dependency/lot trees embedded.",
+              "estimateKind": "upper-bound"
+            }
+          ],
+          "headroom": {
+            "minFreePercent": 3,
+            "minFreeInodes": 100000,
+            "growthBytes": 16777216,
+            "growthInodes": 2048
+          },
+          "command": [
+            "/gnu/store/kba00zrnc1d1cg9bkx0krpvc2sp7wzrh-node-24.18.0/bin/node",
+            "--max-old-space-size=48",
+            "--max-semi-space-size=4",
+            "--input-type=module",
+            "--eval",
+            "import {createHash} from 'node:crypto';\nimport {readFile,writeFile,mkdir,lstat,realpath,readdir,rm} from 'node:fs/promises';\nimport {dirname,join} from 'node:path';\nimport {pathToFileURL} from 'node:url';\nconst storage=await import('/gnu/store/1b34vdsdqd7782y3x9imgnhq8snflih6-koios-news-deployment-1/node_modules/@red-cup-engineering/computer-deployment-engine/src/fabrication-storage.mjs');\nconst need=(x,m)=>{if(!x)throw new TypeError(m);};\nconst digest=b=>createHash('sha256').update(b).digest('hex');\nconst inputPath=\"/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/source-transformation-supplier-state/b82906a94e8b/ordinary-frozen-v1/inputs/fbbb226ec41761f64d41171c6aef3746c60aa9e58b20ad8ee71db49f91604ccd/input-manifest.json\";\nconst inputBytes=storage.readRegularBytes(inputPath,{maxBytes:16384});\nneed(inputBytes.length===7871&&digest(inputBytes)===\"fbbb226ec41761f64d41171c6aef3746c60aa9e58b20ad8ee71db49f91604ccd\",'exact reviewed supplier manifest required before parsing');\nconst input=JSON.parse(inputBytes);\nconst originalHome=process.env.HOME,originalCodexHome=process.env.CODEX_HOME;\nstorage.receiveOwnerDataRoot(input.ownerDataRoot);\nfor(const p of Object.values(input.paths))storage.receiveOwnedDataDestination(input.ownerDataRoot,p,{kind:['clientArchive','receiving','intent'].some(k=>input.paths[k]===p)?'file':'directory',label:'original supplier destination'});\nconst cgroupText=await readFile('/proc/self/cgroup','utf8');\nconst group=cgroupText.split('\\n').find(l=>l.startsWith('0::'))?.slice(3);\nconst admittedGroup=process.env.NATIVE_WHOLE_JOB_ADMITTED_CGROUP;\nconst controller=Number(process.env.NATIVE_WHOLE_JOB_CONTROLLER_PID);\nneed(group&&group===admittedGroup&&controller===process.ppid,'original CDE controller and direct receiver must share admitted domain and PPID');\nneed((await readFile('/proc/'+controller+'/cgroup','utf8')).split('\\n').some(l=>l==='0::'+group),'controller cgroup differs');\nconst groupPath='/sys/fs/cgroup'+group;\nconst nativeValue=async name=>(await readFile(join(groupPath,name),'utf8')).trim();\nneed(await nativeValue('memory.max')==='268435456'&&await nativeValue('memory.swap.max')==='0'&&await nativeValue('pids.max')==='32','actual aggregate memory/swap/tasks differ');\nconst [quota,period]=(await nativeValue('cpu.max')).split(/\\s+/).map(Number);\nneed(Number.isSafeInteger(quota)&&Number.isSafeInteger(period)&&quota>0&&quota*4===period,'actual CPU25 bound differs');\nconst canonicalFile=(p,bytes,hash)=>{const b=storage.readRegularBytes(p,{maxBytes:1048576});need(b.length===bytes&&digest(b)===hash,'source bytes differ: '+p);return b;};\nneed(await realpath(input.paths.consumer)===input.paths.consumer,'original consumer directory redirected');\nneed(JSON.stringify((await readdir(input.paths.consumer)).sort())===JSON.stringify(input.selection.sourceFiles.map(f=>f.path).sort()),'only exact original four frozen consumer files are admitted');\nfor(const f of input.selection.sourceFiles)canonicalFile(join(input.paths.consumer,f.path),f.bytes,f.sha256);\nconst manifest=JSON.parse(storage.readRegularBytes(join(input.paths.consumer,'package.json'),{maxBytes:1048576}));\nneed(manifest.name===input.selection.name&&manifest.version===input.selection.version&&Object.keys(manifest.dependencies??{}).length===59,'original Generic259 identity/runtime pins differ');\nneed(manifest.dependencies['@red-cup-engineering/computer-inference-engine']==='0.2.11','original client-library2.11 pin differs');\nneed(digest(storage.readRegularBytes(join(input.code.root,'package.json'),{maxBytes:1048576}))===input.code.manifestSHA256,'original immutable Code17 manifest differs');\nconst codeManifest=JSON.parse(storage.readRegularBytes(join(input.code.root,'package.json'),{maxBytes:1048576}));\nneed(codeManifest.version===input.code.version&&codeManifest.gitHead===input.code.gitHead,'original immutable Code17 identity differs');\nneed(digest(storage.readRegularBytes(join(input.code.root,'src/source-registry-closure.mjs'),{maxBytes:1048576}))===input.code.sourceRegistryClosureSHA256,'original Code17 source differs');\nneed(digest(storage.readRegularBytes(input.pnpm.entry,{maxBytes:1048576}))===input.pnpm.entrySHA256,'original raw PNPM entry differs');\nconst pnpmRoot=dirname(dirname(input.pnpm.entry));\nconst pnpmManifest=JSON.parse(storage.readRegularBytes(join(pnpmRoot,'package.json'),{maxBytes:1048576}));\nneed(pnpmManifest.name==='pnpm'&&pnpmManifest.version===input.pnpm.version,'actual PNPM identity differs');\n// Exact immutable raw PNPM dist hash is checked by native sha256sum before ANY Node allocation.\n// Original Code17 independently rereads and hashes its supplier again inside its native provider receiving.\nneed((await lstat(join(pnpmRoot,'dist/pnpm.mjs'))).isFile(),'immutable raw PNPM distribution absent');\nconst reference=JSON.parse(canonicalFile(input.sharedStore.reference.path,input.sharedStore.reference.bytes,input.sharedStore.reference.sha256));\nneed(reference.packageManager===input.sharedStore.reference.packageManager&&reference.storeDir===input.sharedStore.directory,'immutable operating-consumer store reference differs');\nfor(const [p,ino] of [[input.sharedStore.base,input.sharedStore.baseInode],[input.sharedStore.directory,input.sharedStore.inode]]){\n storage.receiveOwnedDataDestination(input.ownerDataRoot,p,{label:'existing standing shared store'});\n const stat=await lstat(p);need(stat.isDirectory()&&await realpath(p)===p&&String(stat.dev)===input.sharedStore.device&&String(stat.ino)===ino&&stat.uid===input.sharedStore.uid,'existing original store custody differs');\n}\nneed(String((await lstat(input.paths.consumer)).dev)===input.sharedStore.device,'source and original store devices differ');\nconsole.log(JSON.stringify({phase:'original-supplier-input-and-domain-received',cgroup:group,controllerPid:controller,receiverPid:process.pid,memoryMaxBytes:268435456,memorySwapMaxBytes:0,tasksMax:32,cpuQuotaPercent:25,sourceCommit:input.selection.commit,sourceFiles:4,storeBase:input.sharedStore.base,storeDirectory:input.sharedStore.directory,storeDevice:input.sharedStore.device,storeInode:input.sharedStore.inode,inferenceOrAccountOperation:false}));\nawait mkdir(input.paths.effect,{mode:0o700});\nawait writeFile(input.paths.intent,JSON.stringify({kind:'original-generic-frozen-supplier-intent',at:new Date().toISOString(),manifestSHA256:\"fbbb226ec41761f64d41171c6aef3746c60aa9e58b20ad8ee71db49f91604ccd\",sourceCommit:input.selection.commit,operation:'receiveSourceRegistryConsumers',modelOperation:false,automaticRetry:false})+'\\n',{flag:'wx',mode:0o600});\nlet receipt;\nconst made=[];\nconst ownedDirectory=async p=>{await mkdir(p,{recursive:true,mode:0o700});const s=await lstat(p);need(s.isDirectory()&&await realpath(p)===p,'private installer directory redirected');return {path:p,dev:String(s.dev),ino:String(s.ino)};};\nconst domainQuiet=async()=>{const pids=(await nativeValue('cgroup.procs')).split(/\\s+/).filter(Boolean).map(Number);return pids.every(pid=>pid===controller||pid===process.pid);};\ntry{\n for(const p of [input.paths.staging,input.paths.artifactReceipts,input.paths.metadataCache,input.paths.temporary])made.push(await ownedDirectory(p));\n for(const [name,sub] of [['XDG_CACHE_HOME','cache'],['XDG_CONFIG_HOME','config'],['XDG_DATA_HOME','data'],['PNPM_HOME','pnpm-home']]){\n  const p=join(input.paths.metadataCache,sub);await ownedDirectory(p);process.env[name]=p;\n }\n process.env.TMPDIR=input.paths.temporary;\n process.env.NODE_OPTIONS='--max-old-space-size=96 --max-semi-space-size=4';\n process.env.NODE_DISABLE_COMPILE_CACHE='1';\n delete process.env.NODE_COMPILE_CACHE;\n process.env.CI='true';process.env.PNPM_MAX_WORKERS='1';\n const {readRegistryPackageVersion,receiveRegistryTarball}=await import(pathToFileURL(join(input.code.root,'src/registry.mjs')));\n const {receiveSourceRegistryConsumers}=await import(pathToFileURL(join(input.code.root,'src/source-registry-closure.mjs')));\n const {assertRootInstalledDependencyPins}=await import(pathToFileURL(join(input.code.root,'src/native-registry-imports.mjs')));\n const generic=await readRegistryPackageVersion(input.clientArtifact.registry,input.selection.name,input.selection.version);\n need(generic.found===true&&generic.reachable===true&&generic.manifest?.dist?.integrity===input.selection.canonicalIntegrity,'canonical Generic259 artifact identity differs');\n const client=await readRegistryPackageVersion(input.clientArtifact.registry,input.clientArtifact.name,input.clientArtifact.version);\n need(client.found===true&&client.reachable===true&&client.manifest?.dist?.integrity===input.clientArtifact.integrity,'original CIEclient2.11 artifact differs from committed lock');\n const transfer=await receiveRegistryTarball({registry:input.clientArtifact.registry,tarball:client.manifest.dist.tarball,integrity:input.clientArtifact.integrity,destination:input.paths.clientArchive,timeoutMs:30000,inactivityTimeoutMs:10000});\n await writeFile(join(input.paths.effect,'client-artifact-transfer.json'),JSON.stringify({name:input.clientArtifact.name,version:input.clientArtifact.version,tarball:client.manifest.dist.tarball,gitHead:client.manifest.gitHead??null,...transfer},null,2)+'\\n',{flag:'wx',mode:0o600});\n const arguments_=[input.pnpm.entry,'--prod','--child-concurrency=1','--network-concurrency=1','--store-dir='+input.sharedStore.base,'--cache-dir='+join(input.paths.metadataCache,'pnpm-metadata'),'--userconfig=/dev/null','--globalconfig=/dev/null','--config.enable-global-virtual-store=false','--config.node-linker=isolated','--config.global=false','--config.manage-package-manager-versions=false','--config.update-notifier=false'];\n console.log(JSON.stringify({phase:'original-code17-ordinary-frozen-call',pnpm:process.execPath,pnpmArguments:arguments_,consumer:input.paths.consumer,clientVersion:'0.2.11',nativeInitialFrozen:false,nativeStoreAssembly:false,expectedStore:input.sharedStore.directory}));\n receipt=await receiveSourceRegistryConsumers({consumerPaths:[input.paths.consumer],releases:[{name:input.clientArtifact.name,version:input.clientArtifact.version,...transfer}],artifactReceiving:[{consumer:input.selection.name,name:input.clientArtifact.name,version:input.clientArtifact.version,registry:input.clientArtifact.registry,archive:{path:input.paths.clientArchive,integrity:input.clientArtifact.integrity},limits:input.clientArtifact.limits}],artifactReceiptDirectory:input.paths.artifactReceipts,logDirectory:input.paths.staging,pnpm:process.execPath,pnpmArguments:arguments_,admissionTimeout:60000,installationTimeout:300000});\n await writeFile(join(input.paths.effect,'original-code17-receiving.json'),JSON.stringify(receipt,null,2)+'\\n',{flag:'wx',mode:0o600});\n need(receipt.refusals.length===0&&receipt.packages.length===1,'original frozen receiving refused; preserve native outcome, no retry');\n need(receipt.packages[0].artifactReceiving?.length===1&&receipt.packages[0].artifactReceiving.every(x=>x.ok===true),'original CIEclient2.11 installed archive-member receiving required');\n const pins=await assertRootInstalledDependencyPins({root:input.paths.consumer,manifest});\n need(pins.complete===true&&pins.checked===59,'all original direct runtime pins must be received');\n for(const f of input.selection.sourceFiles)canonicalFile(join(input.paths.consumer,f.path),f.bytes,f.sha256);\n const modules=storage.readRegularBytes(join(input.paths.consumer,'node_modules/.modules.yaml'),{maxBytes:1048576});\n need(await domainQuiet(),'ordinary operation returned but extra whole-job processes remain; retain all cache state');\n for(const info of made.filter(x=>x.path===input.paths.metadataCache||x.path===input.paths.temporary)){\n  const now=await lstat(info.path);need(now.isDirectory()&&await realpath(info.path)===info.path&&String(now.dev)===info.dev&&String(now.ino)===info.ino,'released private cache root changed custody');\n  await rm(info.path,{recursive:true,force:false});\n }\n need(process.env.HOME===originalHome&&process.env.CODEX_HOME===originalCodexHome,'HOME or CODEX_HOME changed');\n const outcome={kind:'original-generic-frozen-supplier-context-receiving',at:new Date().toISOString(),manifestSHA256:\"fbbb226ec41761f64d41171c6aef3746c60aa9e58b20ad8ee71db49f91604ccd\",sourceCommit:input.selection.commit,nativeCodeReceiving:join(input.paths.effect,'original-code17-receiving.json'),runtimePins:pins,clientArtifactCompared:receipt.packages[0].artifactReceiving?.every(x=>x.ok===true)===true,modulesMetadata:{path:join(input.paths.consumer,'node_modules/.modules.yaml'),bytes:modules.length,sha256:digest(modules),decodedStorePathNotIndependentlyClaimed:true},sharedStorePreserved:true,sharedStoreReference:input.sharedStore.reference,releaseMetadataAndTemporaryRetired:true,homeAndCodexHomePreserved:true,domainQuiescentExceptOriginalControllerAndReceiver:true,fullGenericSourceProduct:false,sourceTransformationPortQualified:false,modelOperation:false,codeGenerated:false,productionChanged:false};\n await writeFile(input.paths.receiving,JSON.stringify(outcome,null,2)+'\\n',{flag:'wx',mode:0o600});\n console.log(JSON.stringify({phase:'original-supplier-native-receiving-returned',receiving:input.paths.receiving,pins:pins.checked,clientArtifactCompared:outcome.clientArtifactCompared,releaseMetadataAndTemporaryRetired:true}));\n}catch(error){\n let quiet=null;try{quiet=await domainQuiet();}catch{}\n const failure={kind:'original-generic-frozen-supplier-refusal',at:new Date().toISOString(),manifestSHA256:\"fbbb226ec41761f64d41171c6aef3746c60aa9e58b20ad8ee71db49f91604ccd\",code:typeof error.code==='string'?error.code:null,message:String(error.message).slice(0,2048),originalCodeReceipt:receipt?join(input.paths.effect,'original-code17-receiving.json'):null,domainQuiescentExceptOriginalControllerAndReceiver:quiet,privateCacheAndWorkRetained:true,automaticRetry:false,modelOperation:false,fullGenericSourceProduct:false};\n await writeFile(join(input.paths.effect,'refused.json'),JSON.stringify(failure,null,2)+'\\n',{flag:'wx',mode:0o600});\n console.error(JSON.stringify(failure));process.exitCode=1;\n}\n"
+          ]
+        }
+      ]
+    }
+  },
+  "exactOuterArgv": [
+    "/usr/bin/systemd-run",
+    "--user",
+    "--scope",
+    "--quiet",
+    "--unit=generic-source-transformation-supplier-frozen-v1",
+    "-p",
+    "MemoryMax=256M",
+    "-p",
+    "MemorySwapMax=0",
+    "-p",
+    "CPUQuota=25%",
+    "-p",
+    "TasksMax=32",
+    "/usr/bin/sh",
+    "-c",
+    "set -eu\n[ \"$#\" -eq 3 ] || exit 64\nwhole_job_plan=$1\nwhole_job_plan_sha=$2\nwhole_job_stage=$3\nwhole_job_cgroup=\nwhile IFS=: read -r whole_job_hierarchy whole_job_controllers whole_job_path; do\n if [ \"$whole_job_hierarchy\" = 0 ]; then whole_job_cgroup=$whole_job_path; fi\ndone < /proc/self/cgroup\ncase \"$whole_job_cgroup\" in ''|*[!A-Za-z0-9_./@-]*|*'/../'*|*'/./'*|*'//'*) exit 64;; esac\n[ \"${whole_job_cgroup#/}\" != \"$whole_job_cgroup\" ] && [ \"$whole_job_cgroup\" != / ] || exit 64\nwhole_job_group=/sys/fs/cgroup$whole_job_cgroup\nwhole_job_decimal() {\n case \"$1\" in ''|*[!0-9]*) return 64;; esac\n [ \"${#1}\" -le 15 ] || return 64\n case \"$1\" in 0|[1-9]*) return 0;; *) return 64;; esac\n}\nwhole_job_read() {\n [ -r \"$1\" ] || return 64\n whole_job_value=\n IFS= read -r whole_job_value < \"$1\"\n [ \"${#whole_job_value}\" -le 128 ] || return 64\n}\nwhole_job_read \"$whole_job_group/memory.max\"\n[ \"$whole_job_value\" = 268435456 ] || exit 64\nwhole_job_read \"$whole_job_group/memory.swap.max\"\n[ \"$whole_job_value\" = 0 ] || exit 64\nwhole_job_read \"$whole_job_group/pids.max\"\n[ \"$whole_job_value\" = 32 ] || exit 64\nIFS=' ' read -r whole_job_cpu_quota whole_job_cpu_period < \"$whole_job_group/cpu.max\"\nwhole_job_decimal \"$whole_job_cpu_quota\"\nwhole_job_decimal \"$whole_job_cpu_period\"\n[ \"$whole_job_cpu_quota\" -gt 0 ] && [ \"$whole_job_cpu_period\" -gt 0 ] && [ \"$((whole_job_cpu_quota * 4))\" -eq \"$whole_job_cpu_period\" ] || exit 64\nprintf '%s\\n' '7524c8b5c3c8acee093e9bb63f6a0139b5985677868411bb951e69f65973eec0  /gnu/store/1b34vdsdqd7782y3x9imgnhq8snflih6-koios-news-deployment-1/node_modules/@red-cup-engineering/computer-deployment-engine/scripts/admit-fabrication-stage.mjs' '2a02e68e6f74be384e51cebca4e3e812beabd968a649e0e3e06c13f106cd399a  /gnu/store/1b34vdsdqd7782y3x9imgnhq8snflih6-koios-news-deployment-1/node_modules/@red-cup-engineering/computer-deployment-engine/src/fabrication-storage.mjs' '548bc969d149e691511ce1335843a807e11634c8dbcc54b3e460aeec2f526677  /gnu/store/b2vckbg7j60w8fzhvf8bl45f6x5d3ia8-native-publisher-runtime/node_modules/.pnpm/@red-cup-engineering+npm-workspace-publication-service@0.17.0/node_modules/@red-cup-engineering/npm-workspace-publication-service/src/source-registry-closure.mjs' 'c5b699f83611488c6a372f8acf063936dedded48d19625bdc343360f901e265c  /gnu/store/b2vckbg7j60w8fzhvf8bl45f6x5d3ia8-native-publisher-runtime/node_modules/.pnpm/@red-cup-engineering+npm-workspace-publication-service@0.17.0/node_modules/@red-cup-engineering/npm-workspace-publication-service/package.json' 'ff3224d46b47fbb24a7e9fe15fededef7e00892d07d4e376b6762d4899906bfd  /gnu/store/9b6b8kvnm6c7mqbizca3mwkzblqyrwa6-native-publisher-runtime/node_modules/.pnpm/pnpm@11.28.5/node_modules/pnpm/bin/pnpm.mjs' 'e3738fda08262f74611d7a1ffc11b3e87fa52b466c07eb73211d179ebcb98810  /gnu/store/9b6b8kvnm6c7mqbizca3mwkzblqyrwa6-native-publisher-runtime/node_modules/.pnpm/pnpm@11.28.5/node_modules/pnpm/dist/pnpm.mjs' '5eee23d057f71eae832b3dd138efdfea45410c9cbff8017297cc232d0d31c07b  /gnu/store/b2vckbg7j60w8fzhvf8bl45f6x5d3ia8-native-publisher-runtime/node_modules/.modules.yaml' 'fbbb226ec41761f64d41171c6aef3746c60aa9e58b20ad8ee71db49f91604ccd  /home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/source-transformation-supplier-state/b82906a94e8b/ordinary-frozen-v1/inputs/fbbb226ec41761f64d41171c6aef3746c60aa9e58b20ad8ee71db49f91604ccd/input-manifest.json' 'af4e394ab00158dc7f71a2a129a85a7fd28bd07f5f46822ac2e58025326be04b  /home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/source-transformation-supplier-state/b82906a94e8b/ordinary-frozen-v1/consumer/package.json' 'd51c6cea93a79aa56704c3566e9d1f67732a35bad5b53d5198ff3d12793fc774  /home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/source-transformation-supplier-state/b82906a94e8b/ordinary-frozen-v1/consumer/pnpm-lock.yaml' '7e220a09039bf101b1f5e5f21ae4aab701893a29dd6d754f5cd91468ee400627  /home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/source-transformation-supplier-state/b82906a94e8b/ordinary-frozen-v1/consumer/.npmrc' '9bda76bcbd2d4031a7431d20b19356612ff3d87ad224121c7e494b529fd4b261  /home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/source-transformation-supplier-state/b82906a94e8b/ordinary-frozen-v1/consumer/pnpm-workspace.yaml' | /usr/bin/sha256sum --check --status\nwhole_job_mount_root=$(/usr/bin/awk 'NR > 2048 || length($0) > 8192 {bad=1;exit 64} index($0,\" - cgroup2 \") && $5 == \"/sys/fs/cgroup\" {n++;root=$4} END {if(bad||n!=1||root!=\"/\")exit 64;print root}' /proc/self/mountinfo)\n[ \"$whole_job_mount_root\" = / ] || exit 64\nwhole_job_cursor=$whole_job_cgroup\nwhole_job_depth=0\nwhile :; do\n whole_job_depth=$((whole_job_depth + 1))\n [ \"$whole_job_depth\" -le 128 ] || exit 64\n whole_job_at=/sys/fs/cgroup$whole_job_cursor\n if [ \"$whole_job_cursor\" = / ] && [ ! -e \"$whole_job_at/memory.max\" ] && [ ! -e \"$whole_job_at/memory.current\" ]; then\n  printf '{\"phase\":\"memory-enclosure-before-any-node\",\"cgroup\":\"/\",\"budget\":\"explicit-host-MemAvailable-floor\",\"memoryControllerRootInterfaces\":\"non-applicable-per-native-kernel-contract\",\"unlimitedCapacityAssumed\":false}\\n'\n  break\n fi\n whole_job_read \"$whole_job_group/memory.current\"\n whole_job_scope_current=$whole_job_value\n whole_job_decimal \"$whole_job_scope_current\"\n [ \"$whole_job_scope_current\" -le 268435456 ] || exit 64\n whole_job_remaining=$((268435456 - whole_job_scope_current))\n if [ \"$whole_job_cursor\" = \"$whole_job_cgroup\" ]; then\n  whole_job_current=$whole_job_scope_current\n else\n  whole_job_read \"$whole_job_at/memory.current\"\n  whole_job_current=$whole_job_value\n  whole_job_decimal \"$whole_job_current\"\n fi\n whole_job_required=$whole_job_remaining\n if [ \"$whole_job_cursor\" != \"$whole_job_cgroup\" ]; then whole_job_required=$((whole_job_remaining + 134217728)); fi\n for whole_job_limit_name in memory.max memory.high; do\n  whole_job_read \"$whole_job_at/$whole_job_limit_name\"\n  whole_job_limit=$whole_job_value\n  if [ \"$whole_job_limit\" = max ]; then\n   printf '{\"phase\":\"memory-enclosure-before-any-node\",\"cgroup\":\"%s\",\"limitKind\":\"%s\",\"limitBytes\":\"max\",\"currentBytes\":%s,\"ownScopeCurrentBytes\":%s,\"remainingJobBytes\":%s,\"requiredAdditionalBytes\":%s,\"admitted\":true}\\n' \"$whole_job_cursor\" \"$whole_job_limit_name\" \"$whole_job_current\" \"$whole_job_scope_current\" \"$whole_job_remaining\" \"$whole_job_required\"\n  else\n   whole_job_decimal \"$whole_job_limit\"\n   if [ \"$whole_job_limit\" -lt \"$whole_job_current\" ] || [ \"$((whole_job_limit - whole_job_current))\" -lt \"$whole_job_required\" ]; then\n    printf '{\"phase\":\"memory-enclosure-before-any-node\",\"cgroup\":\"%s\",\"limitKind\":\"%s\",\"limitBytes\":%s,\"currentBytes\":%s,\"ownScopeCurrentBytes\":%s,\"remainingJobBytes\":%s,\"requiredAdditionalBytes\":%s,\"admitted\":false}\\n' \"$whole_job_cursor\" \"$whole_job_limit_name\" \"$whole_job_limit\" \"$whole_job_current\" \"$whole_job_scope_current\" \"$whole_job_remaining\" \"$whole_job_required\"\n    exit 1\n   fi\n   printf '{\"phase\":\"memory-enclosure-before-any-node\",\"cgroup\":\"%s\",\"limitKind\":\"%s\",\"limitBytes\":%s,\"currentBytes\":%s,\"ownScopeCurrentBytes\":%s,\"remainingJobBytes\":%s,\"requiredAdditionalBytes\":%s,\"admitted\":true}\\n' \"$whole_job_cursor\" \"$whole_job_limit_name\" \"$whole_job_limit\" \"$whole_job_current\" \"$whole_job_scope_current\" \"$whole_job_remaining\" \"$whole_job_required\"\n  fi\n done\n [ \"$whole_job_cursor\" != / ] || break\n whole_job_cursor=${whole_job_cursor%/*}\n [ -n \"$whole_job_cursor\" ] || whole_job_cursor=/\ndone\nwhole_job_available=$(/usr/bin/awk '$1 == \"MemAvailable:\" {print $2;found=1;exit} END {if(!found)exit 1}' /proc/meminfo)\nwhole_job_decimal \"$whole_job_available\"\nif [ \"$whole_job_available\" -lt 393216 ]; then\n printf 'Original whole-job host admission refused before ANY Node: availableKiB=%s requiredKiB=393216\\n' \"$whole_job_available\" >&2\n exit 1\nfi\nwhole_job_read \"$whole_job_group/memory.current\"\nwhole_job_helper_current=$whole_job_value\nwhole_job_decimal \"$whole_job_helper_current\"\n[ \"$whole_job_helper_current\" -le 268435456 ] || exit 64\nexport NODE_OPTIONS='--max-old-space-size=96 --max-semi-space-size=4'\nexport NODE_DISABLE_COMPILE_CACHE=1\nunset NODE_COMPILE_CACHE\nexport TMPDIR='/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/source-transformation-supplier-state/b82906a94e8b/ordinary-frozen-v1/effect/temporary'\nexport NATIVE_WHOLE_JOB_ADMITTED_CGROUP=$whole_job_cgroup\nexport NATIVE_WHOLE_JOB_CONTROLLER_PID=$$\nexport NATIVE_WHOLE_JOB_ADMITTED_KIB=$whole_job_available\nprintf '{\"phase\":\"memory-admitted-before-any-node-allocation\",\"cgroup\":\"%s\",\"controllerPid\":%s,\"availableKiB\":%s,\"requiredKiB\":393216,\"memoryMaxBytes\":268435456,\"memorySwapMaxBytes\":0,\"tasksMax\":32,\"cpuQuotaPercent\":25,\"preflightHelperScopeCurrentBytes\":%s,\"hostFloorIsFixedConservativeWholeJobPlusReserve\":true,\"ancestorReadingsAreSnapshotNotReservation\":true}\\n' \"$whole_job_cgroup\" \"$$\" \"$whole_job_available\" \"$whole_job_helper_current\"\nexec /gnu/store/kba00zrnc1d1cg9bkx0krpvc2sp7wzrh-node-24.18.0/bin/node --max-old-space-size=48 --max-semi-space-size=4 /gnu/store/1b34vdsdqd7782y3x9imgnhq8snflih6-koios-news-deployment-1/node_modules/@red-cup-engineering/computer-deployment-engine/scripts/admit-fabrication-stage.mjs --plan \"$whole_job_plan\" --plan-sha256 \"$whole_job_plan_sha\" --stage \"$whole_job_stage\"\n",
+    "original-code17-generic-supplier-preflight",
+    "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/records/source-transformation-supplier-records/b82906a94e8b/ordinary-frozen-v1/dc627aaa7243889a4bd24cf20db2f607bb4089ea3e8f5c97531d4f10e4c144d4/plan.json",
+    "dc627aaa7243889a4bd24cf20db2f607bb4089ea3e8f5c97531d4f10e4c144d4",
+    "receive-original-generic-source-transformation-supplier"
+  ],
+  "sourcePreparation": {
+    "node": "v24.18.0",
+    "plan": {
+      "sha256": "dc627aaa7243889a4bd24cf20db2f607bb4089ea3e8f5c97531d4f10e4c144d4",
+      "bytes": 22690
+    },
+    "commandSHA256": "2753a64a9f466638aeb730da0b7dea8efb54f239e870de2f8a5c57aed69415ac",
+    "sourceCheckerSHA256": "2a02e68e6f74be384e51cebca4e3e812beabd968a649e0e3e06c13f106cd399a",
+    "sourceCheckerGitCommit": "eed32c0009dadb2b9b4ec47785127908e0b8f562",
+    "sourceCheckerBytesEqualInstalledOriginal": true,
+    "nativeValidateStoragePlan": true,
+    "nodeSyntaxCode": 0,
+    "nodeSyntaxStderr": "",
+    "shellSyntaxCode": 0,
+    "nativeInstalledCliSHA256": "7524c8b5c3c8acee093e9bb63f6a0139b5985677868411bb951e69f65973eec0",
+    "installedCdeVersion": "0.4.16",
+    "workingBcfCdeLaterSourceNotSubstituted": {
+      "head": "e71726a16274768fd3daccca7fdec910969eae6d",
+      "storageSHA256": "67c823b1f84d3fba4f93d6103b175f4ccefeb91feb2e87fa9d68a8b5ee479492"
+    },
+    "duplicateLargeApiDistBufferRemoved": true,
+    "preNodeNativeDistHashAndOriginalCodeProviderHashingPreserved": true,
+    "crgInstallOrNodeAdmissionExecuted": false
+  },
+  "preparationAndReceiving": {
+    "first": "One original File0.8 preparation projects only missing exact four source-metadata files, reviewed manifest/plan and actual source reviews. All handles terminal before outerargv; input file bytes and unexpected tree entries checked. Native Code then owns the explicitly planned node_modules addition; never reproject the now-received mutable consumer as an unchanged four-file product.",
+    "second": "Invoke exact reviewed outerargv ONCE after independent/root review and fresh native admission; one record directory variable for stdout/stderr.",
+    "third": "Hold slot through exact original stream, whole-domain terminal and native delivery receiving. Original before/after CDE storage/backing/inode/destination checks remain unchanged.",
+    "qualification": "Only direct supplier context/member receiving. Full original source/programme/immutable product, actual current source-authority/history/resumable CIE composition, JS/Scheme and consuming CDE/Koios operating outcomes remain separately owed."
+  },
+  "effects": {
+    "install": false,
+    "model": false,
+    "feedback": false,
+    "accountHistoryMoved": false,
+    "codeGenerated": false,
+    "productionChanged": false,
+    "twentyNewArticlesPerDayClaim": false
+  }
+}
