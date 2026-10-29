@@ -158,6 +158,24 @@ for (const nested of [
     'an installed Design reader must refuse ambiguous Code schema: '+interfaceKey);
   }
 }
+// The packed Design interfaces must use the incumbent Draft 2020-12
+// supplier, not accept a JSON-parsable but invalid normative contract.
+for (const invalidSchema of [
+  '{"type":23}', '{"required":"source"}',
+  '{"properties":{"source":{"type":23}}}',
+  '{"$schema":"http://json-schema.org/draft-07/schema#","type":"object"}',
+]) {
+  assert.doesNotThrow(()=>JSON.parse(invalidSchema));
+  for (const field of ['inputSchemaJson','outputSchemaJson']) {
+    const invalidDesign=structuredClone(low.design);
+    invalidDesign.operations[0][field]=invalidSchema;
+    assert.deepEqual(receiveEngineeringDesign({
+      stage:'low-level',sources:lowSources,plan:lowPlan,
+      deliveryText:JSON.stringify(invalidDesign),
+    }),{type:'EngineeringDesignDerivationRefusal',reason:'invalid-design'},
+    'a clean installed npm consumer must refuse malformed '+field);
+  }
+}
 const concreteInterface=structuredClone(low.design);
 concreteInterface.operations[0].inputSchemaJson='false';
 concreteInterface.operations[0].outputSchemaJson=
