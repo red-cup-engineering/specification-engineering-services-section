@@ -26,7 +26,8 @@ test("source stdin uses a sharp byte cap: exact limit accepted, one additional b
 
 test("missing, malformed and lossy-decoded input cannot become fabricated source records", async () => {
   await assert.rejects(readSourceJsonStdin(chunks()), /empty source/u);
-  await assert.rejects(readSourceJsonStdin(chunks(Buffer.from('{"a":}'))), SyntaxError);
+  await assert.rejects(readSourceJsonStdin(chunks(Buffer.from('{"a":}'))),
+    {code:"malformed-json"});
   await assert.rejects(readSourceJsonStdin(chunks(Buffer.from([0x7b,0x22,0x78,0x22,0x3a,0x22,0xc3,0x28,0x22,0x7d]))), TypeError);
   await assert.rejects(readSourceJsonStdin(Readable.from(['{"predecoded":true}'])), /raw byte chunks/u);
   for (const maxBytes of [0,-1,1.5,MAX_SOURCE_JSON_BYTES + 1]) {
