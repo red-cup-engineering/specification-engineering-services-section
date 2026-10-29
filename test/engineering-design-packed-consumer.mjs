@@ -33,6 +33,23 @@ assert.equal(high.type, 'EngineeringDesignCandidate');
 assert.equal(high.admitted, false);
 assert.equal(high.proof, 'unreceived');
 
+// Independent packed consumer must refuse lossy UTF-8 source views before
+// a plan acquires its source addresses, even when raw JSON parses successfully.
+const malformedArchitecture = original.map(source => ({...source}));
+malformedArchitecture[2].text = original[2].text.replace('Synthetic original design',
+  'Synthetic ' + String.fromCharCode(0xD800) + ' original design');
+assert.doesNotThrow(() => JSON.parse(malformedArchitecture[2].text));
+assert.throws(() => planEngineeringDesign({
+  stage:'high-level', sources:malformedArchitecture,
+}),TypeError,'original source owner cannot be re-addressed through lossy UTF-8');
+const malformedDelivery=JSON.stringify(hld).replace('Retain A and B',
+  'Retain ' + String.fromCharCode(0xD800) + ' A and B');
+assert.doesNotThrow(() => JSON.parse(malformedDelivery));
+assert.deepEqual(receiveEngineeringDesign({
+  stage:'high-level',sources:original,plan,deliveryText:malformedDelivery,
+}),{type:'EngineeringDesignDerivationRefusal',reason:'invalid-design'});
+
+
 const lowSources = [...original, { kind: 'high-level', text: JSON.stringify(high) }];
 const lowPlan = planEngineeringDesign({ stage: 'low-level', sources: lowSources });
 const low = receiveEngineeringDesign({
