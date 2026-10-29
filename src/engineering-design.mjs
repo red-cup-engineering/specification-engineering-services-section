@@ -447,15 +447,12 @@ export function readEngineeringCodeWork({
   const views = new Map();
   let bytes = 0;
   for (const view of sourceViews) {
-    const qualified = exact(view, ['owner', 'path', 'text', 'expectedSha256']);
-    const legacy = exact(view, ['path', 'text', 'expectedSha256']);
-    requireThat(qualified || legacy);
-    // Legacy path-only views remain meaningful for exactly ONE HLD owner.
-    // A second original owner with the same relative path MUST name its
-    // distinct source owner in every view to prevent cross-repository alias.
+    // Source identity is always the original HLD owner and exact path. An
+    // ownerless view cannot borrow authority even when only one owner is
+    // visible in this particular candidate; source revisions may add another.
+    requireThat(exact(view, ['owner', 'path', 'text', 'expectedSha256']));
     const owners = ownersByPath.get(view.path);
-    const owner = qualified ? view.owner :
-      owners?.size === 1 ? [...owners][0] : null;
+    const owner = view.owner;
     const key = keyOf(owner, view.path);
     requireThat(nonblank(owner) && owners?.has(owner) &&
       plannedSources.has(key) && !views.has(key) &&
@@ -530,11 +527,13 @@ export function readEngineeringCodeWork({
         },
       };
     });
-  const designSource = 'sha256:' + createHash('sha256')
-    .update(JSON.stringify(designCandidate), 'utf8').digest('hex');
+  // Reuse the original Data semantic-content identity rather than hashing
+  // JSON.stringify's caller-controlled property order. Source text digests
+  // remain byte-exact; the parsed Design identity is semantic and stable.
+  const designSource = semanticIdOf('metroplat.artifact')(designCandidate);
   const readout = {
     type: 'EngineeringDesignCodeWorkReadout', version: 1,
-    designCarrierSha256: designSource,
+    designCarrierId: designSource,
     sourceCut: designCandidate.sources.map(({ kind, digest }) => ({ kind, digest })),
     codeSnapshotScope: 'supplied-target-views-only',
     status: discrepancies.length ? 'source-disagreement' : 'source-present-unassayed',
