@@ -1,0 +1,33 @@
+{
+  "id": "2026-10-29-design-review-projection-source-receiving",
+  "kind": "source-receiving-record",
+  "recordedBy": "bare-cedar-fog-codex, Chief Engineering Officer",
+  "requirement": "red-cup-engineering/engineering-services-section:data/records/service-records/requirements-management-service-records/engineering-design-review-projection-bootstrap.work-order.md",
+  "sourceProducer": "original native source-free module fabricator",
+  "sourceProduct": "/home/emsenn/bare-cedar-fog/services/engineering-services-section/data/state/leader-message-normalization-generation-state/review-projection-bootstrap.v5.native-fabrication.json",
+  "sourceArtifactReview": "/home/emsenn/bare-cedar-fog/services/engineering-services-section/data/state/leader-message-normalization-generation-state/review-projection-bootstrap.v5.source-artifact-review.json",
+  "sourceSnapshot": "ni:///sha-256;4V310s1op1LUizs9rjpEVs3NJ2YeXjnO27hnqauMI28",
+  "sourceReceiver": "/gnu/store/f2ac4ayk7xb5sqihmbllbryfb98z6wlb-bare-cedar-fog-deployment-1/node_modules/@red-cup-engineering/feltos/src/software-change/mission/agent-tools.mjs",
+  "receivedPaths": [
+    "data/records/schema/project-high-level-design-review.input.schema.json",
+    "data/records/schema/project-high-level-design-review.output.schema.json",
+    "src/engineering-design-review.mjs",
+    "test/project-high-level-design-review-examples.test.mjs"
+  ],
+  "checks": {
+    "generatedExamplesAndClauseAssays": {
+      "pass": 13,
+      "fail": 0
+    },
+    "originalDesignSourceCut": {
+      "pass": 31,
+      "fail": 0
+    }
+  },
+  "independentBehavioralChannels": 0,
+  "limitations": [
+    "Generator and pre-source clause assays used the same provider/model; no independent behavioral Proof is claimed.",
+    "Pure source generation infrastructure; no Message intake, normalization, worker allocation or LAGOON consumer has been implemented or accepted."
+  ],
+  "retention": "Git holds the generated source and source receipt; the temporary shared-object worktree and its dependency links retire after its source branch is pushed."
+}
