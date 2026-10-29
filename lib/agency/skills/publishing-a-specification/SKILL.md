@@ -18,9 +18,9 @@ The method is the engineering note on the book and specification publishing
 systems (`engineering-services-section/content/text/documents/articles/notes/2026/09/27/2026-09-27-note-on-the-book-and-specification-publishing-systems.md`,
 section "The specification pipeline under the same method").
 ActivityPub++ (`activitypub-services-section`, 2026-09-27) is the reference
-run. Paths below are relative to `lib/emsenn/services/561-group/services/`.
+run. Paths below are relative to `services/`.
 `<spec section>` is
-`engineering-services-section/services/computer-engineering-services-section/services/computer-data-engineering-services-section/services/computer-content-engineering-services-section/services/computer-documents-engineering-services-section/services/computer-article-engineering-services-section/services/specification-engineering-services-section`.
+`engineering-services-section/services/specification-engineering-services-section`.
 
 ## 1. Research: what is already settled
 
