@@ -195,6 +195,35 @@ test('LLD embedded interface schemas cannot erase normative members before Code 
   });
 });
 
+test('LLD interface contracts must satisfy the declared JSON Schema dialect, not merely parse', () => {
+  const sources = sourcesFixture();
+  const high = hldReceipt(sources);
+  const lowSources = [...sources, {kind:'high-level', text:JSON.stringify(high)}];
+  const plan = planEngineeringDesign({stage:'low-level', sources:lowSources});
+  // Real JSON text can carry a nonsensical schema. A valid JSON *document*
+  // does not establish a valid Draft 2020-12 interface contract.
+  const invalidSchemas = [
+    '{"type":23}',
+    '{"type":"not-a-json-schema-type"}',
+    '{"required":"source"}',
+    '{"properties":{"source":{"type":23}}}',
+    '{"$schema":"http://json-schema.org/draft-07/schema#","type":"object"}',
+    '{"type":"object","pattern":"["}',
+  ];
+  for (const raw of invalidSchemas) {
+    assert.doesNotThrow(()=>JSON.parse(raw));
+    for (const field of ['inputSchemaJson','outputSchemaJson']) {
+      const candidate = lldFixture();
+      candidate.operations[0][field] = raw;
+      assert.deepEqual(receiveEngineeringDesign({
+        stage:'low-level', sources:lowSources, plan,
+        deliveryText:JSON.stringify(candidate),
+      }),{type:'EngineeringDesignDerivationRefusal',reason:'invalid-design'},
+      'a malformed normative '+field+' cannot become a Code contract: '+raw);
+    }
+  }
+});
+
 test('refuse Architecture candidate with stale original Requirement revision', () => {
   const sources = sourcesFixture();
   const architecture = JSON.parse(sources[2].text);
