@@ -13,7 +13,7 @@ import {
   readEngineeringCodeWork,
 } from '@red-cup-engineering/specification-engineering-services-section/engineering-design';
 import { indexJavaScriptModuleBindings } from '@red-cup-engineering/specification-engineering-services-section/javascript-module-bindings';
-import { sourcesFixture, clausesSplitAcrossModels } from './engineering-design-source-cut.fixture.mjs';
+import { sourcesFixture, clausesSplitAcrossModels, sourceWithDeniedCondition } from './engineering-design-source-cut.fixture.mjs';
 
 // The installed package's four original source producers must share STRICT
 // JSON intake. Source bytes that hide an earlier claim cannot reach any
@@ -584,3 +584,53 @@ assert.deepEqual(receiveEngineeringDesign({
 
 console.log('Packed original Design consumer: original LLD-to-Code work and test obligations source-read; no effect, proof or implementation conformance granted.');
 console.log('Packed original Design consumer: HLD+LLD source-bound and per-clause model-covered candidates received; stale, cross-cell, unmodeled-clause and partial-model sources refused; proof, adoption and installation still unreceived.');
+
+// The genuine separately installed npm package (not test authors' checkout)
+// must carry a reviewed denied-target source through original Design→Code
+// Work without declaring the forbidden action performed, accepted or proved.
+const deniedSources=sourceWithDeniedCondition();
+const deniedRequirement=JSON.parse(deniedSources[0].text);
+const deniedHldPlan=planEngineeringDesign({stage:'high-level',sources:deniedSources});
+const deniedHigh=receiveEngineeringDesign({
+  stage:'high-level',sources:deniedSources,plan:deniedHldPlan,
+  deliveryText:JSON.stringify(hld),
+});
+assert.equal(deniedHigh.type,'EngineeringDesignCandidate');
+assert.equal(deniedHigh.admitted,false);
+assert.equal(deniedHigh.proof,'unreceived');
+const deniedLowSources=[
+  ...deniedSources,{kind:'high-level',text:JSON.stringify(deniedHigh)},
+];
+const deniedLldPlan=planEngineeringDesign({
+  stage:'low-level',sources:deniedLowSources,
+});
+const deniedLld=structuredClone(low.design);
+deniedLld.operations[0].behavior=
+  'Preserve original source and refuse supplier output without recipient acceptance';
+deniedLld.operations[0].failureCases=[
+  'Supplier attempts to call an unreceived result accepted',
+];
+const deniedLow=receiveEngineeringDesign({
+  stage:'low-level',sources:deniedLowSources,plan:deniedLldPlan,
+  deliveryText:JSON.stringify(deniedLld),
+});
+assert.equal(deniedLow.type,'EngineeringDesignCandidate');
+assert.equal(deniedLow.admitted,false);
+assert.equal(deniedLow.proof,'unreceived');
+const deniedCode=readEngineeringCodeWork({
+  designCandidate:deniedLow,originalPlan:deniedLldPlan,
+  originalDeliveryText:JSON.stringify(deniedLld),sourceViews:[],
+});
+assert.deepEqual(deniedCode.targets[0].originalTrace.map(row=>row.requirementCellId),
+  deniedRequirement['met-when'].map(row=>row.cell));
+assert.equal(deniedRequirement['met-when'][1].target,'denied');
+assert.equal(JSON.parse(deniedSources[1].text).topics[0].clauses[1].keyword,'MUST NOT');
+assert.equal(deniedCode.sourceVerification.status,'source-tests-missing');
+assert.equal(deniedCode.originalDesignAdmitted,false);
+assert.equal(deniedCode.independentProof,'unreceived');
+assert.equal(deniedCode.executableWork,false);
+assert.equal(deniedCode.beneficiaryReceived,false);
+assert.throws(()=>planEngineeringDesign({
+  stage:'high-level',sources:sourceWithDeniedCondition({target:'unknown'}),
+}),TypeError,'an unknown source target cannot enter Design even with refreshed source cuts');
+console.log('Packed Requirement target held + denied: original Design/Code Work traces survive; Proof, original native fabrication and recipient receiving remain open.');
