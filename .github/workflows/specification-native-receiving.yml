@@ -260,6 +260,52 @@ jobs:
           assert.equal(allDecisions.topics[0].clauses.length,3,
             "a fully reviewed engineering decision cut is normative");
           assert.deepEqual(allDecisions.openQuestions,[]);
+          // Original LAGOON Work: a section owns one complete Requirement,
+          // while one Specification owns only the explicitly selected cells.
+          // The installed package (not source checkout) must construct
+          // deterministic, source-addressed partial Specifications.
+          const cutReview={
+            ...review,
+            interpretations:review.interpretations.slice(0,1),
+            cells:[requirement["met-when"][0].cell],
+          };
+          const cutSpec=deriveSpecificationFromRequirementReview(
+            withAgentInference,cutReview);
+          assert.deepEqual(cutSpec.topics[0].clauses.map(c=>c.id),
+            ["original-work"],"a cut emits only its selected original cell");
+          assert.equal(cutSpec.identity.status,"draft");
+          assert.equal(cutSpec.provenance.derivedFrom[0],
+            readWithInference.provenance.derivedFrom[0]);
+          assert.equal(cutSpec.provenance.derivedFrom[1],
+            withAgentInference.id+"@"+artifactId(withAgentInference)+
+              "#cells="+requirement["met-when"][0].cell);
+          assert.throws(()=>deriveSpecificationFromRequirementReview(
+            withAgentInference,{...cutReview,cells:["buyer-work-continuity:absent"]}),
+            /requirement cut names/u);
+          assert.throws(()=>deriveSpecificationFromRequirementReview(
+            withAgentInference,{...cutReview,cells:[requirement["met-when"][0].cell,
+              requirement["met-when"][0].cell]}),/requirement cut names/u);
+          assert.throws(()=>deriveSpecificationFromRequirementReview(
+            withAgentInference,{...cutReview,
+              interpretations:inferredReview.interpretations}),/exactly one/u);
+          const cutCli="node_modules/@red-cup-engineering/specification-engineering-services-section/scripts/derive-specification-from-requirement.mjs";
+          const invoked=spawnSync(process.execPath,[cutCli],{
+            input:JSON.stringify({requirement:withAgentInference,review:cutReview}),
+            encoding:"utf8",timeout:15_000,
+          });
+          assert.equal(invoked.status,0,invoked.stderr);
+          assert.deepEqual(JSON.parse(invoked.stdout),cutSpec,
+            "real separately installed CLI must match the source-owned generator");
+          const refusedCut=spawnSync(process.execPath,[cutCli],{
+            input:JSON.stringify({requirement:withAgentInference,
+              review:{...cutReview,cells:["buyer-work-continuity:absent"]}}),
+            encoding:"utf8",timeout:15_000,
+          });
+          assert.equal(refusedCut.status,1);
+          assert.equal(refusedCut.stdout,"",
+            "unqualified cut cannot emit partial normative artifact");
+          assert.match(refusedCut.stderr,/requirement cut names/u);
+          console.log("Packed LAGOON-style Requirement cut: exact selected cells, source identity, native CLI and adverse refusal independently received; draft not Proof");
           const revised=structuredClone(requirement);
           revised["met-when"][0].says="retain one NEW source obligation";
           const subsequent=deriveSpecificationFromRequirementReview(revised,review);
@@ -367,6 +413,40 @@ jobs:
             {kind:"architecture",text:JSON.stringify(annotatedArchitecture)},
           ]}),TypeError);
           console.log("Packed inferred engineering decision: exact Requirement->Specification->Architecture->Design work received; false source annotation refused; Proof unreceived");
+          // Exercise the SAME source-selected cut through original
+          // Architecture and Design in the genuinely installed tarball.
+          const cutArchitecture=structuredClone(sourceBoundArchitecture);
+          cutArchitecture.sources.find(x=>x.id==="req").revision=artifactId(withAgentInference);
+          cutArchitecture.sources.find(x=>x.id==="spec").revision=artifactId(cutSpec);
+          const selectedCut={requirement:withAgentInference,specification:cutSpec};
+          const selectedReceipt=validateArchitectureDescriptionAgainstSourceCut(
+            cutArchitecture,selectedCut);
+          assert.equal(selectedReceipt.valid,true,JSON.stringify(selectedReceipt.issues));
+          const selectedTrace=readRequirementArchitectureTrace(cutArchitecture,selectedCut);
+          assert.deepEqual(selectedTrace.counts,
+            {sourceCells:1,authoredModelMapped:1,untraced:0});
+          assert.deepEqual(selectedTrace.rows.map(x=>x.cell),
+            ["buyer-work-continuity:original-work"]);
+          const selectedPlan=planEngineeringDesign({stage:"high-level",sources:[
+            {kind:"requirement",text:JSON.stringify(withAgentInference)},
+            {kind:"specification",text:JSON.stringify(cutSpec)},
+            {kind:"architecture",text:JSON.stringify(cutArchitecture)},
+          ]});
+          assert.equal(selectedPlan.type,"EngineeringDesignDerivationPlan");
+          assert.equal(selectedPlan.stage,"high-level");
+          const corruptedCut=structuredClone(cutSpec);
+          corruptedCut.provenance.derivedFrom[1]+=",buyer-work-continuity:original-work";
+          const staleCutArch=structuredClone(cutArchitecture);
+          staleCutArch.sources.find(x=>x.id==="spec").revision=artifactId(corruptedCut);
+          assert.equal(validateArchitectureDescriptionAgainstSourceCut(staleCutArch,{
+            requirement:withAgentInference,specification:corruptedCut,
+          }).valid,false,"duplicate original selected source cannot fake new admission");
+          assert.throws(()=>planEngineeringDesign({stage:"high-level",sources:[
+            {kind:"requirement",text:JSON.stringify(withAgentInference)},
+            {kind:"specification",text:JSON.stringify(corruptedCut)},
+            {kind:"architecture",text:JSON.stringify(staleCutArch)},
+          ]}),TypeError);
+          console.log("Packed original section-Requirement cut: 1/1 selected cell reaches Architecture and HLD plan; duplicate cut refuses; Proof unreceived");
           console.log("Packed buyer condition->Specification clause->architecture model: 1 mapped, 1 untraced; no fabricated proof");
           assert.equal(validateArchitectureDescriptionAgainstSourceCut(sourceBoundArchitecture,{
             requirement:revised,specification:subsequent,

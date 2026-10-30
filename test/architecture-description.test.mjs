@@ -400,6 +400,79 @@ test("inferred engineering clause retains an exact source edge through Architect
  ]}),TypeError);
 });
 
+test("one section Requirement cut preserves selected cell identities into original Architecture and Design",()=>{
+ const source=actualRequirementReviewSource();
+ source.requirement["met-when"].push({
+   cell:"original-work-acceptance:unselected",target:"held",
+   says:"Do not silently include a separate section-wide condition",
+ });
+ source.requirement["met-when"][0].inference=true;
+ source.requirement["met-when"][0]["leader-words"]="Keep the original submitted Work identity";
+ const review={
+   identity:{id:"selected-source-spec",title:"Selected engineering source",seat:"source-review",
+     carrier:"candidate/selected-source.md",authors:["original-review"]},
+   at:"2026-10-30T00:00:00Z",reviewedBy:"source-review",
+   cells:["original-work-acceptance:receiver","original-work-acceptance:source"],
+   interpretations:[
+     {cell:"original-work-acceptance:source",clauseId:"source-work",
+       keyword:"MUST",actor:"The Work receiver"},
+     {cell:"original-work-acceptance:receiver",clauseId:"customer-acceptance",
+       keyword:"MUST NOT",actor:"The Work receiver"},
+   ],
+ };
+ source.specification=deriveSpecificationFromRequirementReview(source.requirement,review);
+ const architecture=candidate();
+ architecture.sources.find(x=>x.id==="req").revision=artifactId(source.requirement);
+ architecture.sources.find(x=>x.id==="spec").revision=artifactId(source.specification);
+ for(const [concernId,cellId,clauseId] of [
+   ["rights","original-work-acceptance:source","source-work"],
+   ["failure","original-work-acceptance:receiver","customer-acceptance"],
+ ]) {
+   const concern=architecture.concerns.find(c=>c.id===concernId);
+   concern.sourceIds=["req","spec"];
+   concern.requirementCellIds=[cellId];
+   concern.specificationClauseIds=[clauseId];
+ }
+ const accepted=validateArchitectureDescriptionAgainstSourceCut(architecture,source);
+ assert.equal(accepted.valid,true,JSON.stringify(accepted.issues));
+ const trace=readRequirementArchitectureTrace(architecture,source);
+ assert.deepEqual(trace.counts,{sourceCells:2,authoredModelMapped:2,untraced:0});
+ assert.equal(trace.rows.some(x=>x.cell.endsWith(":unselected")),false);
+ const plan=planEngineeringDesign({stage:"high-level",sources:[
+   {kind:"requirement",text:JSON.stringify(source.requirement)},
+   {kind:"specification",text:JSON.stringify(source.specification)},
+   {kind:"architecture",text:JSON.stringify(architecture)},
+ ]});
+ assert.equal(plan.type,"EngineeringDesignDerivationPlan");
+ const staleRecord=structuredClone(source.requirement);
+ staleRecord["met-when"][2].says="The section changed a condition excluded from this cut";
+ assert.equal(validateArchitectureDescriptionAgainstSourceCut(architecture,{
+   requirement:staleRecord,specification:source.specification,
+ }).valid,false,"the cut source identity binds the WHOLE original Requirement record");
+ const annotated=structuredClone(source.specification);
+ annotated.provenance.derivedFrom[1]+=",original-work-acceptance:source";
+ const changed=structuredClone(architecture);
+ changed.sources.find(x=>x.id==="spec").revision=artifactId(annotated);
+ assert.equal(validateArchitectureDescriptionAgainstSourceCut(changed,{
+   requirement:source.requirement,specification:annotated,
+ }).valid,false,"duplicate or noncanonical selected cells must refuse");
+ const forged=structuredClone(source.specification);
+ forged.topics[0].clauses[0].backedBy[0]+=" (engineering decision)";
+ const changedForged=structuredClone(architecture);
+ changedForged.sources.find(x=>x.id==="spec").revision=artifactId(forged);
+ assert.equal(validateArchitectureDescriptionAgainstSourceCut(changedForged,{
+   requirement:source.requirement,specification:forged,
+ }).valid,false,"a cut does not authorize decorated source-cell addresses");
+ const extended=structuredClone(source.specification);
+ extended.provenance.derivedFrom[1]=source.requirement.id+"@"+artifactId(source.requirement)+
+   "#cells=original-work-acceptance:receiver,original-work-acceptance:source,original-work-acceptance:unselected";
+ const changedExtended=structuredClone(architecture);
+ changedExtended.sources.find(x=>x.id==="spec").revision=artifactId(extended);
+ assert.equal(validateArchitectureDescriptionAgainstSourceCut(changedExtended,{
+   requirement:source.requirement,specification:extended,
+ }).valid,false,"declaring an additional selected cell without its clause refuses");
+});
+
 test("actual Requirement->Specification->Architecture source cut refuses stale revisions",()=>{
  const sources=actualRequirementReviewSource();
  const architecture=candidate();
