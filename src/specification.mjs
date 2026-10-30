@@ -490,11 +490,13 @@ export function deriveSpecificationFromRequirementReview(requirement, {
       actor: decision.actor,
       statement: condition.says,
       ...(decision.test === undefined ? {} : { test: decision.test }),
+      // Original Requirement cell identity is a machine-readable relation.
+      // Its inference/leader-words origin stays in the exact referenced
+      // Requirement source, not in an alternate free-text citation key.
+      // Architecture and Design require this precise same source coordinate.
       backedBy: [
         "Original Requirement " + requirement.id + " (" + sourceAddress +
-          "), cell " + condition.cell +
-          (condition.inference === true ? " (engineering decision" +
-            (condition["leader-words"] === undefined ? ")" : "; Leader's words: " + condition["leader-words"] + ")") : ""),
+          "), cell " + condition.cell,
       ],
     });
   });
