@@ -5,7 +5,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { semanticIdOf } from '@red-cup-engineering/computer-data-engineering-services-section/semiotic-expression-notation/semantic-content-identity';
-import { sourcesFixture, clausesSplitAcrossModels } from './engineering-design-source-cut.fixture.mjs';
+import { sourcesFixture, clausesSplitAcrossModels, sourceWithDeniedCondition } from './engineering-design-source-cut.fixture.mjs';
 import { planEngineeringDesign, receiveEngineeringDesign,
   readEngineeringDesignInferenceWork,
   readEngineeringCodeWork as readSourceOwnedEngineeringCodeWork } from '../src/engineering-design.mjs';
@@ -922,4 +922,38 @@ test('source-wide declaration gate refuses export-presence as intent verificatio
     assert.ok(Object.isFrozen(result.sourceVerification.missingClauseIds),
       'downstream agents cannot silently change the source-qualified missing obligations');
   }
+});
+
+test('original denied Requirement target crosses Specification, Architecture, HLD and LLD without fabricated proof',()=>{
+  const sources=sourceWithDeniedCondition();
+  const requirement=JSON.parse(sources[0].text);
+  const specification=JSON.parse(sources[1].text);
+  assert.equal(requirement['met-when'][1].target,'denied');
+  assert.equal(specification.topics[0].clauses[1].keyword,'MUST NOT');
+  const high=planEngineeringDesign({stage:'high-level',sources});
+  const receivedHigh=receiveEngineeringDesign({
+    stage:'high-level',sources,plan:high,
+    deliveryText:JSON.stringify(hldFixture()),
+  });
+  assert.equal(receivedHigh.type,'EngineeringDesignCandidate');
+  assert.equal(receivedHigh.admitted,false);
+  assert.equal(receivedHigh.proof,'unreceived');
+  const lowSources=[...sources,{kind:'high-level',text:JSON.stringify(receivedHigh)}];
+  const low=planEngineeringDesign({stage:'low-level',sources:lowSources});
+  const originalLld=lldFixture();
+  originalLld.operations[1].behavior='Refuse unreceived supplier output';
+  originalLld.operations[1].postconditions=['Unreceived supplier output remains refused'];
+  originalLld.operations[1].failureCases=['An unreceived supplier result is presented as customer acceptance'];
+  const receivedLow=receiveEngineeringDesign({
+    stage:'low-level',sources:lowSources,plan:low,
+    deliveryText:JSON.stringify(originalLld),
+  });
+  assert.equal(receivedLow.type,'EngineeringDesignCandidate');
+  assert.equal(receivedLow.admitted,false);
+  assert.equal(receivedLow.proof,'unreceived');
+  assert.deepEqual(receivedLow.design.traceability.map(row=>row.requirementCellId),
+    requirement['met-when'].map(row=>row.cell));
+  const refused=sourceWithDeniedCondition({target:'contested'});
+  assert.throws(()=>planEngineeringDesign({stage:'high-level',sources:refused}),
+    TypeError,'a contested target still refuses even when every source address is refreshed');
 });
