@@ -9,6 +9,7 @@ on:
       - ".github/workflows/specification-native-receiving.yml"
       - ".npmrc"
       - "package.json"
+      - "package-lock.json"
       - "README.md"
       - "src/**"
       - "scripts/**"
@@ -20,6 +21,7 @@ on:
       - ".github/workflows/specification-native-receiving.yml"
       - ".npmrc"
       - "package.json"
+      - "package-lock.json"
       - "README.md"
       - "src/**"
       - "scripts/**"
@@ -50,8 +52,8 @@ jobs:
         uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: "24"
-      - name: Resolve declared dependencies from original registry
-        run: npm install --ignore-scripts --no-audit --no-fund --no-package-lock --registry=https://registry.561.group/
+      - name: Clean-install committed dependency closure from original registry
+        run: npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.561.group/
       - name: Run every original native Node test
         run: npm test
       - name: Read exact original pre-index source without reauthoring a benchmark provider
