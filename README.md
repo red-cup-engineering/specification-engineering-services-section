@@ -222,6 +222,12 @@ independent test receiver, **not** executable tests, Code fabrication, Proof,
 release admission or beneficiary acceptance. Revisions to normative test
 declarations invalidate the original exact Architecture/HLD/LLD source cut.
 
+Projected `targets[].originalTrace` rows retain the exact original Requirement
+`sourceTarget` (`held` or `denied`) alongside the cell ID, Specification clauses
+and Architecture models. This is a desired evidence target, **not** an observed
+positive/negative witness; the source reviewer still owns the normative BCP14
+interpretation and the real test receiver owns executed verification.
+
 Projected targets retain original Requirement cells, Specification clauses, Architecture
 models, input/output schemas, preconditions, effects, errors and verification obligations.
 Even with source present, the status remains `source-present-unassayed`; the flags

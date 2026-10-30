@@ -575,11 +575,13 @@ test('original Design→Code reader yields actionable per-operation tests and ex
     ['source-present-unassayed','source-present-unassayed']);
   assert.deepEqual(first.targets[0].originalTrace,[{
     requirementCellId:'source-req:a',
+    sourceTarget:'held',
     specificationClauseIds:['clause-a'],
     architectureModelIds:['model-a'],
   }]);
   assert.deepEqual(first.targets[1].originalTrace,[{
     requirementCellId:'source-req:b',
+    sourceTarget:'held',
     specificationClauseIds:['clause-b'],
     architectureModelIds:['model-b'],
   }]);
