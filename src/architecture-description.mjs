@@ -235,18 +235,22 @@ export function validateArchitectureDescriptionAgainstSourceCut(record, {
   if(issues.length>0)return Object.freeze({valid:false,issues:Object.freeze(issues)});
   const backref=cell=>"Original Requirement "+requirement.id+" ("+
     expectedRequirement+"), cell "+cell;
-  // No cut can silently delete a LISTED original requirement or promote an
-  // excluded section-wide cell into a generated normative clause.
-  for(const cell of selected) {
-    if(!clauses.some(clause=>clause.backedBy?.includes(backref(cell))))
-      refuse("sourceCut.specification.topics",
-        "selected original Requirement cell lacks a normative clause "+cell);
-  }
-  for(const clause of clauses)for(const [cell] of sourceCells) {
-    if(!selected.has(cell) && clause.backedBy?.includes(backref(cell)))
+  // Index original source-cell references ONCE. A 1,024-cell section
+  // cannot afford to rescan its full record for every selected clause.
+  const cellOfRef=new Map([...sourceCells].map(([cell])=>[backref(cell),cell]));
+  const backed=new Set();
+  for(const clause of clauses)for(const ref of clause.backedBy??[]) {
+    const cell=cellOfRef.get(ref);
+    if(cell===undefined)continue;
+    if(!selected.has(cell))
       refuse("sourceCut.specification.topics",
         "unselected original Requirement cell appears as normative "+cell);
+    backed.add(cell);
   }
+  // No cut may silently delete a LISTED original requirement.
+  for(const cell of selected)if(!backed.has(cell))
+    refuse("sourceCut.specification.topics",
+      "selected original Requirement cell lacks a normative clause "+cell);
   for(const concern of record.concerns) {
     const r=concern.requirementCellIds,s=concern.specificationClauseIds;
     if((r===undefined)!==(s===undefined)) {
