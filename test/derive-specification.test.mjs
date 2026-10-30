@@ -277,3 +277,49 @@ test("reviewed conformance tests refuse control injection, absent cases and unau
     /requirement-to-specification:/u,
     "the source reviewer cannot grant self-certified execution or acceptance");
 });
+
+function mixedRequirement() {
+  const source = sourceRequirement();
+  source["met-when"].push({
+    cell:"enterprise-work-continuity:audit",target:"held",
+    says:"keep a ten-year audit log",inference:true,
+    "leader-words":"none; the Leader did not mention retention",
+  });
+  return source;
+}
+
+test("inference conditions become open questions and never clauses", () => {
+  const source = mixedRequirement();
+  const review = sourceReview(sourceRequirement());
+  const record = deriveSpecificationFromRequirementReview(source, review);
+  const clauses = record.topics.flatMap(t => t.clauses);
+  assert.equal(clauses.length, 3);
+  assert.ok(clauses.every(c => !c.backedBy[0].includes(":audit")));
+  assert.equal(record.openQuestions.length, 1);
+  const [q] = record.openQuestions;
+  assert.match(q.question, /agent inference, not stated by the leader, to be accepted or struck/i);
+  assert.ok(q.question.includes("keep a ten-year audit log"));
+  assert.ok(q.question.includes("enterprise-work-continuity:audit"));
+  assert.ok(q.question.includes("none; the Leader did not mention retention"));
+  assert.ok(validateSpecificationRecord(record).valid);
+});
+
+test("an interpretation naming an inference cell is refused", () => {
+  const source = mixedRequirement();
+  const review = sourceReview(sourceRequirement());
+  review.interpretations.push({cell:"enterprise-work-continuity:audit",
+    clauseId:"audit",keyword:"MUST",actor:"The software Work receiver"});
+  assert.throws(() => deriveSpecificationFromRequirementReview(source, review),
+    /inference cell enterprise-work-continuity:audit/);
+});
+
+test("a requirement of only inference conditions is refused; malformed inference fields too", () => {
+  const source = sourceRequirement();
+  for (const c of source["met-when"]) c.inference = true;
+  assert.throws(() => deriveSpecificationFromRequirementReview(source,
+    {...sourceReview(), interpretations:[]}), /nothing normative/);
+  const bad = sourceRequirement();
+  bad["met-when"][0].inference = "yes";
+  assert.throws(() => deriveSpecificationFromRequirementReview(bad, sourceReview()),
+    /malformed original source condition/);
+});
