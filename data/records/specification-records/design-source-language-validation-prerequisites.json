@@ -13,11 +13,11 @@
     ],
     "profile": "prose"
   },
-  "whatThisIs": "An unadmitted candidate reading of Requirement design-source-language-validation-prerequisites at ni:///sha-256;_pBf9tzLEWw2z1CMPixjCeRGh-NaYsIgBWba_gA6l9s. External authority and specification acceptance remain open.",
+  "whatThisIs": "An unadmitted candidate reading of Requirement design-source-language-validation-prerequisites at ni:///sha-256;r91NSb9NpqTEVNGWt23vAYi-feYCC8a-znE5L2OgdhM. External authority and specification acceptance remain open.",
   "topics": [
     {
       "heading": "Source-owned requirement conditions",
-      "body": "{{clause:prerequisite-shared}}\n\n{{clause:prerequisite-syntax}}\n\n{{clause:prerequisite-parameters}}\n\n{{clause:prerequisite-custody}}\n\n{{clause:prerequisite-qualification}}\n\n{{clause:prerequisite-construction}}\n\n{{clause:prerequisite-complete-interface-contract}}\n\n{{clause:prerequisite-implementable-analysis}}\n\n{{clause:prerequisite-fabrication-completeness}}\n\n{{clause:prerequisite-esm-resolved-identity}}",
+      "body": "{{clause:prerequisite-shared}}\n\n{{clause:prerequisite-syntax}}\n\n{{clause:prerequisite-parameters}}\n\n{{clause:prerequisite-custody}}\n\n{{clause:prerequisite-qualification}}\n\n{{clause:prerequisite-construction}}\n\n{{clause:prerequisite-complete-interface-contract}}\n\n{{clause:prerequisite-implementable-analysis}}\n\n{{clause:prerequisite-fabrication-completeness}}\n\n{{clause:prerequisite-esm-resolved-identity}}\n\n{{clause:prerequisite-esm-local-versus-indirect-exports}}\n\n{{clause:prerequisite-external-module-identities}}",
       "clauses": [
         {
           "id": "prerequisite-shared",
@@ -25,7 +25,7 @@
           "actor": "Specification Engineering shared source-analysis capability",
           "statement": "Build one reusable JavaScript ESM source-analysis capability and one reusable nonexecuting Guile Scheme source-analysis capability as Specification Engineering source-owned JavaScript modules. They are shared prerequisites for the existing design engine, not forwarding implementations of Scheme programs.",
           "backedBy": [
-            "Original Requirement design-source-language-validation-prerequisites (ni:///sha-256;_pBf9tzLEWw2z1CMPixjCeRGh-NaYsIgBWba_gA6l9s), cell design-source-language-validation-prerequisites:shared"
+            "Original Requirement design-source-language-validation-prerequisites (ni:///sha-256;r91NSb9NpqTEVNGWt23vAYi-feYCC8a-znE5L2OgdhM), cell design-source-language-validation-prerequisites:shared"
           ]
         },
         {
@@ -34,7 +34,7 @@
           "actor": "Specification Engineering shared source-analysis capability",
           "statement": "Recognize actual top-level named ESM exports and actual Guile 3.0.9 top-level define and define* bindings from selected source text without evaluating that source; retain exact identifier and path spelling, reject malformed or ambiguous syntax, and do not treat an arbitrary regular expression or caller assertion as proof.",
           "backedBy": [
-            "Original Requirement design-source-language-validation-prerequisites (ni:///sha-256;_pBf9tzLEWw2z1CMPixjCeRGh-NaYsIgBWba_gA6l9s), cell design-source-language-validation-prerequisites:syntax"
+            "Original Requirement design-source-language-validation-prerequisites (ni:///sha-256;r91NSb9NpqTEVNGWt23vAYi-feYCC8a-znE5L2OgdhM), cell design-source-language-validation-prerequisites:syntax"
           ]
         },
         {
@@ -43,7 +43,7 @@
           "actor": "Specification Engineering shared source-analysis capability",
           "statement": "Receive the source text, selected dialect and owner identity, exact requested binding, and all byte, time, memory and worker limits through checked explicit host-admitted parameters. Never allow caller inputs to grant execution authority or weaken the parent engine source-view and aggregate bounds.",
           "backedBy": [
-            "Original Requirement design-source-language-validation-prerequisites (ni:///sha-256;_pBf9tzLEWw2z1CMPixjCeRGh-NaYsIgBWba_gA6l9s), cell design-source-language-validation-prerequisites:parameters"
+            "Original Requirement design-source-language-validation-prerequisites (ni:///sha-256;r91NSb9NpqTEVNGWt23vAYi-feYCC8a-znE5L2OgdhM), cell design-source-language-validation-prerequisites:parameters"
           ]
         },
         {
@@ -52,7 +52,7 @@
           "actor": "Specification Engineering shared source-analysis capability",
           "statement": "Treat trusted immutable source custody, dialect selection and host admission as external contracts supplied by the actual host; do not invent a host owner, authority, receipt, callback path or wrapper. Return deterministic analysis evidence bound to the exact selected source and parameters, with explicit failure and uncertainty.",
           "backedBy": [
-            "Original Requirement design-source-language-validation-prerequisites (ni:///sha-256;_pBf9tzLEWw2z1CMPixjCeRGh-NaYsIgBWba_gA6l9s), cell design-source-language-validation-prerequisites:custody"
+            "Original Requirement design-source-language-validation-prerequisites (ni:///sha-256;r91NSb9NpqTEVNGWt23vAYi-feYCC8a-znE5L2OgdhM), cell design-source-language-validation-prerequisites:custody"
           ]
         },
         {
@@ -61,7 +61,7 @@
           "actor": "Specification Engineering shared source-analysis capability",
           "statement": "Independently qualify the shared implementations against actual selected ESM source, the real Guile maintenance source and safe Guile 3.0.9 syntax fixtures, including malformed, changed, ambiguous and denied inputs. Qualification itself must not execute submitted source.",
           "backedBy": [
-            "Original Requirement design-source-language-validation-prerequisites (ni:///sha-256;_pBf9tzLEWw2z1CMPixjCeRGh-NaYsIgBWba_gA6l9s), cell design-source-language-validation-prerequisites:qualification"
+            "Original Requirement design-source-language-validation-prerequisites (ni:///sha-256;r91NSb9NpqTEVNGWt23vAYi-feYCC8a-znE5L2OgdhM), cell design-source-language-validation-prerequisites:qualification"
           ]
         },
         {
@@ -70,7 +70,7 @@
           "actor": "Specification Engineering shared source-analysis capability",
           "statement": "Use the existing JavaScript-only native generation and fabrication chain for this bounded prerequisite, retain the original full thirteen-condition parent requirement, and deliver source, package and actual host consumption before using these capabilities to admit Scheme planning. No compatibility modes or hand-written code.",
           "backedBy": [
-            "Original Requirement design-source-language-validation-prerequisites (ni:///sha-256;_pBf9tzLEWw2z1CMPixjCeRGh-NaYsIgBWba_gA6l9s), cell design-source-language-validation-prerequisites:construction"
+            "Original Requirement design-source-language-validation-prerequisites (ni:///sha-256;r91NSb9NpqTEVNGWt23vAYi-feYCC8a-znE5L2OgdhM), cell design-source-language-validation-prerequisites:construction"
           ]
         },
         {
@@ -79,7 +79,7 @@
           "actor": "Specification Engineering shared source-analysis capability",
           "statement": "The derived design specifies complete closed machine-readable input and output schemas for every implemented operation, including all nested source selections, graph entries, requested bindings, admitted parameters, limits, checked targets, evidence identities, ordered results, ranges, diagnostic codes, failure and unavailable cases. Define field types, requiredness, allowed values, units, invariants and exact status transitions; an unconstrained object or promise to decide later is not a fabricable contract.",
           "backedBy": [
-            "Original Requirement design-source-language-validation-prerequisites (ni:///sha-256;_pBf9tzLEWw2z1CMPixjCeRGh-NaYsIgBWba_gA6l9s), cell design-source-language-validation-prerequisites:complete-interface-contract"
+            "Original Requirement design-source-language-validation-prerequisites (ni:///sha-256;r91NSb9NpqTEVNGWt23vAYi-feYCC8a-znE5L2OgdhM), cell design-source-language-validation-prerequisites:complete-interface-contract"
           ]
         },
         {
@@ -88,7 +88,7 @@
           "actor": "Specification Engineering shared source-analysis capability",
           "statement": "The derived design selects an implementable nonexecuting analysis procedure and conservative supported grammar for the actual selected dialects, including static binding recognition, lexical and syntactic ambiguity, re-export resolution, Unicode and source byte ranges, exact deterministic resource accounting and defined refusal for unsupported input. Explain how the selected original ESM parser is qualified or instrumented for every required bound; do not assume its current API supplies counters or host isolation.",
           "backedBy": [
-            "Original Requirement design-source-language-validation-prerequisites (ni:///sha-256;_pBf9tzLEWw2z1CMPixjCeRGh-NaYsIgBWba_gA6l9s), cell design-source-language-validation-prerequisites:implementable-analysis"
+            "Original Requirement design-source-language-validation-prerequisites (ni:///sha-256;r91NSb9NpqTEVNGWt23vAYi-feYCC8a-znE5L2OgdhM), cell design-source-language-validation-prerequisites:implementable-analysis"
           ]
         },
         {
@@ -97,7 +97,7 @@
           "actor": "Specification Engineering shared source-analysis capability",
           "statement": "Before native fabrication, source-bound design and independent source-free assays specify all behavior and adverse cases needed to implement each selected module without inventing normative fields, algorithms, authority, counters, effect boundaries or always-unavailable stubs. Actual host resource values, parser-release selection, independent qualification results and live authority remain external receiving conditions rather than fabricated facts.",
           "backedBy": [
-            "Original Requirement design-source-language-validation-prerequisites (ni:///sha-256;_pBf9tzLEWw2z1CMPixjCeRGh-NaYsIgBWba_gA6l9s), cell design-source-language-validation-prerequisites:fabrication-completeness"
+            "Original Requirement design-source-language-validation-prerequisites (ni:///sha-256;r91NSb9NpqTEVNGWt23vAYi-feYCC8a-znE5L2OgdhM), cell design-source-language-validation-prerequisites:fabrication-completeness"
           ]
         },
         {
@@ -106,7 +106,25 @@
           "actor": "Specification Engineering shared source-analysis capability",
           "statement": "ESM re-export analysis preserves the selected dialect standard semantic resolved module-and-binding identity separately from declaration occurrence and diagnostic ranges. Different paths resolving to the same namespace target are not falsely ambiguous; distinct semantic targets, unresolvable paths and actual conflicting stars are handled according to the selected qualified dialect. Specify deterministic evidence selection across equivalent routes and include direct and transitive namespace re-export counterexamples in independent qualification.",
           "backedBy": [
-            "Original Requirement design-source-language-validation-prerequisites (ni:///sha-256;_pBf9tzLEWw2z1CMPixjCeRGh-NaYsIgBWba_gA6l9s), cell design-source-language-validation-prerequisites:esm-resolved-identity"
+            "Original Requirement design-source-language-validation-prerequisites (ni:///sha-256;r91NSb9NpqTEVNGWt23vAYi-feYCC8a-znE5L2OgdhM), cell design-source-language-validation-prerequisites:esm-resolved-identity"
+          ]
+        },
+        {
+          "id": "prerequisite-esm-local-versus-indirect-exports",
+          "keyword": "MUST",
+          "actor": "Specification Engineering shared source-analysis capability",
+          "statement": "The selected ECMAScript dialect module export algorithm distinguishes a direct namespace re-export from a locally exported namespace import. Preserve the standard resolved binding identity for each, including whether the declaring module and local binding are retained; do not coalesce distinct local bindings merely because they import the same namespace target. Independently exercise both equivalent direct namespace re-export paths and distinct local-import-then-export paths, along with cycles and star conflicts, using the selected standard and actual source.",
+          "backedBy": [
+            "Original Requirement design-source-language-validation-prerequisites (ni:///sha-256;r91NSb9NpqTEVNGWt23vAYi-feYCC8a-znE5L2OgdhM), cell design-source-language-validation-prerequisites:esm-local-versus-indirect-exports"
+          ]
+        },
+        {
+          "id": "prerequisite-external-module-identities",
+          "keyword": "MUST",
+          "actor": "Specification Engineering shared source-analysis capability",
+          "statement": "The static ESM dependency contract represents both exact selected source modules and real host-selected external or native module identities, including Node built-ins, with explicit supported binding evidence and qualification boundaries. Every actual import edge has a truthful source or external target; never fabricate JavaScript facade source, omit a required import, execute the supplier or claim an unreceived external export. Unsupported or unknown external bindings remain explicit non-success. Independently receive the actual selected agency and design sources that import node:crypto and node:util.",
+          "backedBy": [
+            "Original Requirement design-source-language-validation-prerequisites (ni:///sha-256;r91NSb9NpqTEVNGWt23vAYi-feYCC8a-znE5L2OgdhM), cell design-source-language-validation-prerequisites:external-module-identities"
           ]
         }
       ]
@@ -122,10 +140,10 @@
   "laws": [],
   "standards": [],
   "provenance": {
-    "derivedAt": "2026-10-29T03:37:45.999Z",
+    "derivedAt": "2026-10-29T05:16:13.504Z",
     "derivedBy": "codex-engineering-session-root",
     "derivedFrom": [
-      "design-source-language-validation-prerequisites@ni:///sha-256;_pBf9tzLEWw2z1CMPixjCeRGh-NaYsIgBWba_gA6l9s"
+      "design-source-language-validation-prerequisites@ni:///sha-256;r91NSb9NpqTEVNGWt23vAYi-feYCC8a-znE5L2OgdhM"
     ]
   }
 }
