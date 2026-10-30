@@ -550,7 +550,7 @@ export function receiveEngineeringHighLevelReview({
   return {
     type:'EngineeringDesignReviewProjection', version:1,
     originalReview:{
-      expectedSha256,
+      expectedSha256:expectedReviewSha256,
       semanticId:semanticIdOf('metroplat.artifact')(review),
       bytes:reviewBytes,
     },
