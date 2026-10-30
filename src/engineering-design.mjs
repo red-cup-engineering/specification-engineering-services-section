@@ -163,7 +163,7 @@ function sourceContext(stage, supplied) {
   const cells = new Map();
   for (const condition of r['met-when']) {
     requireThat(object(condition) && nonblank(condition.cell) && condition.cell.startsWith(r.id + ':') && !cells.has(condition.cell));
-    requireThat(condition.target === 'held' && nonblank(condition.says) && !/[\r\n\u0000]/.test(condition.says));
+    requireThat(['held','denied'].includes(condition.target) && nonblank(condition.says) && !/[\r\n\u0000]/.test(condition.says));
     cells.set(condition.cell, []);
   }
   // This is the complete native parsed Requirement, including ignored fields.
