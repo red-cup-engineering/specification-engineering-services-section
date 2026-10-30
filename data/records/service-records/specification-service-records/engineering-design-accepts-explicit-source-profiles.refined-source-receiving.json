@@ -1,0 +1,26 @@
+{
+  "type": "SourceSpecificationReceiving",
+  "version": 1,
+  "reviewer": "Codex /root",
+  "decision": "received-for-bounded-generator-bootstrap-only",
+  "sourceRequirementIdentity": "ni:///sha-256;K2sTfiQ-RyXTEaN3dwzvQqRzd1ZuL_uYvVzdh4MwZ4A",
+  "sourceSpecificationIdentity": "ni:///sha-256;Q_x_pLF0WHyZZuK2pd6IbTwlnqsT-5JNbe8WN2baLns",
+  "unchangedFactoryRevision": "db52af5115ce9cc12e027d3ec23c42fe5a2a1aa2",
+  "changedRequirementCells": [
+    "engineering-design-accepts-explicit-source-profiles:original-fabrication"
+  ],
+  "sourceReview": "Only original-fabrication changes its inferred route restriction to reflect the actual prior native JSNode generator bootstrap grant. The other12 conditions and their claim limits, exact cuts, profiles and owner/consumer obligations remain intact. Original Fabrication and source-independent receiving remain required; missing sparse meter/caller and native consumer closure are not excused. No application-stage or financial/account/operating authority is granted.",
+  "actualOriginalRegenerationEqual": true,
+  "actualOriginalValidation": {
+    "valid": true,
+    "issues": []
+  },
+  "pairedConditions": 13,
+  "nativeOfficeAdmission": false,
+  "nativeConstructionReview": false,
+  "proof": false,
+  "sourceApplied": false,
+  "installedConsumerReceived": false,
+  "originalPredecessorReceiving": "ni:///sha-256;e8xmP3DLLlvejgTPTy-9_RunbY-ByRaUIWj1f_aXtjQ",
+  "bootstrapAuthorizationSource": "engineering-services-section@d11f80170c947e18e695bdaa0dbfb713edac1252:moneyday-generator-bootstrap-request.authorization"
+}
