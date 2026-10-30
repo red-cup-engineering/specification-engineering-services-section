@@ -105,6 +105,32 @@ the JSON `deliveryText`. The receiving function checks that proposal against
 the exact plan and source cut and returns a typed refusal or an
 `EngineeringDesignCandidate`.
 
+The original CIE producer needs a **separate, deterministic, read-only typed
+handoff**: `readEngineeringDesignInferenceWork(plan)` first revalidates the
+unchanged complete Design plan and all its upstream sources, then returns only
+fields admitted by CIE's closed `inference-work-request` schema. The historical
+`plan.request.messages` / `plan.request.schema` are **abstract Design intent**,
+not valid direct CIE invocation arguments. This projection carries the complete
+source in `context`, preserves the instructions in `objective`, requests
+`contextOptimization.mode: "exact"`, supplies `outputSchema`, selects
+`enforceProviderSchema: true`, and requires the provider's declared
+`json-schema-output` capability. Neither a schema declaration nor a provider's
+capability advertisement proves actual transport enforcement. Where no
+qualified model is available, the original CIE admission must refuse rather
+than silently weaken the contract.
+
+This bridge preserves the **original HLD and rejected LLD plans** rather than
+rewriting their source identities; it produces no inference, provider selection,
+resource budget, authorization, generated Code, Proof, source adoption, or
+accepted LLD. Before an effect, the competent original CIE host/Office must
+separately admit bounded resources, exact provider/model/output-schema
+compatibility and the external receiver, and independently re-assay the delivered
+source. On CIE's *plain* inference route, a generic host system prompt replaces
+the abstract Design plan's former system-role priority, so equivalent semantic
+adherence is **not** claimed. Source interface observed 2026-10-29:
+[CIE closed request schema](https://github.com/red-cup-engineering/computer-inference-engine/blob/81608c2608df119d8ddb0f2ecd5cee42fce879a0/content/dispatch/schemas/inference-work-request.schema.json)
+and [original dispatch](https://github.com/red-cup-engineering/computer-inference-engine/blob/91c2176454d93dcbf103f24e96e1b69b9f9b27dc/src/dispatch/inference-dispatch.mjs).
+
 A structurally received candidate retains `admitted:false` and
 `proof:"unreceived"`. The source reader refuses a changed original Requirement
 or Specification revision, a foreign Architecture model, a normative clause
