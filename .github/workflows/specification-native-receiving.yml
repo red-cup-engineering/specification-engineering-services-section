@@ -435,6 +435,40 @@ jobs:
             {kind:"architecture",text:JSON.stringify(annotatedArchitecture)},
           ]}),TypeError);
           console.log("Packed inferred engineering decision: exact Requirement->Specification->Architecture->Design work received; false source annotation refused; Proof unreceived");
+          // Exercise the SAME source-selected cut through original
+          // Architecture and Design in the genuinely installed tarball.
+          const cutArchitecture=structuredClone(sourceBoundArchitecture);
+          cutArchitecture.sources.find(x=>x.id==="req").revision=artifactId(withAgentInference);
+          cutArchitecture.sources.find(x=>x.id==="spec").revision=artifactId(cutSpec);
+          const selectedCut={requirement:withAgentInference,specification:cutSpec};
+          const selectedReceipt=validateArchitectureDescriptionAgainstSourceCut(
+            cutArchitecture,selectedCut);
+          assert.equal(selectedReceipt.valid,true,JSON.stringify(selectedReceipt.issues));
+          const selectedTrace=readRequirementArchitectureTrace(cutArchitecture,selectedCut);
+          assert.deepEqual(selectedTrace.counts,
+            {sourceCells:1,authoredModelMapped:1,untraced:0});
+          assert.deepEqual(selectedTrace.rows.map(x=>x.cell),
+            ["buyer-work-continuity:original-work"]);
+          const selectedPlan=planEngineeringDesign({stage:"high-level",sources:[
+            {kind:"requirement",text:JSON.stringify(withAgentInference)},
+            {kind:"specification",text:JSON.stringify(cutSpec)},
+            {kind:"architecture",text:JSON.stringify(cutArchitecture)},
+          ]});
+          assert.equal(selectedPlan.type,"EngineeringDesignDerivationPlan");
+          assert.equal(selectedPlan.stage,"high-level");
+          const corruptedCut=structuredClone(cutSpec);
+          corruptedCut.provenance.derivedFrom[1]+=",buyer-work-continuity:original-work";
+          const staleCutArch=structuredClone(cutArchitecture);
+          staleCutArch.sources.find(x=>x.id==="spec").revision=artifactId(corruptedCut);
+          assert.equal(validateArchitectureDescriptionAgainstSourceCut(staleCutArch,{
+            requirement:withAgentInference,specification:corruptedCut,
+          }).valid,false,"duplicate original selected source cannot fake new admission");
+          assert.throws(()=>planEngineeringDesign({stage:"high-level",sources:[
+            {kind:"requirement",text:JSON.stringify(withAgentInference)},
+            {kind:"specification",text:JSON.stringify(corruptedCut)},
+            {kind:"architecture",text:JSON.stringify(staleCutArch)},
+          ]}),TypeError);
+          console.log("Packed original section-Requirement cut: 1/1 selected cell reaches Architecture and HLD plan; duplicate cut refuses; Proof unreceived");
           console.log("Packed buyer condition->Specification clause->architecture model: 1 mapped, 1 untraced; no fabricated proof");
           assert.equal(validateArchitectureDescriptionAgainstSourceCut(sourceBoundArchitecture,{
             requirement:revised,specification:subsequent,
