@@ -299,7 +299,13 @@ test("an inferred condition is an engineering decision: a normative clause backe
   assert.equal(clauses.length, 4);
   const audit = clauses.find(c => c.id === "audit");
   assert.equal(audit.statement, "keep a ten-year audit log");
-  assert.match(audit.backedBy[0], /enterprise-work-continuity:audit \(engineering decision; Leader's words: none; the Leader did not mention retention\)/);
+  // Reviewed engineering inference is normative, but it retains the exact
+  // original source-cell identity for Architecture and Design.
+  assert.match(audit.backedBy[0], /enterprise-work-continuity:audit$/u);
+  assert.equal(audit.backedBy.length,1);
+  assert.equal(source["met-when"].at(-1).inference,true);
+  assert.equal(source["met-when"].at(-1)["leader-words"],
+    "none; the Leader did not mention retention");
   assert.deepEqual(record.openQuestions, [], "an engineering decision is decided, not left for the Leader");
   assert.ok(validateSpecificationRecord(record).valid);
 });
