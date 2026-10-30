@@ -196,7 +196,7 @@ function sourceContext(stage, supplied) {
       }
     }
   }
-  requireThat(clauseIds.size > 0 && [...cells.values()].every(v => v.length > 0));
+  requireThat(clauseIds.size > 0);
   const architecture = parsed.get('architecture');
   requireThat(architecture.type === 'ArchitectureDescriptionCandidate' && object(architecture.identity));
   requireThat(nonblank(architecture.identity.id) && nonblank(architecture.identity.revision));
@@ -206,6 +206,12 @@ function sourceContext(stage, supplied) {
   const architectureTrace = readRequirementArchitectureTrace(architecture, {
     requirement: r, specification
   });
+  // The Architecture source gate independently verifies the WHOLE original
+  // Requirement digest and selected cut. Design may address only its actual
+  // selected cell domain, not require unrelated section-wide conditions.
+  const selectedCells=new Set(architectureTrace.rows.map(row=>row.cell));
+  for(const cell of cells.keys())if(!selectedCells.has(cell))cells.delete(cell);
+  requireThat(cells.size>0 && [...cells.values()].every(v=>v.length>0));
   // Preserve the original Architecture reader's per-clause source relation.
   // A model tied to a Requirement cell does not necessarily implement every
   // separately authored normative clause for that cell.
