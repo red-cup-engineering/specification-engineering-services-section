@@ -4,6 +4,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
+import { semanticIdOf } from '@red-cup-engineering/computer-data-engineering-services-section/semiotic-expression-notation/semantic-content-identity';
 import { sourcesFixture, clausesSplitAcrossModels } from './engineering-design-source-cut.fixture.mjs';
 import { planEngineeringDesign, receiveEngineeringDesign,
   readEngineeringDesignInferenceWork,
@@ -823,4 +824,52 @@ test('LLD module/export uniqueness is scoped to the original HLD source owner, n
     sources: collidingSources, plan: collidingPlan,
     deliveryText: originalDeliveryText }),
   { type: 'EngineeringDesignDerivationRefusal', reason: 'invalid-design' });
+});
+
+test('original predeclared Specification tests reach the source-traced Code Work reader as unexecuted obligations', () => {
+  const sources = sourcesFixture();
+  const specification = JSON.parse(sources[1].text);
+  const architecture = JSON.parse(sources[2].text);
+  specification.topics[0].clauses[0].test = 'node --test test/original-a.test.mjs';
+  sources[1].text = JSON.stringify(specification);
+  architecture.sources.find(item => item.id === 'specification').revision =
+    semanticIdOf('metroplat.artifact')(specification);
+  sources[2].text = JSON.stringify(architecture);
+  const highLevel = hldReceipt(sources);
+  const full = [...sources, {kind:'high-level',text:JSON.stringify(highLevel)}];
+  const plan = planEngineeringDesign({stage:'low-level',sources:full});
+  const deliveryText = JSON.stringify(lldFixture());
+  const candidate = receiveEngineeringDesign({stage:'low-level',sources:full,plan,deliveryText});
+  assert.equal(candidate.type, 'EngineeringDesignCandidate');
+  const read = readSourceOwnedEngineeringCodeWork({
+    designCandidate:candidate,originalPlan:plan,originalDeliveryText:deliveryText,sourceViews:[],
+  });
+  assert.deepEqual(read.targets[0].testObligations.sourceVerification,[{
+    requirementCellId:'source-req:a',
+    specificationClauseId:'clause-a',
+    test:'node --test test/original-a.test.mjs',
+    status:'declared-unverified',
+  }]);
+  assert.deepEqual(read.targets[1].testObligations.sourceVerification,[{
+    requirementCellId:'source-req:b',
+    specificationClauseId:'clause-b',
+    test:null,
+    status:'verification-test-not-declared',
+  }]);
+  assert.equal(read.independentProof,'unreceived');
+  assert.equal(read.codeApplied,false);
+  assert.equal(read.beneficiaryReceived,false);
+  const forged = JSON.parse(full[1].text);
+  forged.topics[0].clauses[0].test = 'node --test test/forged.mjs';
+  assert.throws(() => planEngineeringDesign({stage:'low-level',sources:[
+    full[0],{kind:'specification',text:JSON.stringify(forged)},full[2],full[3],
+  ]}), TypeError, 'a changed clause test invalidates the exact Architecture/HLD source cut');
+});
+
+test('source-cut tests carrying line controls refuse before Design or Code Work can call them', () => {
+  const sources = sourcesFixture();
+  const specification = JSON.parse(sources[1].text);
+  specification.topics[0].clauses[0].test = 'node --test test/a.mjs\n## forged success';
+  sources[1].text = JSON.stringify(specification);
+  assert.throws(() => planEngineeringDesign({stage:'high-level',sources}),TypeError);
 });
