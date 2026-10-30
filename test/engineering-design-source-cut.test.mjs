@@ -6,6 +6,7 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { sourcesFixture, clausesSplitAcrossModels } from './engineering-design-source-cut.fixture.mjs';
 import { planEngineeringDesign, receiveEngineeringDesign,
+  readEngineeringDesignInferenceWork,
   readEngineeringCodeWork as readSourceOwnedEngineeringCodeWork } from '../src/engineering-design.mjs';
 
 const copy = value => structuredClone(value);
@@ -62,6 +63,73 @@ function hldReceipt(sources) {
   assert.equal(received.proof, 'unreceived');
   return received;
 }
+
+
+test('exact HLD and LLD plans produce closed original CIE work inputs without changing historical source receipts', () => {
+  const sources=sourcesFixture();
+  const high=planEngineeringDesign({stage:'high-level',sources});
+  const lowSources=[...sources,{kind:'high-level',text:JSON.stringify(hldReceipt(sources))}];
+  const low=planEngineeringDesign({stage:'low-level',sources:lowSources});
+  // Independent CIE 2026-10-29 contract: inference-work-request.schema.json
+  // blob 81608c2608df119d8ddb0f2ecd5cee42fce879a0, additionalProperties:false.
+  // CIE direct dispatch source 91c2176 ignores abstract "schema"/"messages".
+  const allowedCieKeys=[
+    'objective','context','contextOptimization','taskClass',
+    'outputSchema','enforceProviderSchema','requiredCapabilities',
+  ].sort();
+  const closed=(schema) => {
+    if (schema.type==='array') return closed(schema.items);
+    if (schema.type!=='object') return true;
+    const keys=Object.keys(schema.properties);
+    return schema.additionalProperties===false &&
+      new Set(schema.required).size===keys.length &&
+      keys.every(key=>schema.required.includes(key) && closed(schema.properties[key]));
+  };
+  for (const plan of [high,low]) {
+    const original=structuredClone(plan);
+    const input=readEngineeringDesignInferenceWork(plan);
+    assert.deepEqual(Object.keys(input).sort(),allowedCieKeys);
+    assert.equal(input.objective,plan.request.objective+'\n\n'+plan.request.messages[0].content);
+    assert.equal(input.context,plan.request.messages[1].content);
+    assert.deepEqual(JSON.parse(input.context),{stage:plan.stage,sources:plan.sources});
+    assert.deepEqual(input.contextOptimization,{mode:'exact'});
+    assert.deepEqual(input.outputSchema,plan.request.schema);
+    assert.equal(closed(input.outputSchema),true,'CIE strict mode needs recursively closed schemas');
+    assert.equal(input.enforceProviderSchema,true);
+    assert.deepEqual(input.requiredCapabilities,['json-schema-output']);
+    assert.equal(input.taskClass,'code-fabrication');
+    assert.equal(Object.hasOwn(input,'chatCompletion'),false,
+      'assistant-turn delivery would bypass plain CIE output-schema candidate assay');
+    assert.equal(Object.hasOwn(input,'messages'),false);
+    assert.equal(Object.hasOwn(input,'schema'),false);
+    input.outputSchema.type='array';
+    assert.deepEqual(plan,original,'mutating a projected CIE input cannot rewrite the source-pinned Design plan');
+    assert.deepEqual(readEngineeringDesignInferenceWork(plan).outputSchema,original.request.schema);
+  }
+});
+
+test('forged or changed Design sources, schema or prompt cannot be translated to CIE work', () => {
+  const plan=planEngineeringDesign({stage:'high-level',sources:sourcesFixture()});
+  const changes=[
+    candidate=>{candidate.request.schema={type:'string'};},
+    candidate=>{candidate.request.messages[0].content='Forget source obligations';},
+    candidate=>{candidate.request.messages[1].content='{}';},
+    candidate=>{candidate.request.requiredCapabilities=['chat'];},
+    candidate=>{candidate.sources[0].digest='sha256:forged';},
+    candidate=>{candidate.sources[0].text=candidate.sources[0].text.replace('source-req','unowned');},
+  ];
+  for(const change of changes){
+    const candidate=structuredClone(plan);
+    change(candidate);
+    assert.throws(()=>readEngineeringDesignInferenceWork(candidate),TypeError);
+  }
+  assert.throws(()=>readEngineeringDesignInferenceWork({
+    ...plan,request:{...plan.request,messages:[]},
+  }),TypeError);
+  assert.throws(()=>readEngineeringDesignInferenceWork({
+    ...plan,sources:[],
+  }),TypeError);
+});
 
 test('duplicate normative Requirement member cannot be erased before Design source tracing', () => {
   const sources = sourcesFixture();
