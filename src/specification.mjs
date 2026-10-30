@@ -450,7 +450,7 @@ export function deriveSpecificationFromRequirementReview(requirement, {
   for (const decision of interpretations) {
     if (!decision || Object.getPrototypeOf(decision) !== Object.prototype ||
         Object.keys(decision).some(key =>
-          !["cell","clauseId","keyword","actor"].includes(key)) ||
+          !["cell","clauseId","keyword","actor","test"].includes(key)) ||
         typeof decision.cell !== "string" || !source.has(decision.cell))
       fail("an interpretation names an unknown source condition or an unapproved rewrite field");
     if (choices.has(decision.cell)) fail("duplicate normative interpretation " + decision.cell);
@@ -462,6 +462,16 @@ export function deriveSpecificationFromRequirementReview(requirement, {
         typeof decision.actor !== "string" || !decision.actor.trim() ||
         /[\r\n\u0000]/u.test(decision.actor))
       fail("keyword and responsible actor require explicit BCP 14 interpretation");
+    // A reviewer may PREDECLARE a verification procedure already supported by
+    // the incumbent Specification clause.test field. Source compilation does
+    // not execute it, infer its truth or grant its author execution authority.
+    // Control characters are refused before Markdown and Code Work projection.
+    if (decision.test !== undefined &&
+        (typeof decision.test !== "string" || !decision.test.trim() ||
+          Buffer.byteLength(decision.test, "utf8") > 4096 ||
+          !decision.test.isWellFormed() ||
+          /[\u0000-\u001f\u007f-\u009f\u2028\u2029]/u.test(decision.test)))
+      fail("reviewed verification test must be a bounded control-free source statement");
     ids.add(decision.clauseId);
     choices.set(decision.cell, decision);
   }
@@ -473,6 +483,7 @@ export function deriveSpecificationFromRequirementReview(requirement, {
       id: decision.clauseId, keyword: decision.keyword,
       actor: decision.actor,
       statement: condition.says,
+      ...(decision.test === undefined ? {} : { test: decision.test }),
       backedBy: [
         "Original Requirement " + requirement.id + " (" + sourceAddress +
           "), cell " + condition.cell,
@@ -481,22 +492,20 @@ export function deriveSpecificationFromRequirementReview(requirement, {
   });
   const result = deriveSpecificationRecord({
     identity: {
-      ...identity, profile: "prose", stability: "draft",
-      status: "requires-independent-requirement-and-interpretation-admission",
+      ...identity, profile: "prose", stability: "draft", status: "draft",
     },
-    whatThisIs: "An unadmitted candidate reading of Requirement " +
-      requirement.id + " at " + sourceAddress +
-      ". External authority and specification acceptance remain open.",
+    // A specification states what it specifies; skill writing-a-specification-from-requirements.
+    whatThisIs: "The specification of Requirement " + requirement.id +
+      (typeof requirement.name === "string" && requirement.name.trim() &&
+        !/[\r\n\u0000]/u.test(requirement.name) ? ": " + requirement.name.trim() : "") +
+      " (" + sourceAddress + ").",
     topics: [{
       heading: "Source-owned requirement conditions",
       body: clauses.map(clause => "{{clause:" + clause.id + "}}").join("\n\n"),
       clauses,
     }],
     implementations: [],
-    openQuestions: [{
-      question: "Has the original source Requirement and each BCP 14 interpretation been independently admitted?",
-      blockedBy: "An original competent Office and external reviewer; no approval is inferred from this record",
-    }],
+    openQuestions: [],
     provenance: {
       derivedFrom: [requirement.id + "@" + sourceAddress],
       derivedAt: at,
