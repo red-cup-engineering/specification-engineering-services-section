@@ -105,3 +105,37 @@ export function clausesSplitAcrossModels({ completeArchitecture = false } = {}) 
   sources[2].text = JSON.stringify(architecture);
   return sources;
 }
+
+/**
+ * One additional expressly unadmitted reviewer/model source-cut fixture.
+ * Mirrors the actual Requirement writer's held|denied target domain, with
+ * exact whole-Requirement, normative clause and 42010-model source addresses.
+ * It cannot claim authority, generator conformance or a measured refusal.
+ */
+export function sourceWithDeniedCondition() {
+  const sources=sourcesFixture();
+  const requirement=JSON.parse(sources[0].text);
+  requirement['met-when'][1].target='denied';
+  requirement['met-when'][1].says='Release supplier output without independent recipient acceptance.';
+  const specification=JSON.parse(sources[1].text);
+  specification.provenance.derivedFrom=[
+    requirement.id+'@'+artifactId(requirement),
+  ];
+  for(const [index,clause] of specification.topics[0].clauses.entries()) {
+    const row=requirement['met-when'][index];
+    clause.backedBy=[
+      'Original Requirement '+requirement.id+' ('+artifactId(requirement)+'), cell '+row.cell,
+    ];
+  }
+  specification.topics[0].clauses[1].keyword='MUST NOT';
+  specification.topics[0].clauses[1].statement=requirement['met-when'][1].says;
+  const architecture=JSON.parse(sources[2].text);
+  architecture.sources.find(row=>row.id==='requirement').revision=artifactId(requirement);
+  architecture.sources.find(row=>row.id==='specification').revision=artifactId(specification);
+  architecture.concerns[1].statement='Refuse supplier output without recipient acceptance.';
+  architecture.models.find(row=>row.id==='model-b').content='Original denial is modeled, not observed.';
+  sources[0].text=JSON.stringify(requirement);
+  sources[1].text=JSON.stringify(specification);
+  sources[2].text=JSON.stringify(architecture);
+  return sources;
+}
