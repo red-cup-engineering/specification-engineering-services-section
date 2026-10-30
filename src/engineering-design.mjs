@@ -763,13 +763,28 @@ export function readEngineeringCodeWork({
   // JSON.stringify's caller-controlled property order. Source text digests
   // remain byte-exact; the parsed Design identity is semantic and stable.
   const designSource = semanticIdOf('metroplat.artifact')(designCandidate);
+  // Treat the original Specification as the counting unit, not Code targets:
+  // one clause can demand multiple modules and still needs one independently
+  // authored behavioral verification. Valid exports alone never close this gap.
+  // A declared test is inert source testimony, not executed evidence or Proof.
+  const missingSourceTests = [...declaredSourceTests]
+    .filter(([, test]) => test === null)
+    .map(([clauseId]) => clauseId).sort();
+  const sourceVerification = {
+    scope: 'original-specification-clauses',
+    status: missingSourceTests.length
+      ? 'source-tests-missing' : 'source-tests-declared-unverified',
+    clauseCount: declaredSourceTests.size,
+    declaredTestCount: declaredSourceTests.size - missingSourceTests.length,
+    missingClauseIds: missingSourceTests,
+  };
   const readout = {
     type: 'EngineeringDesignCodeWorkReadout', version: 1,
     designCarrierId: designSource,
     sourceCut: designCandidate.sources.map(({ kind, digest }) => ({ kind, digest })),
     codeSnapshotScope: 'supplied-target-views-only',
     status: discrepancies.length ? 'source-disagreement' : 'source-present-unassayed',
-    targets, discrepancies,
+    targets, discrepancies, sourceVerification,
     originalDesignAdmitted: false, independentProof: 'unreceived',
     executableWork: false, codeApplied: false, beneficiaryReceived: false,
   };
