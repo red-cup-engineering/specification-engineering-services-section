@@ -51,6 +51,16 @@ import { indexJavaScriptModuleBindings } from './javascript-module-bindings.mjs'
  * Host/typed request owner retains byte, time and resource limits.
  */
 
+import { projectHighLevelDesignReview } from './engineering-design-review.mjs';
+import { fileURLToPath } from 'node:url';
+import { readFileText } from '@red-cup-engineering/computer-file-engineering-services-section/read-file';
+import { validateJsonSchema } from '@red-cup-engineering/json-schema-services-section/validation';
+
+const REVIEW_INPUT_SCHEMA_PATH=fileURLToPath(new URL(
+  '../data/records/schema/project-high-level-design-review.input.schema.json',
+  import.meta.url));
+const REVIEW_INPUT_SCHEMA=JSON.parse(await readFileText(REVIEW_INPUT_SCHEMA_PATH));
+
 const ORDER = ['requirement', 'specification', 'architecture', 'high-level'];
 const LAYERS = ['data', 'code', 'networking', 'systems'];
 const SYSTEM = 'Derive only the requested engineering design candidate from the complete original source cut. Retain every original requirement, explicit uncertainty and source identity. Follow the supplied response schema. A candidate is not adoption, proof, fabrication, installation or operation. Return one complete JSON design value. Exact source identity and upstream uncertainty remain in the complete source envelope; keep openQuestions concise and retain relevant blockers without repeating entire source records or source metadata. For high-level design use unique component IDs, acyclic dependencies on same or lower Data, Code, Networking, Systems layers, provider-to-consumer port connections with exactly one provider per required port, and one exact original Requirement-cell trace row covering every component. For low-level design use the exact component IDs and per-cell allocations from the supplied high-level candidate, cover every high-level component, and use unique operation IDs and module/export pairs. Every module is a concrete prospective POSIX relative path starting src/ and ending .mjs, with no backslash or empty, dot or dotdot segment. Every exportName is a whole ASCII identifier spelling: letter, underscore or dollar first, then letters, digits, underscores or dollars. Choose concrete NEW candidate module/export names where new work is required; this does not assert that those interfaces already exist. Retain unresolved existing bindings in openQuestions, never as placeholder prose in module or exportName. Input/output schema fields contain JSON text decoding to an object or boolean. Each trace row names exactly its original Specification clauses, actual Architecture model IDs and selected design elements; low-level operation component IDs for that row must equal the high-level component allocation as a set. Keep all declared behavior, failure, bound, effect and acceptance fields; unknown bounds or mechanisms remain explicit unqualified blockers and grant no effect authority. The receiver checks structural correspondence only; semantic refinement, source adoption, Proof and installed operation remain separately unreceived.';
@@ -214,7 +224,7 @@ function sourceContext(stage, supplied) {
     requireThat(object(model) && nonblank(model.id) && !models.has(model.id) && nonblank(model.content));
     models.add(model.id);
   }
-  const context = { sources, cells, models, authoredClausesByCell, hld: null };
+  const context = { sources, cells, models, authoredClausesByCell, architectureTrace, hld: null };
   if (stage === 'low-level') {
     const upstream = parsed.get('high-level');
     requireThat(exact(upstream, ['type', 'stage', 'sources', 'design', 'admitted', 'proof']));
@@ -459,6 +469,95 @@ export function receiveEngineeringDesign(input) {
   }
   if (!validDesign(input.stage, design, context)) return { type: 'EngineeringDesignDerivationRefusal', reason: 'invalid-design' };
   return { type: 'EngineeringDesignCandidate', stage: input.stage, sources: plan.sources, design, admitted: false, proof: 'unreceived' };
+}
+
+
+/**
+ * Receive one original review-authored HLD through the EXISTING Design
+ * projector AND exact source-cut Design receiver, not a second HLD generator.
+ *
+ * Inputs preserve the original Requirement, Specification, Architecture,
+ * reviewed source cut and byte-identical review JSON. The review and selected
+ * budget must be admitted by their actual external Office/host; an SHA/NI is
+ * an integrity address, not authority. No model, shell, Code writer or paid
+ * inference is invoked here. Even an internally valid result is an
+ * unadmitted Design candidate with independent Proof and receiving open.
+ *
+ * The source-bound HLD candidate can be reused as the unchanged fourth
+ * source for the original low-level planEngineeringDesign operation.
+ */
+export function receiveEngineeringHighLevelReview({
+  sources, reviewText, expectedReviewSha256, reviewedSourceCut, limits,
+} = {}) {
+  const bounded = ['maxReviewBytes', 'maxComponents', 'maxRequirements', 'maxTraceRows'];
+  if (!exact(limits, bounded) ||
+      !bounded.every(key => Number.isSafeInteger(limits[key]) && limits[key] > 0))
+    throw new TypeError('Engineering review bounds must be exact positive integers');
+  if (typeof reviewText !== 'string' || !reviewText.isWellFormed() ||
+      !/^sha256:[a-f0-9]{64}$/u.test(expectedReviewSha256))
+    throw new TypeError('Engineering review source digest requires well-formed original text');
+  const reviewBytes = Buffer.byteLength(reviewText, 'utf8');
+  if (reviewBytes > limits.maxReviewBytes)
+    throw new TypeError('Engineering review budget exceeded before projection');
+  const actualDigest = 'sha256:' +
+    createHash('sha256').update(reviewText, 'utf8').digest('hex');
+  if (expectedReviewSha256 !== actualDigest)
+    throw new TypeError('Engineering review source digest mismatch');
+
+  // This is precisely the source projection used by planEngineeringDesign
+  // and receiveEngineeringDesign. Never accept a separate caller trace.
+  const context = sourceContext('high-level', sources);
+  const sourceCut = context.sources.map(({kind,digest}) => ({kind,digest}));
+  if (!Array.isArray(reviewedSourceCut) || !equal(reviewedSourceCut, sourceCut))
+    return { type:'EngineeringDesignDerivationRefusal', reason:'source-cut-mismatch' };
+  if (context.cells.size > limits.maxTraceRows)
+    throw new TypeError('Engineering review budget exceeded for original trace');
+
+  let review;
+  try { review = parseObject(reviewText); }
+  catch {
+    return { type:'EngineeringDesignDerivationRefusal', reason:'invalid-review' };
+  }
+  if (!Array.isArray(review.components))
+    return { type:'EngineeringDesignDerivationRefusal', reason:'invalid-review' };
+  if (review.components.length > limits.maxComponents ||
+      review.components.reduce((total, component) =>
+        total + (Array.isArray(component?.requires) ? component.requires.length : 0), 0)
+        > limits.maxRequirements)
+    throw new TypeError('Engineering review budget exceeded for component allocations');
+
+  // The original source-generated input schema governs the review's syntax;
+  // the original Architecture reader supplies the *actual* authored trace.
+  // A caller-authored model ID or claim cannot replace that derived evidence.
+  const input = {review,trace:context.architectureTrace};
+  if (!validateJsonSchema(input, REVIEW_INPUT_SCHEMA).valid)
+    return { type:'EngineeringDesignDerivationRefusal', reason:'invalid-review' };
+
+  let design;
+  try { design = projectHighLevelDesignReview(input); }
+  catch {
+    return { type:'EngineeringDesignDerivationRefusal', reason:'invalid-review' };
+  }
+  const plan = makePlan('high-level', context);
+  const deliveryText = JSON.stringify(design);
+  const candidate = receiveEngineeringDesign({
+    stage:'high-level', sources, plan, deliveryText,
+  });
+  // Cycles, false clause/model attribution, illegal layer links or incomplete
+  // traceability are refused by the EXISTING Design receiver, not by a weaker
+  // second structural checker.
+  if (candidate.type !== 'EngineeringDesignCandidate') return candidate;
+  return {
+    type:'EngineeringDesignReviewProjection', version:1,
+    originalReview:{
+      expectedSha256,
+      semanticId:semanticIdOf('metroplat.artifact')(review),
+      bytes:reviewBytes,
+    },
+    reviewText, sourceCut, deliveryText, candidate,
+    admitted:false, independentReview:'unreceived',
+    proof:'unreceived', executableWork:false,
+  };
 }
 
 
