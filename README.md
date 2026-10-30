@@ -100,6 +100,12 @@ missing witness, treat a digest as authority or exceed the input boundary. This 
 admission is tested in [source-stdin.test.mjs](test/source-stdin.test.mjs); it does not
 adopt the original customer's Requirements.
 
+The public `loadSpecificationSchema` and `loadArchitectureDescriptionSchema` functions
+provide independent readback copies; consumer edits cannot change the original
+internal validators. Both readers use their single source-owned committed schema,
+not a second requirements dialect or a new approval authority. Separate source,
+architecture and independently installed package regressions exercise this boundary.
+
 ## Specification and venue rendering
 
 A reviewed Requirement can be interpreted into a draft with
@@ -107,9 +113,12 @@ A reviewed Requirement can be interpreted into a draft with
 supported source condition rather than relying on the entire source document's presence as
 blanket coverage. A condition marked `"inference": true` (added by an agent, not stated by
 the Leader) is an engineering decision: it is reviewed and becomes a clause like any other,
-and its backing names it as an engineering decision with any `leader-words`. It is never left
-open for the Leader (rule engineering-decisions-are-made-not-deferred-to-the-leader). A rendered Specification is a reproducible Markdown carrier with source
-identities, topic sections and BCP 14 clauses.
+and its `backedBy` stays the exact original Requirement-cell source address.
+The `inference` and `leader-words` facts remain independently inspectable in that
+original Requirement, never appended to a machine-readable citation key. The
+engineering decision is not left open for the Leader (rule
+engineering-decisions-are-made-not-deferred-to-the-leader). A rendered Specification
+is a reproducible Markdown carrier with source identities, topic sections and BCP 14 clauses.
 [Specification tests](test/specification.test.mjs) and
 [Requirement-derivation tests](test/derive-specification.test.mjs) exercise the existing
 source contract.
@@ -212,6 +221,12 @@ Specification-clause pairing. Each row carries the exact source-authored `test` 
 independent test receiver, **not** executable tests, Code fabrication, Proof,
 release admission or beneficiary acceptance. Revisions to normative test
 declarations invalidate the original exact Architecture/HLD/LLD source cut.
+
+Projected `targets[].originalTrace` rows retain the exact original Requirement
+`sourceTarget` (`held` or `denied`) alongside the cell ID, Specification clauses
+and Architecture models. This is a desired evidence target, **not** an observed
+positive/negative witness; the source reviewer still owns the normative BCP14
+interpretation and the real test receiver owns executed verification.
 
 Projected targets retain original Requirement cells, Specification clauses, Architecture
 models, input/output schemas, preconditions, effects, errors and verification obligations.

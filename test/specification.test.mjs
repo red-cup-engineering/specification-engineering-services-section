@@ -4,7 +4,7 @@ import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { relativeLinkPath } from "@red-cup-engineering/markdown-engineering-services-section/relocate-markdown-tree";
-import { classifyCitationTarget, countNormativeKeywords, renderSpecificationMarkdown, repoRootFromDestination, resolveCitationText, validateSpecificationRecord, verifyCitationTargetsExist } from "../src/specification.mjs";
+import { classifyCitationTarget, countNormativeKeywords, renderSpecificationMarkdown, repoRootFromDestination, resolveCitationText, validateSpecificationRecord, verifyCitationTargetsExist, loadSpecificationSchema } from "../src/specification.mjs";
 
 // These assertions exercise the original file-bound reader, not a fake stat port
 // or the developer's historical /home/emsenn/info tree. Every fixture cleans up.
@@ -347,4 +347,26 @@ test("ordinary authored Specification carrier frontmatter stays byte-compatible"
   ].join("\n");
   assert.ok(rendered.startsWith(header.replace("\n# Example specification", "\n\n# Example specification") + "\n"),
     "ordinary YAML keys, values and ordering must remain byte-stable");
+});
+
+test("public Specification schema projection cannot mutate original validation law", () => {
+  // Engineering #137: source-facing schema inspection is read-only with respect
+  // to the original verifier. Mutating an exported view must not rewrite it.
+  const view = loadSpecificationSchema();
+  const originalPattern = view.$defs.identity.properties.version.pattern;
+  try {
+    view.$defs.identity.properties.version.pattern = "^untrusted-only$";
+    assert.equal(loadSpecificationSchema().$defs.identity.properties.version.pattern,
+      originalPattern, "another reader sees the original immutable rule");
+    assert.equal(validateSpecificationRecord(baseRecord()).valid, true,
+      "an authorized specification is not rejected by an external schema edit");
+    const invalid = baseRecord();
+    invalid.identity.version = "not-semver";
+    assert.equal(validateSpecificationRecord(invalid).valid, false,
+      "an invalid version does not become admitted by a borrowed schema view");
+  } finally {
+    // The RED version exposes the live module object. Restore before other
+    // tests so the deliberately failing oracle cannot poison unrelated cases.
+    view.$defs.identity.properties.version.pattern = originalPattern;
+  }
 });

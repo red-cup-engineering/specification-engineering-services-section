@@ -7,7 +7,7 @@ import {
   renderArchitectureDescriptionMarkdown, validateArchitectureDescriptionRecord,
   renderArchitectureDescriptionFromSourceCut, validateArchitectureDescriptionAgainstSourceCut,
   readRequirementArchitectureTrace, readRequirementArchitectureImpact,
-  deriveArchitectureDescriptionFromSpecificationReview,
+  deriveArchitectureDescriptionFromSpecificationReview, loadArchitectureDescriptionSchema,
 } from "../src/architecture-description.mjs";
 import { deriveSpecificationFromRequirementReview } from "../src/specification.mjs";
 import { planEngineeringDesign } from "../src/engineering-design.mjs";
@@ -930,4 +930,24 @@ test("review-derived Architecture drives the incumbent revision-impact reader wi
   assert.deepEqual(impact.affectedModels,["auth-model"]);
   assert.equal(impact.independentlyAcceptedCustomerWork,false);
   assert.equal(impact.originalEffect,"none-read-only");
+});
+
+test("public Architecture schema projection cannot remove original source admission", () => {
+  // Requirement-to-Architecture source ID and conformance gates must be
+  // invariant under a consumer's edits to a schema view.
+  const view = loadArchitectureDescriptionSchema();
+  const originalRequired = [...view.required];
+  try {
+    view.required.splice(view.required.indexOf("type"), 1);
+    assert.deepEqual(loadArchitectureDescriptionSchema().required, originalRequired,
+      "a schema reader may not replace the verifier's original required fields");
+    assert.equal(validateArchitectureDescriptionRecord(candidate()).valid, true);
+    const missingKind = candidate();
+    delete missingKind.type;
+    assert.equal(validateArchitectureDescriptionRecord(missingKind).valid, false,
+      "the original Architecture type stays required after external mutation");
+  } finally {
+    // Restore the old live reference when running this RED test against main.
+    view.required.splice(0, view.required.length, ...originalRequired);
+  }
 });

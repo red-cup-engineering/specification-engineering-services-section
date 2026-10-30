@@ -13,7 +13,9 @@ const SCHEMA = JSON.parse(await readFileText(SCHEMA_PATH));
  * ISO/IEC/IEEE 42010:2022 conformance and semantic refinement are NOT established here.
  */
 export function loadArchitectureDescriptionSchema() {
-  return SCHEMA;
+  // Keep the original source-cut validator independent of consumer edits
+  // to a published schema readback. Do not invent another schema dialect.
+  return structuredClone(SCHEMA);
 }
 
 const byId = (items) => new Map(items.map((item) => [item.id, item]));
