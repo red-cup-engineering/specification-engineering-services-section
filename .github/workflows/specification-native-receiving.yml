@@ -118,7 +118,7 @@ jobs:
           import { spawnSync } from "node:child_process";
           import {
             validateSpecificationRecord, renderSpecificationMarkdown,
-            deriveSpecificationFromRequirementReview,
+            deriveSpecificationFromRequirementReview, loadSpecificationSchema,
           } from "@red-cup-engineering/specification-engineering-services-section/specification";
           import { renderSpecificationRfcXml } from "@red-cup-engineering/specification-engineering-services-section/specification-rfcxml";
           const valid = {
@@ -137,6 +137,17 @@ jobs:
               derivedAt: "2026-10-24T00:00:00Z", derivedBy: "source-admitted-author" },
           };
           assert.equal(validateSpecificationRecord(valid).valid, true);
+          // Separately clean-installed real package: public schema readback
+          // must not be able to rewrite the original normative validator.
+          const publicSpecificationSchema=loadSpecificationSchema();
+          const originalVersionPattern=publicSpecificationSchema.$defs.identity.properties.version.pattern;
+          publicSpecificationSchema.$defs.identity.properties.version.pattern="^foreign-only$";
+          assert.equal(loadSpecificationSchema().$defs.identity.properties.version.pattern,
+            originalVersionPattern);
+          assert.equal(validateSpecificationRecord(valid).valid,true);
+          const invalidVersion=structuredClone(valid);
+          invalidVersion.identity.version="not-a-semver";
+          assert.equal(validateSpecificationRecord(invalidVersion).valid,false);
           assert.match(renderSpecificationMarkdown(valid),
             /recipient MUST.*record an independent acceptance/u);
           const conflicted = structuredClone(valid);
@@ -318,6 +329,7 @@ jobs:
           // independently INSTALLED package, not the build checkout.
           const {
             validateArchitectureDescriptionAgainstSourceCut,
+            validateArchitectureDescriptionRecord, loadArchitectureDescriptionSchema,
             renderArchitectureDescriptionFromSourceCut,
             readRequirementArchitectureTrace,
           } = await import("@red-cup-engineering/specification-engineering-services-section/architecture-description");
@@ -355,6 +367,16 @@ jobs:
               concernIds:["rights"],sourceIds:["decision"]}],
             openQuestions:[],
           };
+          const publicArchitectureSchema=loadArchitectureDescriptionSchema();
+          const originalArchitectureFields=[...publicArchitectureSchema.required];
+          publicArchitectureSchema.required.splice(
+            publicArchitectureSchema.required.indexOf("type"),1);
+          assert.deepEqual(loadArchitectureDescriptionSchema().required,
+            originalArchitectureFields);
+          const invalidArchitecture=structuredClone(sourceBoundArchitecture);
+          delete invalidArchitecture.type;
+          assert.equal(validateArchitectureDescriptionRecord(invalidArchitecture).valid,false,
+            "external schema readback may not strip original architecture source admission");
           const cut={requirement,specification:candidate};
           const verified=validateArchitectureDescriptionAgainstSourceCut(sourceBoundArchitecture,cut);
           assert.equal(verified.valid,true,JSON.stringify(verified.issues));
