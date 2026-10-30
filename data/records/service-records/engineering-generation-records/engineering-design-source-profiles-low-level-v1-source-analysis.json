@@ -132,5 +132,196 @@
     "bytes": 7064,
     "receiptReportedBy": "/root",
     "scope": "Root independently read actual root extras and all seven operation schemas/bounds/semantics; accepted no LLD."
+  },
+  "providerSchemaTransportSourceQualification": {
+    "kind": "OriginalLLDProviderSchemaTransportReadOnlySourceQualification",
+    "version": 1,
+    "observedOn": "2026-10-29",
+    "status": "source-only-assay-qualified; historical transport and native owner receiving unknown",
+    "sourceOwner": "red-cup-engineering/specification-engineering-services-section#19",
+    "originalWork": "red-cup-engineering/engineering-services-section#137",
+    "sourceRevisions": {
+      "design": "red-cup-engineering/specification-engineering-services-section/src/engineering-design.mjs@blob:abd5491886221aa694b5c31e7f58be363e342136",
+      "inferenceDispatch": "red-cup-engineering/computer-inference-engine/src/dispatch/inference-dispatch.mjs@blob:91c2176454d93dcbf103f24e96e1b69b9f9b27dc",
+      "directProvider": "red-cup-engineering/computer-inference-engine/src/dispatch/direct-endpoint-provider.mjs@blob:a17f7759fc5b17fa9f2e8f3980c8fd3a240ad956",
+      "providerAdmission": "red-cup-engineering/computer-inference-engine/content/dispatch/provider-admissions/direct-endpoint-providers.json@blob:9bac9a7bd917aeaf63bd70dc869dc7656eb91d9b",
+      "originalFirstLowLevelPlan": "sha256:b81a953ab983a609b97dc4940826f58401263d1211dfc6c78ff1957139205a18",
+      "originalFirstProviderRequest": "sha256:93efd0cc247bf9884deee65eb61af43fa101aba6407c3d40d7da34532ce4df91",
+      "originalUnacceptedRaw": "sha256:164a07f27b6de39aab5a417a13736fe304eaff164f3cfb02a2e791906f39843c"
+    },
+    "assayMethod": "Extract unmodified designSchema, isClosedJsonSchema and openAiJsonSchemaResponseFormat named function bodies from exact Git blob strings into isolated ECMAScript function scopes; call with high-level and low-level stages and changed copies of their literal source-built schemas. Read provider-admission JSON directly. Inspect exact native CIE requiredCapabilities/outputSchema/enforceProviderSchema conditional source strings. No credential, native host, model, GitHub Actions or original consumer operation executed. Predicate results are structural, not full JSON Schema vocabulary validation.",
+    "testCases": [
+      {
+        "name": "HLD root schema fields",
+        "actual": "components,connections,traceability,openQuestions",
+        "expected": "same ordered list",
+        "result": "pass"
+      },
+      {
+        "name": "HLD full native generated schema closed",
+        "actual": "true",
+        "expected": "true",
+        "result": "pass"
+      },
+      {
+        "name": "HLD CIE projected response_format strict",
+        "actual": "true",
+        "expected": "true",
+        "result": "pass"
+      },
+      {
+        "name": "HLD malformed nested missing type admitted by closedness predicate",
+        "actual": "true",
+        "expected": "true, exposes predicate's limitation",
+        "result": "pass"
+      },
+      {
+        "name": "HLD nested open object disallows strict",
+        "actual": "false",
+        "expected": "false",
+        "result": "pass"
+      },
+      {
+        "name": "LLD root schema fields",
+        "actual": "operations,traceability,openQuestions",
+        "expected": "same ordered list",
+        "result": "pass"
+      },
+      {
+        "name": "LLD full native generated schema closed",
+        "actual": "true",
+        "expected": "true",
+        "result": "pass"
+      },
+      {
+        "name": "LLD CIE projected response_format strict",
+        "actual": "true",
+        "expected": "true",
+        "result": "pass"
+      },
+      {
+        "name": "LLD malformed nested missing type admitted by closedness predicate",
+        "actual": "true",
+        "expected": "true, exposes predicate's limitation",
+        "result": "pass"
+      },
+      {
+        "name": "LLD nested open object disallows strict",
+        "actual": "false",
+        "expected": "false",
+        "result": "pass"
+      },
+      {
+        "name": "NVIDIA 3.5 VL catalog row declares json-schema-output",
+        "actual": "true",
+        "expected": "true",
+        "result": "pass"
+      },
+      {
+        "name": "Generic NVIDIA NIM catalog rows lack json-schema-output",
+        "actual": "true",
+        "expected": "true",
+        "result": "pass"
+      },
+      {
+        "name": "CIE source consumes input.outputSchema, not plan.request.schema directly",
+        "actual": "true",
+        "expected": "true",
+        "result": "pass"
+      },
+      {
+        "name": "CIE direct conditional requires enforceProviderSchema and capable descriptor",
+        "actual": "true",
+        "expected": "true",
+        "result": "pass"
+      },
+      {
+        "name": "CIE requiredCapabilities does not automatically add schema-output for enforce-only",
+        "actual": "true",
+        "expected": "true",
+        "result": "pass"
+      },
+      {
+        "name": "Design plan provides schema and text-output only, not CIE outputSchema",
+        "actual": "true",
+        "expected": "true",
+        "result": "pass"
+      }
+    ],
+    "casesRun": 16,
+    "sourceChecksPassed": 16,
+    "observedProviderAdmissionRows": [
+      {
+        "providerId": "nvidia-nim",
+        "model": null,
+        "jsonSchemaOutput": false
+      },
+      {
+        "providerId": "nvidia-nim",
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "jsonSchemaOutput": false
+      },
+      {
+        "providerId": "nvidia-nim",
+        "model": "z-ai/glm-5.3-flash",
+        "jsonSchemaOutput": false
+      },
+      {
+        "providerId": "nvidia-nim-nemotron-35-super-vl",
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "jsonSchemaOutput": true
+      },
+      {
+        "providerId": "nvidia-nim-glm-5-3",
+        "model": "z-ai/glm-5.3",
+        "jsonSchemaOutput": false
+      }
+    ],
+    "verifiedSourceBoundary": [
+      "Design plan.request.schema is a source-bound normative schema; it is not itself the native CIE input.outputSchema.",
+      "Native CIE direct provider response_format=json_schema requires explicit input.enforceProviderSchema and an eligible selected descriptor advertising json-schema-output, unless an explicitly source-matched chatCompletion.response_format takes precedence.",
+      "EnforceProviderSchema alone does not put json-schema-output in CIE demand.requiredCapabilities; only explicit caller requiredCapabilities or chatCompletion schema format does.",
+      "Current catalog includes a capable NVIDIA Nemotron 3.5 VL row and incapable generic NVIDIA NIM rows; returned original model identity does not prove which dispatch path and response_format were used.",
+      "CIE isClosedJsonSchema permits a syntactically incomplete nested schema missing a type. Full dialect/keyword validation belongs to the existing JSON Schema supplier before calling that predicate.",
+      "The original first LLD wrong schema-definition root stays a separately witnessed negative; the source-only preflight cannot retroactively grade its transport."
+    ],
+    "proposedOriginalCallerContract": {
+      "source": "Original Design plan.request.schema and original four-stage source digests/selected profile",
+      "actualInput": "Review original native host invocation; show exact plan.request.schema -> CIE input.outputSchema structural/content match, deliberate enforceProviderSchema true and requiredCapabilities including json-schema-output for provider-constrained lot.",
+      "sourceReview": "Require independent exact-source closedness and JSON Schema grammar admission by incumbent supplier; refuse or report unknown for missing/change/mismatch.",
+      "selectedOffer": "Read original CIE descriptor and actual response_format/provenance; effective strict true is a conditional observation, not an inferred catalog fact.",
+      "recipient": "Original CIE receiver plus source-independent semantic Design assayer; no current Actor impersonation or output patch.",
+      "event": "After original CIE negative outcome reconciliation, review separately admitted successor request and consumer effects before any new paid/zero-cash lot."
+    },
+    "externalResearch": [
+      {
+        "lens": "CLASS",
+        "url": "https://csrc.nist.gov/pubs/sp/800/218/final",
+        "publication": "2022-02-03 final",
+        "exactClaim": "SSDF 1.1 distinguishes development verification/provenance practice from result integrity; no native Design qualification is conferred."
+      },
+      {
+        "lens": "CLASS",
+        "url": "https://www.iso.org/standard/72089.html",
+        "publication": "2018-11; confirmed 2024",
+        "exactClaim": "29148:2018 remains the published requirements engineering standard in October 2026; 2026 successor is draft."
+      },
+      {
+        "lens": "TARGET",
+        "url": "https://docs.api.nvidia.com/nim/reference/nvidia-nemotron-3_5-super-vl-120b-a12b-infer",
+        "publication": "not stated; consulted 2026-10-29",
+        "exactClaim": "The selected model's hosted /v1/chat/completions API documents response_format with json_schema; it does not witness the historical request."
+      }
+    ],
+    "alternativeRejected": "NVIDIA self-hosted NIM guided_json usage and synthetic schema closure alone cannot prove actual NVIDIA hosted response_format or original CIE delivery enforcement.",
+    "downstreamAcceptance": {
+      "originalCieFeedback": "unreceived; different original receiver actor",
+      "firstLld": "refused invalid-design",
+      "newLld": "not generated",
+      "proof": "unreceived",
+      "code": "not fabricated",
+      "consumer": "not installed or independently received"
+    },
+    "nextOwnerOperation": "Original CIE receiver first reconcile workLot receipt and exact outcome in its own journal; record first rejected lot once under its original authority, inspect original envelope/outputSchema/enforceProviderSchema/selected descriptor/effective wire response_format, and return exact source-bound observation for existing PR #19 successor request review."
   }
 }
