@@ -199,57 +199,47 @@ jobs:
           }),/every source condition requires exactly one/u);
           // The source-authority rule must hold for the actual independently
           // INSTALLED package, not just generator-authored tests in the checkout.
-          // This additional retention demand is explicitly an agent inference,
-          // NOT a Leader/customer Requirement and NOT a normative clause.
+          // A cell the agent inferred is an engineering decision the engineering
+          // owner takes with its rationale (rule
+          // engineering-decisions-are-made-not-deferred-to-the-leader): it needs
+          // its own interpretation and renders as a clause marked as such.
           const withAgentInference=structuredClone(requirement);
           withAgentInference["met-when"].push({
-            cell:"buyer-work-continuity:guessed-retention",target:"held",
+            cell:"buyer-work-continuity:decided-retention",target:"held",
             says:"retain every buyer record for ten years",
             inference:true,
-            "leader-words":"the customer made no ten-year retention request",
+            "leader-words":"the customer stated no retention period",
+          });
+          assert.throws(()=>deriveSpecificationFromRequirementReview(
+            withAgentInference,review),/every source condition requires exactly one/u,
+            "a decided cell is specified like any other, never skipped");
+          const decidedReview=structuredClone(review);
+          decidedReview.interpretations.push({
+            cell:"buyer-work-continuity:decided-retention",
+            clauseId:"decided-retention",keyword:"MUST",actor:"The Group",
           });
           const readWithInference=deriveSpecificationFromRequirementReview(
-            withAgentInference,review);
+            withAgentInference,decidedReview);
           assert.equal(validateSpecificationRecord(readWithInference).valid,true);
           assert.deepEqual(readWithInference.topics[0].clauses.map(c=>c.id),
-            ["original-work","independent-recipient"],
-            "only independently reviewed non-inference source conditions become normative");
-          assert.deepEqual(readWithInference.topics[0].clauses.map(c=>c.statement),
-            requirement["met-when"].map(c=>c.says),
-            "the original buyer clauses remain intact and in their source order");
-          assert.equal(readWithInference.openQuestions.length,1);
-          assert.match(readWithInference.openQuestions[0].question,
-            /Agent inference, not stated by the Leader/u);
-          assert.match(readWithInference.openQuestions[0].question,
-            /retain every buyer record for ten years/u);
-          assert.match(readWithInference.openQuestions[0].question,
-            /buyer-work-continuity:guessed-retention/u);
-          assert.match(readWithInference.openQuestions[0].question,
-            /the customer made no ten-year retention request/u);
-          assert.match(readWithInference.openQuestions[0].blockedBy,
-            /Leader acceptance or striking/u);
-          assert.equal(readWithInference.identity.status,"draft");
+            ["original-work","independent-recipient","decided-retention"]);
+          assert.match(readWithInference.topics[0].clauses[2].backedBy[0],
+            /engineering decision; Leader's words: the customer stated no retention period/u);
+          assert.equal(readWithInference.openQuestions.length,0);
           assert.notEqual(readWithInference.provenance.derivedFrom[0],
             candidate.provenance.derivedFrom[0],
-            "the added open inference still changes original source identity");
-          assert.doesNotMatch(renderSpecificationMarkdown(readWithInference),
-            /Group MUST retain every buyer record for ten years/u,
-            "an unadopted inference cannot render as a normative clause");
-          const forgedReview=structuredClone(review);
-          forgedReview.interpretations.push({
-            cell:"buyer-work-continuity:guessed-retention",
-            clauseId:"guessed-retention",keyword:"MUST",actor:"Unadopted agent",
+            "the added cell changes original source identity");
+          // A section keeps one Requirement record; a Specification of part of it
+          // is generated from a requirement cut that names its cells.
+          const cutSpecification=deriveSpecificationFromRequirementReview(withAgentInference,{
+            ...review,interpretations:review.interpretations.slice(0,1),
+            cells:[requirement["met-when"][0].cell],
           });
-          assert.throws(()=>deriveSpecificationFromRequirementReview(
-            withAgentInference,forgedReview),
-            /an interpretation names inference cell buyer-work-continuity:guessed-retention/u);
-          const onlyInferences=structuredClone(withAgentInference);
-          for(const condition of onlyInferences["met-when"])
-            condition.inference=true;
-          assert.throws(()=>deriveSpecificationFromRequirementReview(
-            onlyInferences,{...review,interpretations:[]}),
-            /nothing normative remains to specify/u,
-            "a source with no customer conditions cannot create a Specification");
+          assert.deepEqual(cutSpecification.topics[0].clauses.map(c=>c.id),["original-work"]);
+          assert.equal(cutSpecification.provenance.derivedFrom[0],
+            readWithInference.provenance.derivedFrom[0],
+            "a cut keeps the whole record's exact source relation");
+          assert.match(cutSpecification.provenance.derivedFrom[1],/#cells=/u);
           const revised=structuredClone(requirement);
           revised["met-when"][0].says="retain one NEW source obligation";
           const subsequent=deriveSpecificationFromRequirementReview(revised,review);
