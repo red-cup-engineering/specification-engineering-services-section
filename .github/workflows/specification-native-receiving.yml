@@ -13,7 +13,8 @@ on:
       - "src/**"
       - "scripts/**"
       - "test/**"
-      - "data/records/schema/**"
+      - "data/records/**"
+      - "content/text/documents/specifications/**"
   pull_request:
     paths:
       - ".github/workflows/specification-native-receiving.yml"
@@ -23,7 +24,8 @@ on:
       - "src/**"
       - "scripts/**"
       - "test/**"
-      - "data/records/schema/**"
+      - "data/records/**"
+      - "content/text/documents/specifications/**"
   merge_group:
     types: [checks_requested]
   workflow_dispatch:
