@@ -181,6 +181,14 @@ function sourceContext(stage, supplied) {
     for (const clause of topic.clauses) {
       requireThat(object(clause) && nonblank(clause.id) && !clauseIds.has(clause.id));
       requireThat(strings(clause.backedBy, 1, true));
+      // Native Specification already supports an authored clause.test. It is
+      // an unexecuted verification obligation, not LLD model testimony.
+      // Refuse unsafe source carriers before an inference or Code readout.
+      requireThat(clause.test === undefined ||
+        (typeof clause.test === 'string' && clause.test.trim().length > 0 &&
+          Buffer.byteLength(clause.test, 'utf8') <= 4096 &&
+          clause.test.isWellFormed() &&
+          !/[\u0000-\u001f\u007f-\u009f\u2028\u2029]/u.test(clause.test)));
       clauseIds.add(clause.id);
       for (const ref of clause.backedBy) {
         requireThat(references.has(ref));
@@ -612,6 +620,12 @@ export function readEngineeringCodeWork({
   // relative module spelling. Preserve their original ownership, without
   // inferring GitHub authorization or executable Work from the HLD label.
   const highLevel = parseObject(designCandidate.sources[3].text);
+  // Read original Specification verification procedures, not invented LLD
+  // expectations. Source revisions and per-clause trace were already
+  // re-received above against the complete Requirement/Architecture/HLD cut.
+  const originalSpecification = parseObject(designCandidate.sources[1].text);
+  const declaredSourceTests = new Map(originalSpecification.topics.flatMap(topic =>
+    topic.clauses.map(clause => [clause.id, clause.test ?? null])));
   const originalOwners = new Map(highLevel.design.components.map(row =>
     [row.id, row.owner]));
   const keyOf = (owner, path) => JSON.stringify([owner, path]);
@@ -727,6 +741,20 @@ export function readEngineeringCodeWork({
           resourceBounds: [...operation.resourceBounds],
           effectBoundaries: [...operation.effectBoundaries],
           acceptance: [...operation.acceptanceObligations],
+          // Independently authored Specification tests remain separate from
+          // model-derived LLD tests. Missing procedures are explicit gaps;
+          // declared procedures are carried only as inert test descriptions.
+          sourceVerification: traced.get(operation.id).flatMap(row =>
+            row.specificationClauseIds.map(specificationClauseId => {
+              const test = declaredSourceTests.get(specificationClauseId) ?? null;
+              return {
+                requirementCellId: row.requirementCellId,
+                specificationClauseId,
+                test,
+                status: test === null
+                  ? 'verification-test-not-declared' : 'declared-unverified',
+              };
+            })),
           status: 'unreceived',
         },
       };
