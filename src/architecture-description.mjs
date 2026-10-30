@@ -147,6 +147,27 @@ export function validateArchitectureDescriptionRecord(record) {
  * rights are authenticated here; a valid result is still a candidate, not
  * a 42010 certificate, a proof of the view's correctness or accepted Work.
  */
+// A section has one complete Requirement, but a Specification may select a
+// source-addressed finite cut of its cells. That selection has no independent
+// Office or Proof authority; the full record's native ID remains its source.
+function selectedRequirementCells(requirement,specification,revision) {
+  const original=requirement["met-when"].map(row=>row.cell);
+  const source=requirement.id+"@"+revision;
+  const cuts=specification.provenance.derivedFrom.filter(value=>
+    typeof value==="string" && value.startsWith(requirement.id+"@") &&
+    value.includes("#cells="));
+  if(cuts.length===0)return new Set(original);
+  if(cuts.length!==1 || !cuts[0].startsWith(source+"#cells="))
+    return null;
+  const listed=cuts[0].slice((source+"#cells=").length).split(",");
+  const available=new Set(original);
+  if(listed.length===0 || listed.some(cell=>!cell || !available.has(cell)) ||
+     new Set(listed).size!==listed.length ||
+     listed.join(",")!==[...listed].sort().join(","))
+    return null;
+  return new Set(listed);
+}
+
 export function validateArchitectureDescriptionAgainstSourceCut(record, {
   requirement, specification,
 } = {}) {
@@ -207,8 +228,25 @@ export function validateArchitectureDescriptionAgainstSourceCut(record, {
   const clauseMap=new Map(clauses.map(row=>[row.id,row]));
   if(clauseMap.size!==clauses.length)
     refuse("sourceCut.specification.topics","duplicate normative clause IDs are not a valid correspondence");
+  const selected=selectedRequirementCells(requirement,specification,expectedRequirement);
+  if(selected===null)
+    refuse("sourceCut.specification.provenance",
+      "selected Requirement cut must bind the whole source and canonical sorted unique cells");
+  if(issues.length>0)return Object.freeze({valid:false,issues:Object.freeze(issues)});
   const backref=cell=>"Original Requirement "+requirement.id+" ("+
     expectedRequirement+"), cell "+cell;
+  // No cut can silently delete a LISTED original requirement or promote an
+  // excluded section-wide cell into a generated normative clause.
+  for(const cell of selected) {
+    if(!clauses.some(clause=>clause.backedBy?.includes(backref(cell))))
+      refuse("sourceCut.specification.topics",
+        "selected original Requirement cell lacks a normative clause "+cell);
+  }
+  for(const clause of clauses)for(const [cell] of sourceCells) {
+    if(!selected.has(cell) && clause.backedBy?.includes(backref(cell)))
+      refuse("sourceCut.specification.topics",
+        "unselected original Requirement cell appears as normative "+cell);
+  }
   for(const concern of record.concerns) {
     const r=concern.requirementCellIds,s=concern.specificationClauseIds;
     if((r===undefined)!==(s===undefined)) {
@@ -224,6 +262,9 @@ export function validateArchitectureDescriptionAgainstSourceCut(record, {
       if(!sourceCells.has(cell))
         refuse("concerns."+concern.id+".requirementCellIds",
           "unknown original Requirement condition "+cell);
+      else if(!selected.has(cell))
+        refuse("concerns."+concern.id+".requirementCellIds",
+          "condition excluded by selected Requirement cut "+cell);
       if(!s.some(id=>clauseMap.get(id)?.backedBy?.includes(backref(cell))))
         refuse("concerns."+concern.id+".requirementCellIds",
           "no selected normative clause actually backs source condition "+cell);
@@ -305,7 +346,10 @@ export function readRequirementArchitectureTrace(record,sources) {
       traced.set(cell,list);
     }
   }
-  const rows=requirement["met-when"].map(row=>{
+  // Trace the selected responsibility domain; excluded cells remain in
+  // the complete original Requirement and its content address.
+  const selected=selectedRequirementCells(requirement,specification,sourceRevision);
+  const rows=requirement["met-when"].filter(row=>selected.has(row.cell)).map(row=>{
     const originalClauses=Object.freeze([...(normative.get(row.cell)??[])].sort());
     const paths=Object.freeze([...(traced.get(row.cell)??[])].sort((a,b)=>
       a.concernId.localeCompare(b.concernId) ||
