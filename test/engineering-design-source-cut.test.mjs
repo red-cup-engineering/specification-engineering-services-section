@@ -873,3 +873,53 @@ test('source-cut tests carrying line controls refuse before Design or Code Work 
   sources[1].text = JSON.stringify(specification);
   assert.throws(() => planEngineeringDesign({stage:'high-level',sources}),TypeError);
 });
+
+test('source-wide declaration gate refuses export-presence as intent verification at 0, 1 and 2 declared clauses', () => {
+  for (const declared of [0, 1, 2]) {
+    const sources = sourcesFixture();
+    if (declared > 0) {
+      const specification = JSON.parse(sources[1].text);
+      for (let index = 0; index < declared; index++) {
+        specification.topics[0].clauses[index].test =
+          'node --test test/source-clause-' + index + '.test.mjs';
+      }
+      sources[1].text = JSON.stringify(specification);
+      const architecture = JSON.parse(sources[2].text);
+      architecture.sources.find(row => row.id === 'specification').revision =
+        semanticIdOf('metroplat.artifact')(specification);
+      sources[2].text = JSON.stringify(architecture);
+    }
+    const high = hldReceipt(sources);
+    const lowSources = [...sources, { kind: 'high-level', text: JSON.stringify(high) }];
+    const plan = planEngineeringDesign({ stage: 'low-level', sources: lowSources });
+    const originalDeliveryText = JSON.stringify(lldFixture());
+    const candidate = receiveEngineeringDesign({
+      stage: 'low-level', sources: lowSources, plan, deliveryText: originalDeliveryText,
+    });
+    assert.equal(candidate.type, 'EngineeringDesignCandidate');
+    const result = readSourceOwnedEngineeringCodeWork({
+      designCandidate: candidate, originalPlan: plan, originalDeliveryText,
+      sourceViews: [
+        exactView('src/op-a.mjs', 'export const retainA = value => value;'),
+        exactView('src/op-b.mjs', 'export const retainB = value => value;'),
+      ],
+    });
+    assert.equal(result.status, 'source-present-unassayed',
+      'existing exports are only source presence, not warranted intention');
+    assert.deepEqual(result.discrepancies, []);
+    assert.deepEqual(result.sourceVerification, {
+      scope: 'original-specification-clauses',
+      status: declared === 2
+        ? 'source-tests-declared-unverified' : 'source-tests-missing',
+      clauseCount: 2,
+      declaredTestCount: declared,
+      missingClauseIds: ['clause-a', 'clause-b'].slice(declared),
+    });
+    assert.equal(result.originalDesignAdmitted, false);
+    assert.equal(result.independentProof, 'unreceived');
+    assert.equal(result.executableWork, false);
+    assert.equal(result.codeApplied, false);
+    assert.ok(Object.isFrozen(result.sourceVerification.missingClauseIds),
+      'downstream agents cannot silently change the source-qualified missing obligations');
+  }
+});
