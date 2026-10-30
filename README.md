@@ -195,6 +195,21 @@ corresponding failures; syntactic observation is not behavioral Proof. The parse
 analysis or close
 [PR #19](https://github.com/red-cup-engineering/specification-engineering-services-section/pull/19).
 
+The existing Requirement-review derivation now permits an independently authored
+`interpretations[].test` for any original condition, using the already defined
+`Specification.clause.test` field. A test declaration is bounded, single-line,
+source-versioned, and **never executed** by the generator. Existing Specifications
+without a declared test are still drafts, not silently given new cases.
+
+The same existing Design → Code readout reports
+`targets[].testObligations.sourceVerification` per original Requirement-cell and
+Specification-clause pairing. Each row carries the exact source-authored `test` or
+`null`; its state is `declared-unverified` or
+`verification-test-not-declared`. These states are preconditions for an
+independent test receiver, **not** executable tests, Code fabrication, Proof,
+release admission or beneficiary acceptance. Revisions to normative test
+declarations invalidate the original exact Architecture/HLD/LLD source cut.
+
 Projected targets retain original Requirement cells, Specification clauses, Architecture
 models, input/output schemas, preconditions, effects, errors and verification obligations.
 Even with source present, the status remains `source-present-unassayed`; the flags
