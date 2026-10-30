@@ -22,7 +22,9 @@ const REPO_RELATIVE_TARGET = /^(?:lib\/|\.claude\/|CLAUDE\.md$)/u;
  * @returns {object} The parsed Draft 2020-12 schema document.
  */
 export function loadSpecificationSchema() {
-  return SPECIFICATION_SCHEMA;
+  // The module's original validation law is private. A public schema
+  // inspection cannot mutate subsequent source-admission decisions.
+  return structuredClone(SPECIFICATION_SCHEMA);
 }
 
 /**
