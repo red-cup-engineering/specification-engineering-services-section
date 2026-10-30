@@ -65,6 +65,16 @@ test('original review projection composes with the same exact-source Design rece
   assert.equal(actual.candidate.design.traceability.length,2);
   assert.equal(actual.candidate.design.traceability[0].requirementCellId,'source-req:a');
   assert.equal(actual.candidate.design.traceability[1].requirementCellId,'source-req:b');
+  // End-to-end stage composition: native source-qualified HLD becomes EXACTLY
+  // the fourth source of the incumbent LLD planner. It cannot become Proof.
+  const lowLevelSources=[...input.sources,
+    {kind:'high-level',text:JSON.stringify(actual.candidate)}];
+  const lowLevel=planEngineeringDesign({stage:'low-level',sources:lowLevelSources});
+  assert.equal(lowLevel.type,'EngineeringDesignDerivationPlan');
+  assert.equal(lowLevel.stage,'low-level');
+  assert.equal(lowLevel.sources.length,4);
+  assert.equal(lowLevel.sources[3].kind,'high-level');
+  assert.deepEqual(lowLevel.sources.slice(0,3),originalPlan.sources);
   assert.deepEqual(actual,receiveEngineeringHighLevelReview(copy(input)),
     'same exact source and original reviewed allocation must replay byte-equivalently');
 });
