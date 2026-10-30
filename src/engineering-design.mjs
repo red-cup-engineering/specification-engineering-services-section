@@ -181,6 +181,14 @@ function sourceContext(stage, supplied) {
     for (const clause of topic.clauses) {
       requireThat(object(clause) && nonblank(clause.id) && !clauseIds.has(clause.id));
       requireThat(strings(clause.backedBy, 1, true));
+      // Native Specification already supports an authored clause.test. It is
+      // an unexecuted verification obligation, not LLD model testimony.
+      // Refuse unsafe source carriers before an inference or Code readout.
+      requireThat(clause.test === undefined ||
+        (typeof clause.test === 'string' && clause.test.trim().length > 0 &&
+          Buffer.byteLength(clause.test, 'utf8') <= 4096 &&
+          clause.test.isWellFormed() &&
+          !/[\u0000-\u001f\u007f-\u009f\u2028\u2029]/u.test(clause.test)));
       clauseIds.add(clause.id);
       for (const ref of clause.backedBy) {
         requireThat(references.has(ref));
@@ -612,6 +620,12 @@ export function readEngineeringCodeWork({
   // relative module spelling. Preserve their original ownership, without
   // inferring GitHub authorization or executable Work from the HLD label.
   const highLevel = parseObject(designCandidate.sources[3].text);
+  // Read original Specification verification procedures, not invented LLD
+  // expectations. Source revisions and per-clause trace were already
+  // re-received above against the complete Requirement/Architecture/HLD cut.
+  const originalSpecification = parseObject(designCandidate.sources[1].text);
+  const declaredSourceTests = new Map(originalSpecification.topics.flatMap(topic =>
+    topic.clauses.map(clause => [clause.id, clause.test ?? null])));
   const originalOwners = new Map(highLevel.design.components.map(row =>
     [row.id, row.owner]));
   const keyOf = (owner, path) => JSON.stringify([owner, path]);
@@ -727,6 +741,20 @@ export function readEngineeringCodeWork({
           resourceBounds: [...operation.resourceBounds],
           effectBoundaries: [...operation.effectBoundaries],
           acceptance: [...operation.acceptanceObligations],
+          // Independently authored Specification tests remain separate from
+          // model-derived LLD tests. Missing procedures are explicit gaps;
+          // declared procedures are carried only as inert test descriptions.
+          sourceVerification: traced.get(operation.id).flatMap(row =>
+            row.specificationClauseIds.map(specificationClauseId => {
+              const test = declaredSourceTests.get(specificationClauseId) ?? null;
+              return {
+                requirementCellId: row.requirementCellId,
+                specificationClauseId,
+                test,
+                status: test === null
+                  ? 'verification-test-not-declared' : 'declared-unverified',
+              };
+            })),
           status: 'unreceived',
         },
       };
@@ -735,13 +763,28 @@ export function readEngineeringCodeWork({
   // JSON.stringify's caller-controlled property order. Source text digests
   // remain byte-exact; the parsed Design identity is semantic and stable.
   const designSource = semanticIdOf('metroplat.artifact')(designCandidate);
+  // Treat the original Specification as the counting unit, not Code targets:
+  // one clause can demand multiple modules and still needs one independently
+  // authored behavioral verification. Valid exports alone never close this gap.
+  // A declared test is inert source testimony, not executed evidence or Proof.
+  const missingSourceTests = [...declaredSourceTests]
+    .filter(([, test]) => test === null)
+    .map(([clauseId]) => clauseId).sort();
+  const sourceVerification = {
+    scope: 'original-specification-clauses',
+    status: missingSourceTests.length
+      ? 'source-tests-missing' : 'source-tests-declared-unverified',
+    clauseCount: declaredSourceTests.size,
+    declaredTestCount: declaredSourceTests.size - missingSourceTests.length,
+    missingClauseIds: missingSourceTests,
+  };
   const readout = {
     type: 'EngineeringDesignCodeWorkReadout', version: 1,
     designCarrierId: designSource,
     sourceCut: designCandidate.sources.map(({ kind, digest }) => ({ kind, digest })),
     codeSnapshotScope: 'supplied-target-views-only',
     status: discrepancies.length ? 'source-disagreement' : 'source-present-unassayed',
-    targets, discrepancies,
+    targets, discrepancies, sourceVerification,
     originalDesignAdmitted: false, independentProof: 'unreceived',
     executableWork: false, codeApplied: false, beneficiaryReceived: false,
   };

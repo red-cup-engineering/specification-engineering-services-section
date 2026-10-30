@@ -3,6 +3,7 @@
 // export, never ../src, and preserves source/Proof/admission boundaries.
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
+import { artifactId } from '@red-cup-engineering/semiotic-eavt-services-section/identity';
 import { spawnSync } from 'node:child_process';
 import {
   planEngineeringDesign,
@@ -318,6 +319,62 @@ assert.equal(work.targets[0].bindingObservation.status,'observed');
 assert.deepEqual(work.targets[0].bindingObservation.resolved,{
   owner:'fixture-only',path:'src/source-operation.mjs',binding:'retainSourceValue',
 });
+// Independent installed-package consumer: the original normative source test
+// reaches the prospective Code target. One missing test stays missing rather
+// than being replaced with a model-authored LLD expectation.
+const verifiedSources=original.map(row=>({...row}));
+const verifiedSpecification=JSON.parse(verifiedSources[1].text);
+verifiedSpecification.topics[0].clauses[0].test='node --test test/original-source-a.test.mjs';
+verifiedSources[1].text=JSON.stringify(verifiedSpecification);
+const verifiedArchitecture=JSON.parse(verifiedSources[2].text);
+verifiedArchitecture.sources.find(row=>row.id==='specification').revision=
+  artifactId(verifiedSpecification);
+verifiedSources[2].text=JSON.stringify(verifiedArchitecture);
+const verifiedHldPlan=planEngineeringDesign({stage:'high-level',sources:verifiedSources});
+const verifiedHigh=receiveEngineeringDesign({
+  stage:'high-level',sources:verifiedSources,plan:verifiedHldPlan,
+  deliveryText:JSON.stringify(hld),
+});
+assert.equal(verifiedHigh.type,'EngineeringDesignCandidate');
+const verifiedLowSources=[...verifiedSources,
+  {kind:'high-level',text:JSON.stringify(verifiedHigh)}];
+const verifiedLowPlan=planEngineeringDesign({stage:'low-level',sources:verifiedLowSources});
+const verifiedLow=receiveEngineeringDesign({
+  stage:'low-level',sources:verifiedLowSources,plan:verifiedLowPlan,
+  deliveryText:JSON.stringify(low.design),
+});
+assert.equal(verifiedLow.type,'EngineeringDesignCandidate');
+const verifiedWork=readEngineeringCodeWork({
+  designCandidate:verifiedLow,originalPlan:verifiedLowPlan,
+  originalDeliveryText:JSON.stringify(low.design),sourceViews:sourceCut,
+});
+assert.deepEqual(verifiedWork.targets[0].testObligations.sourceVerification,[
+  {requirementCellId:'source-req:a',specificationClauseId:'clause-a',
+    test:'node --test test/original-source-a.test.mjs',status:'declared-unverified'},
+  {requirementCellId:'source-req:b',specificationClauseId:'clause-b',
+    test:null,status:'verification-test-not-declared'},
+]);
+assert.deepEqual(verifiedWork.sourceVerification,{
+  scope:'original-specification-clauses',
+  status:'source-tests-missing',
+  clauseCount:2,
+  declaredTestCount:1,
+  missingClauseIds:['clause-b'],
+},'the installed public Code Work readout cannot hide an untested source obligation');
+assert.equal(verifiedWork.status,'source-present-unassayed',
+  'valid source export syntax does not imply source intent was verified');
+assert.equal(verifiedWork.independentProof,'unreceived');
+assert.equal(verifiedWork.executableWork,false);
+assert.equal(verifiedWork.beneficiaryReceived,false);
+// A source test is normative text. Changing it under an old source address
+// cannot preserve a formerly received HLD/LLD or Code target.
+const staleSources=verifiedSources.map(row=>({...row}));
+const staleSpec=JSON.parse(staleSources[1].text);
+staleSpec.topics[0].clauses[0].test='node --test test/new-assertion.mjs';
+staleSources[1].text=JSON.stringify(staleSpec);
+assert.throws(()=>planEngineeringDesign({stage:'high-level',sources:staleSources}),
+  TypeError,'fresh Specification verification requires fresh Architecture source receiving');
+
 // Deliberately clean source bytes with the WRONG export must disagree with the
 // original LLD; passing a digest proves no obligation of its implementation.
 const wrongText='export const differentOperation = () => 42;\n';

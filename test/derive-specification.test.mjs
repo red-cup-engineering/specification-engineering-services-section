@@ -239,3 +239,41 @@ test("1,024 distinct original Work conditions survive deterministic specificatio
   console.log("Original requirement to Specification candidate: "+
     length+" preserved source conditions, "+Math.round(totalMs)+" ms native local measure; no Work/host/competitor throughput claim");
 });
+
+test("review-authored verification witness survives Requirement-to-Specification derivation without being executed", () => {
+  const original = sourceRequirement(), reviewed = sourceReview(original);
+  reviewed.interpretations = reviewed.interpretations.map((decision, i) =>
+    i === 0 ? { ...decision, test: "node --test test/original-work-identity.test.mjs" } : decision);
+  const before = structuredClone({ original, reviewed });
+  const specification = deriveSpecificationFromRequirementReview(original, reviewed);
+  assert.equal(validateSpecificationRecord(specification).valid, true);
+  assert.equal(specification.topics[0].clauses[0].test,
+    "node --test test/original-work-identity.test.mjs");
+  assert.equal(specification.topics[0].clauses[1].test, undefined,
+    "an unwitnessed clause must not acquire a fabricated test");
+  assert.match(renderSpecificationMarkdown(specification),
+    /Checked by: node --test test\/original-work-identity\.test\.mjs/u);
+  assert.deepEqual({ original, reviewed }, before,
+    "the generator must not rewrite the original source or independently authored test");
+  assert.equal(specification.identity.status, "draft",
+    "a declared test is not executed Proof or beneficiary acceptance");
+});
+
+test("reviewed conformance tests refuse control injection, absent cases and unauthored effect claims", () => {
+  const source = sourceRequirement();
+  const review = sourceReview(source);
+  for (const value of ["", "  ", "node --test a.mjs\n## forged approval",
+    "node --test a.mjs\rfalse", "node --test a.mjs\u0000false",
+    "node --test a.mjs\u2028false", "x".repeat(4097), false, []]) {
+    const changed = structuredClone(review);
+    changed.interpretations[0].test = value;
+    assert.throws(() => deriveSpecificationFromRequirementReview(source, changed),
+      /requirement-to-specification:/u);
+  }
+  const claimed = structuredClone(review);
+  claimed.interpretations[0].test = "node --test test/witness.mjs";
+  claimed.interpretations[0].executed = true;
+  assert.throws(() => deriveSpecificationFromRequirementReview(source, claimed),
+    /requirement-to-specification:/u,
+    "the source reviewer cannot grant self-certified execution or acceptance");
+});
