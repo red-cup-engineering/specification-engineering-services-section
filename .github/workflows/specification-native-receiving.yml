@@ -240,7 +240,7 @@ jobs:
             candidate.provenance.derivedFrom[0],
             "engineering source selection changes the original full-source identity");
           assert.match(renderSpecificationMarkdown(readWithInference),
-            /Group MUST retain every buyer record for ten years/u,
+            /\*\*The Group MUST\*\* retain every buyer record for ten years/u,
             "the reviewed engineering decision is genuinely normative");
           const forgedReview=structuredClone(inferredReview);
           forgedReview.interpretations[2].cell="buyer-work-continuity:forged";
