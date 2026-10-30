@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { artifactId } from "@red-cup-engineering/semiotic-eavt-services-section/identity";
 import {
   deriveSpecificationRecord, deriveSpecificationFromRequirementReview,
   renderSpecificationMarkdown, validateSpecificationRecord,
@@ -310,4 +311,28 @@ test("an inferred condition still needs its review; malformed inference fields a
   bad["met-when"][0].inference = "yes";
   assert.throws(() => deriveSpecificationFromRequirementReview(bad, sourceReview()),
     /malformed original source condition/);
+});
+
+test("a requirement cut of a section's one record generates only its cells and keeps the record's exact source", () => {
+  const requirement = { id: "lagoon", kind: "requirement", name: "LAGOON", "met-when": [
+    { cell: "lagoon:one-home", target: "held", says: "LAGOON shall have one repository." },
+    { cell: "lagoon:release-baseline-at-formation", target: "held", inference: true, says: "A release shall record its forest baseline once." },
+    { cell: "lagoon:release-baseline-no-cascade", target: "held", inference: true, says: "Formation shall not require ancestor pins." },
+  ] };
+  const identity = { id: "release-baselines", title: "Release baselines", seat: "lagoon", carrier: "release-baselines.md", authors: ["engineer"] };
+  const cells = ["lagoon:release-baseline-no-cascade", "lagoon:release-baseline-at-formation"];
+  const interpretations = [
+    { cell: cells[1], clauseId: "baseline-at-formation", keyword: "MUST", actor: "LAGOON release formation" },
+    { cell: cells[0], clauseId: "no-ancestor-pin", keyword: "MUST NOT", actor: "LAGOON release formation" },
+  ];
+  const at = "2026-10-30T00:00:00.000Z", reviewedBy = "engineer";
+  const spec = deriveSpecificationFromRequirementReview(requirement, { identity, interpretations, at, reviewedBy, cells });
+  assert.deepEqual(spec.topics[0].clauses.map(clause => clause.id), ["baseline-at-formation", "no-ancestor-pin"]);
+  const exact = "lagoon@" + artifactId(requirement);
+  assert.equal(spec.provenance.derivedFrom[0], exact);
+  assert.equal(spec.provenance.derivedFrom[1], exact + "#cells=" + [...cells].sort().join(","));
+  assert.match(spec.whatThisIs, /cells lagoon:release-baseline-at-formation, lagoon:release-baseline-no-cascade\.$/u);
+  assert.throws(() => deriveSpecificationFromRequirementReview(requirement, { identity, interpretations, at, reviewedBy, cells: ["lagoon:not-a-cell"] }), /requirement cut/u);
+  assert.throws(() => deriveSpecificationFromRequirementReview(requirement, { identity, interpretations: [...interpretations, { cell: "lagoon:one-home", clauseId: "one-home", keyword: "MUST", actor: "LAGOON" }], at, reviewedBy, cells }), /exactly one/u);
+  assert.throws(() => deriveSpecificationFromRequirementReview(requirement, { identity, interpretations, at, reviewedBy }), /exactly one/u);
 });

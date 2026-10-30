@@ -402,9 +402,11 @@ export function deriveSpecificationRecord(draft, options = {}) {
  * @returns {object} Existing house Specification record, unadmitted draft
  */
 export function deriveSpecificationFromRequirementReview(requirement, {
-  identity, interpretations, at, reviewedBy,
+  identity, interpretations, at, reviewedBy, cells,
 } = {}) {
   const fail = message => { throw new TypeError("requirement-to-specification: " + message); };
+  // A section keeps all its cells in one Requirement record (Leader, 2026-10-30), so a Specification of one
+  // capability is generated from a cut of it: the whole original record plus the cells it covers.
   if (!requirement || Object.getPrototypeOf(requirement) !== Object.prototype ||
       requirement.kind !== "requirement" ||
       typeof requirement.id !== "string" ||
@@ -414,8 +416,15 @@ export function deriveSpecificationFromRequirementReview(requirement, {
     fail("one source-owned Requirement with nonempty met-when conditions is required");
   // A cell an agent inferred is an engineering decision the engineering owner took, normative like any other:
   // it is never left open for the Leader (rule engineering-decisions-are-made-not-deferred-to-the-leader).
+  const recordCells = requirement["met-when"].map(condition => condition?.cell);
+  if (cells !== undefined && (!Array.isArray(cells) || cells.length === 0 ||
+      cells.some(cell => typeof cell !== "string" || !recordCells.includes(cell)) ||
+      new Set(cells).size !== cells.length))
+    fail("a requirement cut names one or more distinct cells of the original record");
+  const selected = cells === undefined ? null : new Set(cells);
+  const covered = requirement["met-when"].filter(condition => selected === null || selected.has(condition?.cell));
   if (!Array.isArray(interpretations) ||
-      interpretations.length !== requirement["met-when"].length)
+      interpretations.length !== covered.length)
     fail("every source condition requires exactly one explicit normative interpretation");
   if (!identity || typeof identity !== "object" || Array.isArray(identity) ||
       typeof identity.id !== "string" ||
@@ -457,7 +466,8 @@ export function deriveSpecificationFromRequirementReview(requirement, {
     if (!decision || Object.getPrototypeOf(decision) !== Object.prototype ||
         Object.keys(decision).some(key =>
           !["cell","clauseId","keyword","actor","test"].includes(key)) ||
-        typeof decision.cell !== "string" || !source.has(decision.cell))
+        typeof decision.cell !== "string" || !source.has(decision.cell) ||
+        (selected !== null && !selected.has(decision.cell)))
       fail("an interpretation names an unknown source condition or an unapproved rewrite field");
     if (choices.has(decision.cell)) fail("duplicate normative interpretation " + decision.cell);
     if (typeof decision.clauseId !== "string" ||
@@ -482,7 +492,8 @@ export function deriveSpecificationFromRequirementReview(requirement, {
     choices.set(decision.cell, decision);
   }
   const sourceAddress = artifactId(requirement);
-  const clauses = requirement["met-when"].map(condition => {
+  const cut = selected === null ? "" : "#cells=" + [...selected].sort().join(",");
+  const clauses = covered.map(condition => {
     const decision = choices.get(condition.cell);
     if (!decision) fail("missing review of source condition " + condition.cell);
     return Object.freeze({
@@ -506,7 +517,8 @@ export function deriveSpecificationFromRequirementReview(requirement, {
     whatThisIs: "The specification of Requirement " + requirement.id +
       (typeof requirement.name === "string" && requirement.name.trim() &&
         !/[\r\n\u0000]/u.test(requirement.name) ? ": " + requirement.name.trim() : "") +
-      " (" + sourceAddress + ").",
+      " (" + sourceAddress + ")" +
+      (selected === null ? "." : ", cells " + [...selected].sort().join(", ") + "."),
     topics: [{
       heading: "Source-owned requirement conditions",
       body: clauses.map(clause => "{{clause:" + clause.id + "}}").join("\n\n"),
@@ -515,7 +527,7 @@ export function deriveSpecificationFromRequirementReview(requirement, {
     implementations: [],
     openQuestions: [],
     provenance: {
-      derivedFrom: [requirement.id + "@" + sourceAddress],
+      derivedFrom: [requirement.id + "@" + sourceAddress, ...(cut ? [requirement.id + "@" + sourceAddress + cut] : [])],
       derivedAt: at,
       derivedBy: reviewedBy,
     },
