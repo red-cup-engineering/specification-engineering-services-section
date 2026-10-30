@@ -54,6 +54,16 @@
       "cell": "design-source-language-validation-prerequisites:esm-resolved-identity",
       "target": "held",
       "says": "ESM re-export analysis preserves the selected dialect standard semantic resolved module-and-binding identity separately from declaration occurrence and diagnostic ranges. Different paths resolving to the same namespace target are not falsely ambiguous; distinct semantic targets, unresolvable paths and actual conflicting stars are handled according to the selected qualified dialect. Specify deterministic evidence selection across equivalent routes and include direct and transitive namespace re-export counterexamples in independent qualification."
+    },
+    {
+      "cell": "design-source-language-validation-prerequisites:esm-local-versus-indirect-exports",
+      "target": "held",
+      "says": "The selected ECMAScript dialect module export algorithm distinguishes a direct namespace re-export from a locally exported namespace import. Preserve the standard resolved binding identity for each, including whether the declaring module and local binding are retained; do not coalesce distinct local bindings merely because they import the same namespace target. Independently exercise both equivalent direct namespace re-export paths and distinct local-import-then-export paths, along with cycles and star conflicts, using the selected standard and actual source."
+    },
+    {
+      "cell": "design-source-language-validation-prerequisites:external-module-identities",
+      "target": "held",
+      "says": "The static ESM dependency contract represents both exact selected source modules and real host-selected external or native module identities, including Node built-ins, with explicit supported binding evidence and qualification boundaries. Every actual import edge has a truthful source or external target; never fabricate JavaScript facade source, omit a required import, execute the supplier or claim an unreceived external export. Unsupported or unknown external bindings remain explicit non-success. Independently receive the actual selected agency and design sources that import node:crypto and node:util."
     }
   ],
   "x-provenance": {
@@ -77,6 +87,20 @@
       "previousSource": "data/state/design-language-generation-service-state/prerequisite-architecture-request-v4.json messages[1].content.requirement",
       "independentReview": "data/state/design-language-generation-service-state/prerequisite-architecture-request-v4.independent-semantic-receiving.json",
       "basis": "Independent review identified a concrete namespace re-export graph where declaration occurrences differ but their resolved namespace identity is the same. This condition corrects the source contract without claiming a selected parser, implemented code or proof."
+    },
+    "esm-local-resolution-completion": {
+      "author": "Codex engineering session /root",
+      "previousRequirement": "ni:///sha-256;_pBf9tzLEWw2z1CMPixjCeRGh-NaYsIgBWba_gA6l9s",
+      "previousSource": "data/state/design-language-generation-service-state/prerequisite-architecture-request-v7.json messages[1].content.requirement",
+      "independentReview": "data/state/design-language-generation-service-state/prerequisite-architecture-request-v7.independent-semantic-receiving.json",
+      "basis": "Independent primary-standard review found that two separate locally exported namespace imports from the same leaf have distinct resolved binding identities even when direct namespace re-exports to that leaf coalesce. Preserve all ten prior conditions; no accepted code or proof is asserted."
+    },
+    "native-module-completion": {
+      "author": "Codex engineering session /root",
+      "previousRequirement": "ni:///sha-256;0FTQI9OaQiUafKpEkmxHyVLRpbn0IPjx_BlGtG4Q06M",
+      "previousSource": "data/state/design-language-generation-service-state/prerequisite-architecture-request-v8.json messages[1].content.requirement",
+      "independentReview": "data/state/design-language-generation-service-state/prerequisite-architecture-request-v8.independent-semantic-receiving.json",
+      "basis": "Independent source review found the proposed closed graph could only hold ESM source nodes but the actual selected source imports native Node modules. Preserve eleven original conditions; no fabricated facade, authority or proof."
     }
   }
 }

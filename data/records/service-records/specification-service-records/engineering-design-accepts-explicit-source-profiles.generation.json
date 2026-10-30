@@ -1,11 +1,11 @@
 {
   "type": "SourceGenerationObservation",
   "version": 1,
-  "recordedAt": "2026-10-28 23:22:11 UTC",
+  "recordedAt": "2026-10-29T04:51:42.234Z",
   "requirement": {
     "repository": "red-cup-engineering/specification-engineering-services-section",
     "path": "data/records/service-records/requirements-service-records/engineering-design-accepts-explicit-source-profiles.json",
-    "semanticIdentity": "engineering-design-accepts-explicit-source-profiles@ni:///sha-256;oJBTBcQ8qRwN78ZGaPuAtLN1zTApV_geIhvgRZkrvhQ"
+    "semanticIdentity": "engineering-design-accepts-explicit-source-profiles@ni:///sha-256;K2sTfiQ-RyXTEaN3dwzvQqRzd1ZuL_uYvVzdh4MwZ4A"
   },
   "producer": {
     "repository": "red-cup-engineering/specification-engineering-services-section",
@@ -21,7 +21,8 @@
       "seat": "red-cup-engineering/specification-engineering-services-section",
       "carrier": "content/text/documents/specifications/engineering-design-source-profiles.md",
       "authors": [
-        "codex /root/koios_delivery"
+        "codex /root/koios_delivery",
+        "Codex /root/design_profile_fabrication"
       ]
     },
     "interpretations": [
@@ -104,10 +105,10 @@
         "actor": "The original source-bound Engineering Design provider and its receiving owners"
       }
     ],
-    "at": "2026-10-28T23:20:00.000Z",
-    "reviewedBy": "codex /root/koios_delivery; source interpretation only, independent admission unsettled"
+    "at": "2026-10-29T04:51:42.234Z",
+    "reviewedBy": "Codex /root/design_profile_fabrication; source interpretation only, independent original admission unsettled"
   },
-  "attribution": "The at field is an authored deterministic producer input, not an asserted physical execution timestamp. The native operation exited0; schema valid0issues was observed in this session.",
+  "attribution": "Actual unchanged original db52 factory executed by Codex /root/design_profile_fabrication after source Requirement refinement. Native validation observed valid with zero issues. No native Office, construction, Proof or operational acceptance asserted.",
   "actual": {
     "exitCode": 0,
     "validation": {
@@ -116,21 +117,23 @@
     },
     "sourceConditions": 13,
     "generatedClauses": 13,
-    "carrierBytes": 10383
+    "carrierBytes": 11034
   },
   "limits": {
     "nodeOldSpaceMiB": 64,
     "dependencyInstall": false
   },
   "receiving": {
-    "independentRequirementAdmission": false,
-    "independentInterpretationAdmission": false,
-    "architectureGenerated": false,
-    "highLevelDesignGenerated": false,
-    "lowLevelDesignGenerated": false,
-    "codeGenerated": false,
-    "assaysExecuted": false,
-    "sourceIntegrated": false,
+    "sourceInput": "awaiting independent parent source receiving of refined original Requirement/Spec",
+    "nativeOffice": false,
+    "constructionReview": false,
+    "proof": false,
+    "installedConsumer": false,
     "productionActivated": false
+  },
+  "priorSourceCut": {
+    "requirement": "ni:///sha-256;oJBTBcQ8qRwN78ZGaPuAtLN1zTApV_geIhvgRZkrvhQ",
+    "specification": "ni:///sha-256;gujZhOB3i5vPRZ0D8XYH-ZlFi3INchXGRPcgxchQwDg",
+    "revision": "48f6ed16eade45cabc9d9348441fc11e8e2a4622"
   }
 }

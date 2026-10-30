@@ -64,7 +64,7 @@
     {
       "cell": "engineering-design-accepts-explicit-source-profiles:original-fabrication",
       "target": "held",
-      "says": "ensure that generated normative implementation and assays use the original house generation chain and original generic Fabrication source-transformation carrier, with exact writable snapshots, complete verified source views, source-independent review, original development-history custody and the actual resumable CIE task. The input profile never chooses the model, provider, account, resource grant, native command or acceptance authority."
+      "says": "ensure that generated normative implementation and assays use the original Fabrication owner and checked original native construction/source boundaries, the exact authorized source and writable cut, source-independent receiving, original development-history custody and common inference/accounting custody. Only for the previously human-authorized bounded bootstrap of missing Engineering generator stages, select the existing native JSNode source-free work-order/meaning-closure factory with its trusted isolated-assay host composition; absent Design stages remain explicitly unqualified until independently received. Select the original generic source-transformation carrier and actual resumable CIE task when that carrier's supplier, resource-meter and receiving prerequisites are actually qualified. This bootstrap route waives no downstream application, source-authority, Proof, zero-cash, resource or installed-consumer gate. Input profile Data never chooses the model, provider, account, resource grant, native command or acceptance authority."
     },
     {
       "cell": "engineering-design-accepts-explicit-source-profiles:whole-family-cutover",
@@ -95,6 +95,20 @@
     "current-gap": "validLld and the Design inference instruction hardcode src/*.mjs and ASCII JavaScript export spelling; CDE requires native Scheme targets. A generic source-transformation producer already exists and is to be reused.",
     "existing-work-review": "No open Specification PR was found. Three older Design/source-lineage branches are wholly behind main. The diverged pulse13 branch contains original owner-scoped collision source/tests; its useful owner-scope semantics are retained in this requirement, not discarded for lack of knowledge.",
     "recovery": "Original BCF world-connect timed out after90s without Character/Work/provider readback. No empty journal, native appointment, admitted Work, authority or missing-provider conclusion is inferred from that timeout.",
-    "normative-predicate": "Conditions are authored as ensure-that predicates so the original generator can combine an explicit actor and BCP14 keyword with the untouched source statement. No generated carrier is manually rewritten."
+    "normative-predicate": "Conditions are authored as ensure-that predicates so the original generator can combine an explicit actor and BCP14 keyword with the untouched source statement. No generated carrier is manually rewritten.",
+    "original-fabrication-route-refinement": {
+      "author": "Codex /root/design_profile_fabrication",
+      "recordedAt": "2026-10-29T04:51:42.234Z",
+      "priorSource": {
+        "revision": "48f6ed16eade45cabc9d9348441fc11e8e2a4622",
+        "requirement": "ni:///sha-256;oJBTBcQ8qRwN78ZGaPuAtLN1zTApV_geIhvgRZkrvhQ",
+        "cell": "engineering-design-accepts-explicit-source-profiles:original-fabrication",
+        "says": "ensure that generated normative implementation and assays use the original house generation chain and original generic Fabrication source-transformation carrier, with exact writable snapshots, complete verified source views, source-independent review, original development-history custody and the actual resumable CIE task. The input profile never chooses the model, provider, account, resource grant, native command or acceptance authority."
+      },
+      "reason": "Original inferred generic-only condition unnecessarily narrowed the already explicit native-JSNode missing-generator bootstrap. Parent independently received this source contradiction; correct the owning Requirement rather than assert false satisfaction.",
+      "authority": "https://github.com/red-cup-engineering/engineering-services-section/blob/d11f80170c947e18e695bdaa0dbfb713edac1252/data/records/service-records/requirements-management-service-records/requirements-generate-specifications-designs-and-normative-code.json",
+      "actualHumanAnswer": "Authorize this bounded bootstrap",
+      "scope": "Missing Engineering generators only; no native Office/construction/Proof or downstream application exemption."
+    }
   }
 }
