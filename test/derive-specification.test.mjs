@@ -298,7 +298,13 @@ test("an inferred condition is an engineering decision: a normative clause backe
   assert.equal(clauses.length, 4);
   const audit = clauses.find(c => c.id === "audit");
   assert.equal(audit.statement, "keep a ten-year audit log");
-  assert.match(audit.backedBy[0], /enterprise-work-continuity:audit \(engineering decision; Leader's words: none; the Leader did not mention retention\)/);
+  // The inference is an engineering decision, but its source address cannot
+  // acquire editorial notes: the original Requirement is the typed origin.
+  assert.match(audit.backedBy[0], /enterprise-work-continuity:audit$/u);
+  assert.equal(audit.backedBy.length,1);
+  assert.equal(source["met-when"].at(-1).inference,true);
+  assert.equal(source["met-when"].at(-1)["leader-words"],
+    "none; the Leader did not mention retention");
   assert.deepEqual(record.openQuestions, [], "an engineering decision is decided, not left for the Leader");
   assert.ok(validateSpecificationRecord(record).valid);
 });
