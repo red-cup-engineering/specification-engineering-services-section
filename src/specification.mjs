@@ -412,9 +412,20 @@ export function deriveSpecificationFromRequirementReview(requirement, {
       !Array.isArray(requirement["met-when"]) ||
       requirement["met-when"].length === 0)
     fail("one source-owned Requirement with nonempty met-when conditions is required");
-  if (!Array.isArray(interpretations) ||
-      interpretations.length !== requirement["met-when"].length)
-    fail("every source condition requires exactly one explicit normative interpretation");
+  const normativeCount = requirement["met-when"]
+    .filter(condition => !(condition && condition.inference === true)).length;
+  if (normativeCount === 0)
+    fail("every condition is an agent inference not stated by the Leader; " +
+      "nothing normative remains to specify until the Leader accepts one");
+  for (const decision of Array.isArray(interpretations) ? interpretations : []) {
+    const named = decision && requirement["met-when"].find(condition =>
+      condition && condition.inference === true && condition.cell === decision.cell);
+    if (named)
+      fail("an interpretation names inference cell " + named.cell +
+        ": an agent inference is not normative until the Leader accepts it");
+  }
+  if (!Array.isArray(interpretations) || interpretations.length !== normativeCount)
+    fail("every non-inference source condition requires exactly one explicit normative interpretation");
   if (!identity || typeof identity !== "object" || Array.isArray(identity) ||
       typeof identity.id !== "string" ||
       !/^[a-z0-9]+(?:-[a-z0-9]+)*$/u.test(identity.id) ||
@@ -440,7 +451,11 @@ export function deriveSpecificationFromRequirementReview(requirement, {
         !condition.cell.startsWith(requirement.id + ":") ||
         typeof condition.says !== "string" || !condition.says.trim() ||
         /[\r\n\u0000]/u.test(condition.says) ||
-        condition.target !== "held")
+        condition.target !== "held" ||
+        (condition.inference !== undefined && typeof condition.inference !== "boolean") ||
+        (condition["leader-words"] !== undefined &&
+          (typeof condition["leader-words"] !== "string" ||
+            /[\r\n\u0000]/u.test(condition["leader-words"]))))
       fail("unadmitted or malformed original source condition at index " + position);
     if (source.has(condition.cell))
       fail("duplicate original source condition " + condition.cell);
@@ -453,6 +468,9 @@ export function deriveSpecificationFromRequirementReview(requirement, {
           !["cell","clauseId","keyword","actor","test"].includes(key)) ||
         typeof decision.cell !== "string" || !source.has(decision.cell))
       fail("an interpretation names an unknown source condition or an unapproved rewrite field");
+    if (source.get(decision.cell).inference === true)
+      fail("an interpretation names inference cell " + decision.cell +
+        ": an agent inference is not normative until the Leader accepts it");
     if (choices.has(decision.cell)) fail("duplicate normative interpretation " + decision.cell);
     if (typeof decision.clauseId !== "string" ||
         !/^[a-z0-9]+(?:-[a-z0-9]+)*$/u.test(decision.clauseId) ||
@@ -476,7 +494,16 @@ export function deriveSpecificationFromRequirementReview(requirement, {
     choices.set(decision.cell, decision);
   }
   const sourceAddress = artifactId(requirement);
-  const clauses = requirement["met-when"].map(condition => {
+  const openQuestions = requirement["met-when"]
+    .filter(condition => condition.inference === true)
+    .map(condition => ({
+      question: "Agent inference, not stated by the Leader, to be accepted or struck: \"" +
+        condition.says + "\" (cell " + condition.cell + ")." +
+        (condition["leader-words"] === undefined ? "" :
+          " Leader's words: " + condition["leader-words"]),
+      blockedBy: "Leader acceptance or striking of cell " + condition.cell,
+    }));
+  const clauses = requirement["met-when"].filter(condition => condition.inference !== true).map(condition => {
     const decision = choices.get(condition.cell);
     if (!decision) fail("missing review of source condition " + condition.cell);
     return Object.freeze({
@@ -505,7 +532,7 @@ export function deriveSpecificationFromRequirementReview(requirement, {
       clauses,
     }],
     implementations: [],
-    openQuestions: [],
+    openQuestions,
     provenance: {
       derivedFrom: [requirement.id + "@" + sourceAddress],
       derivedAt: at,
