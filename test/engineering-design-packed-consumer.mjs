@@ -354,6 +354,15 @@ assert.deepEqual(verifiedWork.targets[0].testObligations.sourceVerification,[
   {requirementCellId:'source-req:b',specificationClauseId:'clause-b',
     test:null,status:'verification-test-not-declared'},
 ]);
+assert.deepEqual(verifiedWork.sourceVerification,{
+  scope:'original-specification-clauses',
+  status:'source-tests-missing',
+  clauseCount:2,
+  declaredTestCount:1,
+  missingClauseIds:['clause-b'],
+},'the installed public Code Work readout cannot hide an untested source obligation');
+assert.equal(verifiedWork.status,'source-present-unassayed',
+  'valid source export syntax does not imply source intent was verified');
 assert.equal(verifiedWork.independentProof,'unreceived');
 assert.equal(verifiedWork.executableWork,false);
 assert.equal(verifiedWork.beneficiaryReceived,false);
