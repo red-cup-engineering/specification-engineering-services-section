@@ -10,6 +10,7 @@ import {
   deriveArchitectureDescriptionFromSpecificationReview,
 } from "../src/architecture-description.mjs";
 import { deriveSpecificationFromRequirementReview } from "../src/specification.mjs";
+import { planEngineeringDesign } from "../src/engineering-design.mjs";
 import { artifactId } from "@red-cup-engineering/semiotic-eavt-services-section/identity";
 
 function candidate() {
@@ -318,7 +319,7 @@ test("actual native architecture-description command reads accepted JSON bytes a
   assert.match(refused.stderr,/unknown models identifier missing-model/u);
 });
 
-function actualRequirementReviewSource() {
+function actualRequirementReviewSource({engineeringInference=false}={}) {
  const requirement={id:"original-work-acceptance",kind:"requirement",
    "met-when":[
      {cell:"original-work-acceptance:source",target:"held",
@@ -326,6 +327,10 @@ function actualRequirementReviewSource() {
      {cell:"original-work-acceptance:receiver",target:"held",
        says:"require separate independent acceptance of useful customer output"},
    ]};
+ if(engineeringInference){
+   requirement["met-when"][0].inference=true;
+   requirement["met-when"][0]["leader-words"]="The original customer asked to preserve the Work identity";
+ }
  const review={
    identity:{id:"work-acceptance-spec",title:"Customer receiving candidate",
      seat:"source-review",carrier:"candidate/source-work.md",authors:["review-only"]},
@@ -340,6 +345,60 @@ function actualRequirementReviewSource() {
  const specification=deriveSpecificationFromRequirementReview(requirement,review);
  return {requirement,specification};
 }
+
+test("inferred engineering clause retains an exact source edge through Architecture and Design planning",()=>{
+ const sources=actualRequirementReviewSource({engineeringInference:true});
+ const sourceCell=sources.requirement["met-when"][0].cell;
+ const expected="Original Requirement "+sources.requirement.id+
+   " ("+artifactId(sources.requirement)+"), cell "+sourceCell;
+ const clause=sources.specification.topics[0].clauses.find(x=>x.id==="source-work");
+ assert.deepEqual(clause.backedBy,[expected],
+   "a normative source address cannot absorb explanatory decision prose");
+ assert.equal(clause.statement,sources.requirement["met-when"][0].says);
+ assert.deepEqual(sources.specification.openQuestions,[],
+   "reviewed engineering decisions are normative; this does not grant Proof");
+ assert.equal(sources.specification.identity.status,"draft");
+ const architecture=candidate();
+ architecture.sources.find(x=>x.id==="req").revision=artifactId(sources.requirement);
+ architecture.sources.find(x=>x.id==="spec").revision=artifactId(sources.specification);
+ for(const [concernId,cellId,clauseId] of [
+   ["rights",sourceCell,"source-work"],
+   ["failure",sources.requirement["met-when"][1].cell,"customer-acceptance"],
+ ]) {
+   const concern=architecture.concerns.find(c=>c.id===concernId);
+   concern.sourceIds=["req","spec"];
+   concern.requirementCellIds=[cellId];
+   concern.specificationClauseIds=[clauseId];
+ }
+ const checked=validateArchitectureDescriptionAgainstSourceCut(architecture,sources);
+ assert.equal(checked.valid,true,JSON.stringify(checked.issues));
+ const trace=readRequirementArchitectureTrace(architecture,sources);
+ assert.deepEqual(trace.counts,{sourceCells:2,authoredModelMapped:2,untraced:0});
+ assert.deepEqual(trace.rows.find(x=>x.cell===sourceCell).normativeClauseIds,["source-work"]);
+ assert.equal(trace.independentProof,false);
+ const plan=planEngineeringDesign({stage:"high-level",sources:[
+   {kind:"requirement",text:JSON.stringify(sources.requirement)},
+   {kind:"specification",text:JSON.stringify(sources.specification)},
+   {kind:"architecture",text:JSON.stringify(architecture)},
+ ]});
+ assert.equal(plan.type,"EngineeringDesignDerivationPlan");
+ assert.equal(plan.stage,"high-level");
+ const forged=structuredClone(sources.specification);
+ forged.topics[0].clauses[0].backedBy[0]+=" (engineering decision; cannot append to identity)";
+ const changed=structuredClone(architecture);
+ changed.sources.find(x=>x.id==="spec").revision=artifactId(forged);
+ const refused=validateArchitectureDescriptionAgainstSourceCut(changed,{
+   requirement:sources.requirement,specification:forged,
+ });
+ assert.equal(refused.valid,false);
+ assert.ok(refused.issues.some(x=>/no selected normative clause actually backs/u.test(x.message)),
+   "the previously unsafe annotated address must refuse when read as source");
+ assert.throws(()=>planEngineeringDesign({stage:"high-level",sources:[
+   {kind:"requirement",text:JSON.stringify(sources.requirement)},
+   {kind:"specification",text:JSON.stringify(forged)},
+   {kind:"architecture",text:JSON.stringify(changed)},
+ ]}),TypeError);
+});
 
 test("actual Requirement->Specification->Architecture source cut refuses stale revisions",()=>{
  const sources=actualRequirementReviewSource();
