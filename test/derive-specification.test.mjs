@@ -122,7 +122,9 @@ test("every original Requirement acceptance condition survives a separately attr
   const record=deriveSpecificationFromRequirementReview(original,review);
   assert.equal(validateSpecificationRecord(record).valid,true);
   assert.equal(record.identity.stability,"draft");
-  assert.match(record.identity.status,/requires-independent/u);
+  assert.equal(record.identity.status,"draft");
+  assert.match(record.whatThisIs,new RegExp("^The specification of Requirement "+original.id),"a specification states what it specifies");
+  assert.deepEqual(record.openQuestions,[],"no stock admission question");
   assert.equal(record.topics.length,1);
   const produced=record.topics[0].clauses;
   assert.equal(produced.length,original["met-when"].length);
@@ -138,7 +140,6 @@ test("every original Requirement acceptance condition survives a separately attr
   }
   assert.match(record.provenance.derivedFrom[0],/^enterprise-work-continuity@ni:\/\/\/sha-256;/u);
   assert.equal(record.provenance.derivedBy,"source-identified-reviewer");
-  assert.equal(record.openQuestions.length,1);
   const out=renderSpecificationMarkdown(record);
   assert.match(out,/original source reviewer/u);
   assert.match(out,/The software Work receiver MUST NOT.*never count/u);
