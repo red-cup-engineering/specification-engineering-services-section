@@ -37,7 +37,7 @@ The package [exports](package.json) select these existing source modules; the co
 | `./specification-rfcxml` | [specification-rfcxml.mjs](src/specification-rfcxml.mjs) | RFCXML v3 Internet-Draft rendering of an eligible Specification |
 | `./specification-readout` | [specification-readout.mjs](src/specification-readout.mjs) | Source-language BCP 14 clause readings and XML projection |
 | `./architecture-description` | [architecture-description.mjs](src/architecture-description.mjs) | Source-bound ArchitectureDescriptionCandidate, exact buyer-condition trace, revision pressure and source-impact readings |
-| `./engineering-design` | [engineering-design.mjs](src/engineering-design.mjs) | HLD/LLD candidate plan/receiving and read-only Code-work targets |
+| `./engineering-design` | [engineering-design.mjs](src/engineering-design.mjs) | Source-pinned review → original HLD receiver, HLD/LLD plans and read-only Code-work targets |
 | `./javascript-module-bindings` | [javascript-module-bindings.mjs](src/javascript-module-bindings.mjs) | Nonexecuting syntax observations of exact JavaScript module/export bindings |
 
 The [Specification](data/records/schema/specification.schema.json),
@@ -46,6 +46,42 @@ The [Specification](data/records/schema/specification.schema.json),
 are in their existing `data/records/schema/` home. Original obligations belong to those
 schemas, source readers, relevant tests and authorized Requirement/Work owners—not to
 explanatory paragraphs duplicated in this README.
+
+## A reviewed HLD reuses the original receiver
+
+\`receiveEngineeringHighLevelReview({sources,reviewText,expectedReviewSha256,reviewedSourceCut,limits})\`
+is a **pure source projection** in the existing \`./engineering-design\` entrypoint,
+not a new model caller, proof checker or WorkCell. It binds the original full
+Requirement, Specification and Architecture text, the separately pinned source
+cut from the review's author, and the exact unchanged review JSON. The review
+source is identified by both its literal SHA-256 bytes and the incumbent Data
+semantic NI, without treating either identity as authorization.
+
+The implementation reconstructs the original Architecture's authored trace;
+calls the existing source-generated
+[\`projectHighLevelDesignReview\`](src/engineering-design-review.mjs) against the
+original review input schema; and sends that **deterministic output** through
+the original \`receiveEngineeringDesign\` structural receiver. A missing or stale
+reviewed source cut, forged/ambiguous review, clause disagreement or invalid
+dependency topology cannot silently produce a candidate. Explicit finite host
+limits cover review bytes, component count, required ports and trace rows.
+Original host authority must establish that those limits are admissible.
+
+The returned \`EngineeringDesignReviewProjection\` contains the original
+review text and digests, source cut, deterministic design text and the same
+\`EngineeringDesignCandidate\` received through the original engine.
+Both carriers remain \`admitted:false\`, with independent review and Proof
+\`unreceived\` and no executable Work. An Office-supplied review digest or
+source revision is **not independently authenticated by this pure function**.
+The existing LLD planner may consume the unchanged HLD candidate as its
+fourth source; original Work, native inference for genuinely unresolved LLD,
+independent stage Proof, Code fabrication, integration and beneficiary receiving
+remain separately required.
+
+See the [source-cut integration regression](test/engineering-design-reviewed-hld.integration.test.mjs),
+including exact replay, stale cuts, foreign clauses, cyclic dependency and
+source/host limit refusals. Test success demonstrates only the named
+source transformation, not a released or independently accepted SDLC.
 
 ## One source admission boundary
 
