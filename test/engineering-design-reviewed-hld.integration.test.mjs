@@ -30,7 +30,10 @@ function reviewFixture() {
 }
 function request(review = reviewFixture(), sources = sourcesFixture(), bounds = limits) {
   const reviewText = JSON.stringify(review);
-  return {sources, reviewText, expectedReviewSha256: digest(reviewText), limits: bounds};
+  const plan=planEngineeringDesign({stage:'high-level',sources});
+  const reviewedSourceCut=plan.sources.map(({kind,digest})=>({kind,digest}));
+  return {sources, reviewText, expectedReviewSha256: digest(reviewText),
+    reviewedSourceCut, limits: bounds};
 }
 function acceptedProjection(value) {
   assert.equal(value.type, 'EngineeringDesignReviewProjection');
@@ -83,8 +86,8 @@ test('source-cut mismatch refuses instead of laundering an old review into a new
   const changed=copy(input);
   changed.sources[2].text=changed.sources[2].text.replace('Component for A.',
     'Unreviewed different source concern.');
-  assert.throws(()=>receiveEngineeringHighLevelReview(changed),
-    /Invalid engineering design input|architecture|source|revision/u);
+  assert.deepEqual(receiveEngineeringHighLevelReview(changed),
+    {type:'EngineeringDesignDerivationRefusal',reason:'source-cut-mismatch'});
 });
 
 test('no missing or foreign clause, arbitrary extra key, or duplicate-key JSON can enter Design', () => {
