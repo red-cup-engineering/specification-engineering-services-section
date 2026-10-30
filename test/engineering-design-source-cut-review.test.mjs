@@ -191,3 +191,31 @@ test('the original refused LLD provider delivery remains refused at the current 
     'a later Design receiver may not silently accept a known refused source');
   assert.equal(next.reason, 'invalid-design');
 });
+
+test('current fourteen-condition original Requirement cannot silently receive its historical thirteen-condition HLD cut',()=>{
+  // These are the ORIGINAL retained Engineering #137/#19 source records, not
+  // made-up source values or a fabricated new provider response. The original
+  // Requirement acquired a fourteenth (requirement-cut) cell after the 13-cell
+  // Specification/Architecture source selection. That historical LLD lot
+  // must remain available as evidence, but it cannot be current Design.
+  const dir='../data/records/service-records/';
+  const read=path=>readFileSync(new URL(dir+path,import.meta.url),'utf8');
+  const reqText=read('requirements-service-records/engineering-design-accepts-explicit-source-profiles.json');
+  const specText=read('specification-service-records/engineering-design-accepts-explicit-source-profiles.json');
+  const archText=read('architecture-description-service-records/engineering-design-explicit-source-profiles.json');
+  const req=JSON.parse(reqText),spec=JSON.parse(specText),arch=JSON.parse(archText);
+  assert.equal(req.kind,'requirement');
+  assert.equal(req['met-when'].length,14);
+  assert.equal(spec.topics.flatMap(topic=>topic.clauses).length,13);
+  assert.ok(req['met-when'].some(row=>row.cell.endsWith(':requirement-cut')));
+  assert.notEqual(arch.sources.find(row=>row.id===arch.upstream.requirementsSourceId).revision,
+    artifactId(req),'the stored 13-cell Architecture source is NOT the revised original Requirement NI');
+  const sources=[
+    {kind:'requirement',text:reqText},
+    {kind:'specification',text:specText},
+    {kind:'architecture',text:archText},
+  ];
+  assert.throws(()=>planEngineeringDesign({stage:'high-level',sources}),TypeError,
+    'actual current original source and superseded Design cut cannot produce a new native plan');
+  assert.equal(arch.standard.conformance,'unassessed');
+});
