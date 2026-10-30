@@ -181,7 +181,12 @@ jobs:
           const candidate = deriveSpecificationFromRequirementReview(requirement,review);
           assert.equal(validateSpecificationRecord(candidate).valid,true);
           assert.equal(candidate.identity.stability,"draft");
-          assert.match(candidate.identity.status,/requires-independent/u);
+          // The ORIGINAL generator has intentionally returned an unadmitted
+          // draft since its source-bound review contract was established.
+          // An old CI expectation of "requires-independent" was false and
+          // also broke main's packed receiving despite all native tests passing.
+          assert.equal(candidate.identity.status,"draft",
+            "a reviewed source correspondence is not adopted, proved or received");
           assert.deepEqual(candidate.topics[0].clauses.map(c=>c.statement),
             requirement["met-when"].map(c=>c.says));
           assert.match(renderSpecificationMarkdown(candidate),/Group MUST/u);
