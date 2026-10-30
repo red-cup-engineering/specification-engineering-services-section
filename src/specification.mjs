@@ -453,7 +453,7 @@ export function deriveSpecificationFromRequirementReview(requirement, {
         !condition.cell.startsWith(requirement.id + ":") ||
         typeof condition.says !== "string" || !condition.says.trim() ||
         /[\r\n\u0000]/u.test(condition.says) ||
-        condition.target !== "held" ||
+        !["held", "denied"].includes(condition.target) ||
         (condition.inference !== undefined && typeof condition.inference !== "boolean") ||
         (condition["leader-words"] !== undefined &&
           (typeof condition["leader-words"] !== "string" ||
