@@ -1,4 +1,4 @@
-# @red-cup-engineering/specification-engineering-services-section
+# Specification Engineering Services Section
 
 <!-- 561-group-standards:badges:start -->
 [![Red Cup Engineering](https://img.shields.io/badge/561%20Group-Red%20Cup%20Engineering-c0392b)](https://github.com/red-cup-engineering)
@@ -7,495 +7,86 @@
 [![Tips welcome](https://img.shields.io/badge/tips-welcome-d4a017)](https://github.com/561-group/.github/blob/main/TIPS.md)
 <!-- 561-group-standards:badges:end -->
 
-Fabricates Specification records from journaled rulings and semantic-record-journal rows into topic-sectioned, BCP14-clause Markdown carriers, never handwritten.
 
-## Strict source JSON admission across Specification and Design
+Specification Engineering turns source-admitted Requirements and reviewed decisions into **source-traceable Specification and Architecture records**, and reads proposed high- and low-level Design without granting implementation or publication rights. The package [manifest](package.json) currently names source edition `0.1.3-dev.1`. A source edition or passing generator test is not a released, installed, independently proved or beneficiary-received engineering product.
 
-The original four Specification stdin commands share `readSourceJsonStdin`:
-a bounded, fatal UTF-8 byte entrance (at most 8 MiB) followed by the **existing**
-`@red-cup-engineering/json-services-section/canonical-json`
-`admitCanonicalJson` supplier. The Design generator's original
-Requirement/Specification/Architecture/HLD source cuts and provider Design
-deliveries use that same strict JSON admission before semantic trace matching.
+The original [Engineering four-closure Work #137](https://github.com/red-cup-engineering/engineering-services-section/issues/137) governs the larger chain: admitted Requirements → Specification → Design (Architecture, high level, low level) → independent Proof → Fabrication → actual consumer receiving. A deterministic Markdown renderer is only one operation in that chain. The [Design-profile PR #19](https://github.com/red-cup-engineering/specification-engineering-services-section/pull/19) still holds separately qualified language and artifact profile work.
 
-This is necessary source preservation, not merely pretty printing. Plain
-`JSON.parse` accepts duplicate object names and keeps only the last member,
-which can erase an earlier customer requirement, design operation, refusal
-obligation, or witness before downstream validation. It also admits escaped
-lone Unicode surrogates that lack a well-defined UTF-8 scalar identity.
-The original strict supplier refuses these inputs, including nested duplicates
-and escaped malformed Unicode; the Design receiving surface returns its
-existing `invalid-design` refusal for malformed provider delivery.
+## Maintained interfaces and their owners
 
-The original literal source texts and their SHA-256 cuts remain as authored,
-rather than being silently rewritten into canonical text. The strict parser's
-admitted JSON value is used for subsequent source-dependent calculations,
-without inventing a second parser or changing the separate source-authority
-and Code/Work/Proof/recipient gates. The existing host byte bound is unchanged;
-the JSON paid-transformation envelope does not override the Specification
-source capacity. Original source tests and a clean installed package consumer
-check all four CLI entrances, malformed source and delivery, and unchanged
-valid HLD/LLD paths. This source correctness check is not independently
-admitted Engineering Design, proof of program behavior, fabrication, or
-installed MetroPlat/Koios operation.
+The package [exports](package.json) select these existing source modules; the corresponding `scripts/` commands are stdin/stdout adapters, not separate authorities.
 
-## Original ECMAScript named-binding evidence for Code Work
+| Public export | Source owner | What it produces or reads |
+| --- | --- | --- |
+| `./specification` | [specification.mjs](src/specification.mjs) | Validated Specification record, source identity/citation checks, deterministic BCP 14 Markdown and reviewed Requirement→Specification derivation |
+| `./specification-rfcxml` | [specification-rfcxml.mjs](src/specification-rfcxml.mjs) | RFCXML v3 Internet-Draft rendering of an eligible Specification |
+| `./specification-readout` | [specification-readout.mjs](src/specification-readout.mjs) | Source-language BCP 14 clause readings and XML projection |
+| `./architecture-description` | [architecture-description.mjs](src/architecture-description.mjs) | Source-bound ArchitectureDescriptionCandidate, exact buyer-condition trace, revision pressure and source-impact readings |
+| `./engineering-design` | [engineering-design.mjs](src/engineering-design.mjs) | HLD/LLD candidate plan/receiving and read-only Code-work targets |
+| `./javascript-module-bindings` | [javascript-module-bindings.mjs](src/javascript-module-bindings.mjs) | Nonexecuting syntax observations of exact JavaScript module/export bindings |
 
-The existing `readEngineeringCodeWork` now uses a **nonexecuting original
-ECMAScript parser**, `@red-cup-engineering/javascript-parser-service@0.1.0`,
-through the Specification Engineering-owned
-`./javascript-module-bindings` export. This is the JavaScript half of the
-existing source-language-validation prerequisite; it does **not** implement
-Guile Scheme analysis or complete the explicit-profile cutover.
+The [Specification](data/records/schema/specification.schema.json), [Architecture](data/records/schema/architecture-description.schema.json) and [Design input/output](data/records/schema/plan-engineering-design.input.schema.json) schemas are in their existing `data/records/schema/` home. Original obligations belong to those schemas, source readers, relevant tests and authorized Requirement/Work owners—not to explanatory paragraphs duplicated in this README.
 
-`indexJavaScriptModuleBindings(sources,{maxBytes,maxModules})` reads only
-the caller's original `{owner,path,text}` source views and requires explicit
-finite bounds within the incumbent Design Code Work maximum of **2,097,152
-UTF-8 bytes** and **64 modules**. Missing limits, extra/ambiguous source
-views, invalid or noncanonical paths, and exceeded bounds refuse before
-parsing. The caller still owns actual host time/memory/isolation and the
-authority to supply source; parameter shape alone grants neither.
+## One source admission boundary
 
-`inspect({owner,path,exportName})` returns `observed`, `absent`,
-`unknown`, or `contested`, with an original resolved module-and-binding
-identity and parser source offsets where derivable. Direct named exports,
-local import bindings, explicit re-exports, namespace exports and transitive
-export-star relations preserve source paths: multiple ways of reaching the
-**same** target do not create a false conflict, while distinct star targets
-and duplicate explicit exports remain contested. Source not supplied, parser
-refusal, invalid local bindings, unsupported external paths and cyclic
-export-star routes remain unknown rather than being promoted to absence or
-proof. The original parser does not execute any submitted JavaScript.
+The four original Specification stdin commands—`census-specification`, `make-specification`, `update-specification` and `derive-specification`—share [read-source-json-stdin.mjs](scripts/read-source-json-stdin.mjs). The reader requires valid UTF-8 within the **8 MiB** request boundary, then delegates canonical JSON admission to the existing `@red-cup-engineering/json-services-section/canonical-json` supplier. Nested duplicate object keys, malformed Unicode scalar escapes and invalid input refuse rather than being silently normalized into different Requirements.
 
-The incumbent `EngineeringDesignCodeWorkReadout.targets[].bindingObservation`
-exposes this syntax evidence only for custodian-digest-matching source bytes.
-When an exact selected export is absent, it emits
-`CODE_EXPORT_NOT_OBSERVED`; conflicting exports emit
-`CODE_EXPORT_CONTESTED`. Unknown source remains unresolved. Even with
-a syntactically observed binding, `status:source-present-unassayed`,
-`originalDesignAdmitted:false`, `independentProof:unreceived`,
-`executableWork:false` and `beneficiaryReceived:false` remain
-**unchanged**. Nothing in this reading verifies runtime behavior, actual
-contract satisfaction, source licensing, human/Actor authority or release.
+The Design source entrances apply the same strict JSON discipline. They preserve each **literal original source text**, its exact SHA-256 cut and the separate admitted JSON value. JSON canonicalization is not permission to rewrite the custodian's words, infer a missing witness, treat a digest as authority or exceed the input boundary. This source admission is tested in [source-stdin.test.mjs](test/source-stdin.test.mjs); it does not adopt the original customer's Requirements.
 
-The original regression suite checks convergent and conflicting source
-graphs, repeated and invalid lexical bindings, negative source inputs, and
-the **actual current Design source** in addition to fixtures. The separate
-cleanly installed package consumer imports the public reader and checks
-a wrong implementation export against the original LLD. Its parser package
-source is separately compared to the original Git blob
-`5ca0fa15caab57032cfab43f0cfba3000f7704b9` in the current native
-tests. These are necessary source-level assays, not qualified native
-Fabrication maker provenance, source-independent behavioral Proof, a
-published new edition, or a deployed/operating service. The original
-Engineering #137 and Design-profile PR #19 retain the unfinished
-Guile-qualified and downstream receiving obligations.
+## Specification and venue rendering
 
-## Source-bound HLD and LLD candidate generation
+A reviewed Requirement can be interpreted into a draft with `deriveSpecificationFromRequirementReview`. Each normative clause retains its original supported source condition rather than relying on the entire source document's presence as blanket coverage. A rendered Specification is a reproducible Markdown carrier with source identities, topic sections and BCP 14 clauses. [Specification tests](test/specification.test.mjs) and [Requirement-derivation tests](test/derive-specification.test.mjs) exercise the existing source contract.
 
-The existing `./engineering-design` public export supplies
-`planEngineeringDesign({stage, sources})` and
-`receiveEngineeringDesign({stage, sources, plan, deliveryText})`.
-`stage` is `high-level` or `low-level`. The first stage requires **the
-complete original** `requirement`, `specification` and `architecture`
-source texts; the second additionally requires the exact previously received
-`high-level` candidate. The plan carries the original text/identity and a
-source-pinned inference request; a separately authorized provider supplies
-the JSON `deliveryText`. The receiving function checks that proposal against
-the exact plan and source cut and returns a typed refusal or an
-`EngineeringDesignCandidate`.
+For IETF-style presentation, `renderSpecificationRfcXml` emits RFCXML v3 under RFC 7991 from a Specification that supplies its explicit `rfc` block: draft identity, category, stream, intellectual-property status, abstract, authors and references. It maps the house introduction, BCP 14 material (RFC 2119 and RFC 8174), implementation status (RFC 7942), and open questions to the venue's sections. The renderer refuses missing Security Considerations or IANA Considerations topics. See [RFCXML tests](test/specification-rfcxml.test.mjs).
 
-A structurally received candidate retains `admitted:false` and
-`proof:"unreceived"`. The source reader refuses a changed original Requirement
-or Specification revision, a foreign Architecture model, a normative clause
-without an authored model witness, a design row whose selected models do not
-cover its claimed clauses, and an LLD that revises its HLD allocation without
-a new upstream design. No inference operation, proof authority, filesystem
-write, accepted Work or release is granted by this exported module.
+These two outputs are **representations of the source record**, not independent technical review, RFC publication or standards conformance certification.
 
-The LLD `operations[].module` is a **prospective source file name**, not
-an arbitrary model label. In addition to its already required canonical POSIX
-`src/...mjs` shape, it must contain no NUL, be well-formed UTF-16, and already
-have an **NFC-stable Unicode spelling**. The receiver refuses unpaired
-surrogates and decomposed source names that canonically alias another path;
-it never silently renames a reviewed module while retaining its old
-Design/source identity. Valid canonical Unicode characters remain permitted. This
-source-format gate makes no assertion that a target file or export exists.
+## Source-qualified Architecture
 
-**Migration:** Older unadmitted Design candidates with decomposed/non-NFC
-module paths must be re-received from their complete original source cut,
-not rewritten downstream under the previous Design identity. This does not
-retroactively invalidate any separately installed source file or claim a
-filesystem migration was executed.
+The `./architecture-description` module validates and renders an **ISO/IEC/IEEE 42010:2022-informed candidate**, not an independently admitted architecture or standards audit. The input must already identify the original Requirement and Specification source revisions, system, stakeholder concerns, viewpoints, views, models, correspondences and decisions. It refuses broken cross-references, unknown identifiers, unauthored model selections and self-claimed conformance. A stable original input and generator revision produce stable Markdown bytes.
 
-**Migration:** Older unadmitted Design candidates containing a NUL or
-unpaired surrogate module path cannot be grandfathered into Code fabrication.
-Reissue an LLD with a usable original-source-bound module spelling and
-repeat independent Design receiving and Proof. Do not silently replace its
-path while preserving an old source/revision identity.
+`deriveArchitectureDescriptionFromSpecificationReview({requirement,specification,review})` accepts independently authored architectural choices bound to the exact original source cut; it does **not** invent those choices. The result remains `candidate` with 42010 conformance `unassessed`. `identity.owner` names an attributed source author, not an authenticated governing Office.
 
-The original generation Work is recorded in
-`data/records/service-records/fabrication-work-order-service-records/moneyday-design-generators.work-order.md`;
-the original receiving candidate is in the neighboring
-`fabrication-receiving-service-records`. Those are source and acceptance
-records, not proof that the Moneyday buyer received an operating repair.
-See the original Engineering four-closure [issue #137](https://github.com/red-cup-engineering/engineering-services-section/issues/137)
-for the source-to-Design/Proof/maker/operation obligations.
+`readRequirementArchitectureTrace(architecture,{requirement,specification})` separately checks each exact `met-when[].cell` through a source-backed normative clause, a declared concern, and its actual model/view/viewpoint. Missing mappings remain **untraced**. The original public enterprise-knowledge-management RFP fixture demonstrates this distinction: three Requirement conditions and interpreted clauses can yield **one mapped Architecture condition and two still untraced**, without being mistaken for an implemented SharePoint, taxonomy or citation service. The fixture is source-test evidence, not an authorized bid or a buyer receipt. See [architecture-description.test.mjs](test/architecture-description.test.mjs).
 
-## Source-bound LLD to Code Work readout
-
-The original engineering-design public export now includes
-**readEngineeringCodeWork**. It consumes one incumbent LLD
-EngineeringDesignCandidate, the **original derivation plan**, the **exact
-original provider-delivered Design JSON**, and bounded source views of the
-Code modules addressed by that LLD. It reuses the original
-receiveEngineeringDesign function to reconstruct the same source-received
-candidate. A mutated candidate, foreign plan, changed normative clause,
-stale Architecture/HLD allocation, false adoption or forged Proof status
-refuses before any Code Work is projected.
-
-Code sources belong to the **original HLD component owner**. Relative
-module paths such as `src/source.mjs` are not repository identities: different
-File, Deployment, Fabrication or Group owners may select the same spelling.
-Each projected Code-work target now carries `originalComponentOwner` copied
-from the **source-verified HLD**. The original Design still owns that
-attribution; this reader does not infer, appoint or authenticate an Office.
-
-Every source view **must** name its original owner:
-`{owner, path, text, expectedSha256}`. Its key is the pair of original
-HLD owner and relative source path, never the path alone. Even a single
-observed owner does **not** authorize an ownerless `{path, text,
-expectedSha256}` view: a later source revision can add another owner
-without granting authority to a former path-only claimant. Distinct
-original owners with the same path retain separate SHA-256 source views;
-foreign, duplicate, unqualified or ownerless views refuse before Code-work
-projection. The total supplied source view remains capped at 2 MiB.
-
-`designCarrierId` is computed by the existing Data
-`semanticIdOf('metroplat.artifact')` provider over the complete,
-source-received design candidate. It is stable under irrelevant JavaScript
-object-property ordering and changes with a genuine normative Design
-revision. It is **not** the raw-byte SHA-256 of the provider's delivery,
-nor a signed or independently accepted proof; the original byte-exact
-source hashes are retained in `sourceCut` and the original delivery
-remains independently required.
-
-The source digest only establishes equality with the supplied custodian
-address. Neither an HLD owner string nor a hash comparison authenticates
-GitHub repository rights, proves the declared export actually exists,
-checks runtime behavior, or establishes source completeness. Missing from
-a supplied view means "not observed", not "does not exist in the repository."
-
-
-The typed EngineeringDesignCodeWorkReadout provides a bounded, deterministic
-Code work target for each source-traced LLD operation: the original
-source component owner, exact prospective module/export pair, observed
-source digest, inherited original Requirement
-cells / Specification clauses / Architecture models, parsed input/output
-JSON Schemas, preconditions, behavior, failure and resource/effect bounds,
-and unchanged independently **unreceived** test and acceptance obligations.
-The discrepancy codes SOURCE_VIEW_NOT_RECEIVED and
-SOURCE_DIGEST_DISAGREEMENT identify genuine failures of the supplied cut.
-Even with every source present, the status is only
-source-present-unassayed. The result is deeply immutable.
-
-The reader cannot create another WorkCell registry or scheduler, choose
-an inference provider, write a module, synthesize behavioral assertions from
-unqualified prose, authenticate a model delivery, spend resources or settle a
-customer obligation. The flags originalDesignAdmitted, executableWork,
-codeApplied and beneficiaryReceived remain false; independentProof remains
-unreceived. The original Engineering, Code, Work, Sign and Enterprise owners
-must independently qualify revision-pinned Proof, verify exports and behavior
-in an isolated assay, and admit effects and actual consumer receiving.
-
-Native regression tests use the actual Requirement→Specification→Architecture
-→HLD→LLD source fixture and cover correct trace, changed source digest,
-unprovided/extra source, fabricated Design mutation, prototype/Unicode and
-source budget boundaries, and several Code operations in one module. The
-existing packed-consumer test imports the new reader through the public
-engineering-design export from a clean independently installed package, not
-from the local source tree. These tests qualify a source-producing readout,
-not delivered working software.
-
-## Reproducible source-candidate qualification
-
-Source changes and **shipped README changes** run the original native Node 24
-suite, historical source regressions, npm packaging, and a clean independent
-installation exercising the public Specification/Architecture/HLD/LLD APIs.
-The same checks also run on merged main source, not only PR previews. The CI
-job packs the candidate twice from the same source, requires byte-identical
-archives, creates and verifies `SHA256SUMS`, and retains the exact
-consumer-tested tarball plus checksum for 30 days in its Actions artifact.
-A different source commit must earn its own source-qualified checksum.
-
-To run the source checks in a qualified Node 24 checkout, resolve the declared
-dependencies from the original approved registry and run `npm test`. The
-CI-installed consumer uses `npm pack --ignore-scripts`, an independent
-`npm install` of that archive, and the package's actual exported APIs.
-The SHA-256 checksum by itself proves only local archive integrity.
-The original qualification workflow additionally sends that **same** tested
-archive, after all native and independently installed consumer checks pass, to
-a separate least-privileged attestation job. The second job verifies the
-downloaded SHA256SUMS and expected installed Design module, asks GitHub's
-Sigstore-backed `actions/attest` for a signed SLSA v1 provenance statement
-and independently checks the artifact's **real bytes**, repository,
-specific signer workflow, exact commit and GitHub-hosted runner using
-`gh attestation verify`. An independently modified tarball is the negative
-control and must refuse. Both jobs must pass for source qualification.
-
-After retrieving the original GitHub Actions tarball, its independent consumer
-can verify the signed provenance without trusting our text record:
+The [Architecture CLI](scripts/render-architecture-description.mjs) retains ordinary rendering and explicit source-bound modes:
 
 ```sh
-gh attestation verify ./red-cup-engineering-specification-engineering-services-section-0.1.3-dev.0.tgz \\
-  --repo red-cup-engineering/specification-engineering-services-section \\
+node scripts/render-architecture-description.mjs < architecture-candidate.json
+node scripts/render-architecture-description.mjs --source-cut < original-three-stage-cut.json
+node scripts/render-architecture-description.mjs --reviewed-source-cut < authored-review-source-cut.json
+```
+
+Each source-cut mode verifies its own required input; a whole-document identity or loose document similarity cannot substitute for cell-to-clause-to-model trace.
+
+## HLD, LLD and Code-work readout
+
+`planEngineeringDesign({stage,sources})` and `receiveEngineeringDesign({stage,sources,plan,deliveryText})` belong to the existing `./engineering-design` export. High-level Design requires the complete original Requirement, Specification and Architecture texts. Low-level Design additionally requires the exact previously source-received HLD. The plan binds an exact source cut and request; an independently authorized inference provider supplies `deliveryText`. Receiving the response checks stage, trace, authored model witnesses and allocation, but always leaves `admitted:false` and `proof:"unreceived"`.
+
+An LLD `operations[].module` is a prospective canonical `src/...mjs` path. It cannot include NUL, unpaired Unicode surrogates or a decomposed spelling that is not NFC-stable. Do not silently rename an old candidate and keep its prior Design identity; receive it again from the original source cut. The shape check does not prove a file or export exists.
+
+`readEngineeringCodeWork` reconstructs the original source-received Design from its plan and **exact provider-delivered JSON** before projecting a Code target. Each supplied source view must identify `{owner,path,text,expectedSha256}`; the identity is **(original HLD component owner, module path)**, never the file path alone. Duplicate, foreign, ownerless, digest-disagreeing or over-budget views refuse. The incumbent boundary is **2,097,152 UTF-8 bytes and 64 module views**. Its `designCarrierId` is the existing Data `semanticIdOf('metroplat.artifact')` identity over the received candidate—not the raw delivery SHA-256 and not a signed approval.
+
+The nonexecuting `indexJavaScriptModuleBindings(sources,{maxBytes,maxModules})` parser reports `observed`, `absent`, `unknown` or `contested` for a source-identified export. Direct exports, re-exports, namespace bindings and export-star paths retain their original module identity; conflicting export-star targets remain contested, while absent source, unsupported paths and unresolved cycles remain unknown. The reader never executes submitted JavaScript. `CODE_EXPORT_NOT_OBSERVED` and `CODE_EXPORT_CONTESTED` distinguish the corresponding failures; syntactic observation is not behavioral Proof. The parser is `@red-cup-engineering/javascript-parser-service@0.1.0`; it does **not** supply Guile Scheme analysis or close [PR #19](https://github.com/red-cup-engineering/specification-engineering-services-section/pull/19).
+
+Projected targets retain original Requirement cells, Specification clauses, Architecture models, input/output schemas, preconditions, effects, errors and verification obligations. Even with source present, the status remains `source-present-unassayed`; the flags `originalDesignAdmitted:false`, `executableWork:false`, `codeApplied:false`, `beneficiaryReceived:false` and `independentProof:unreceived` are not upgraded by a syntactic match. No new WorkCell, model provider, file write, source maker or release is created here.
+
+## Reading Requirement changes without recreating Work
+
+`readRequirementRevisionPressure(before,after)` accepts two complete original Requirements with the **same source-owned identity**. It distinguishes changed original text, accepted conditions, speakers, ordering and exact EAVT content addresses. It can signal that downstream source requalification or regeneration is required, but it neither creates a new Requirement nor retroactively adopts the change. The Architecture CLI exposes this early reading through `--requirement-pressure`.
+
+`readRequirementArchitectureImpact(before,after)` is **different**: it accepts two independently qualified complete {Requirement, Specification, Architecture} triples and compares exact source and stage revisions, original conditions, normative clause identities **and contents**, and model/view mappings. Its `--source-impact` CLI mode distinguishes `regenerate-and-requalify` from `requalify-source-only`. Changed source identity can require requalification without justifying regeneration of unchanged logic. Both readouts have no effect on original Work, rights, Proof or the beneficiary. See [revision-pressure tests](test/requirement-revision-pressure.test.mjs) and [the independent packed consumer](test/requirement-revision-packed-consumer.mjs).
+
+The original Moneyday Design-generator work order remains [here](data/records/service-records/fabrication-work-order-service-records/moneyday-design-generators.work-order.md). A change report is not a substituted customer decision; its original Requirement Office and recipient still owe the actual admission and receiving.
+
+## Reproducible source qualification is not settlement
+
+The [native receiving workflow](.github/workflows/specification-native-receiving.yml) runs the original Node 24 tests and separately installed package consumers, packs the same source twice into byte-identical npm archives, checks `SHA256SUMS` and retains the consumer-tested archive for its configured artifact period. Its separate least-privileged attestation job authenticates the **actual archive bytes, repository, signer workflow and commit** using GitHub's Sigstore-backed attestation and an adversarial changed-archive control.
+
+```sh
+gh attestation verify ./specification-engineering-services-section.tgz \
+  --repo red-cup-engineering/specification-engineering-services-section \
   --signer-workflow red-cup-engineering/specification-engineering-services-section/.github/workflows/specification-native-receiving.yml
 ```
 
-The unsigned checksum file is still provided for offline integrity comparison;
-the signed attestation is held by GitHub, and the verification command checks
-GitHub's trusted signing certificate and authenticated subject digest. Check
-the source commit/ref in the resulting statement before adoption. A signed
-source/build claim is **not** an independently accepted Design proof, a SLSA
-Build Level 3 assessment, immutable npm registry publication, a successful
-Bare Cedar Fog host installation or recipient benefit. The owner of SignChain
-retains institutional evidence-chain integration rather than treating this
-external attestation as a replacement for source-owned Work.
-
-
-
-## Deterministic architecture-description projection (source proposal)
-
-This package also projects an **ArchitectureDescriptionCandidate** record into a reproducible, **ISO/IEC/IEEE 42010:2022-informed** Markdown architecture description. The source schema is [`data/records/schema/architecture-description.schema.json`](data/records/schema/architecture-description.schema.json), the pure-ish read/validation/rendering surface is exported as `./architecture-description`, and the stdin→stdout CLI is `scripts/render-architecture-description.mjs`.
-
-The record must *already* contain original requirement/specification source identities and revisions, system, stakeholders, concerns, viewpoints, views, models, correspondences, decisions and rationales. The renderer checks source/ID references and concern/view/model correspondence, rejects unknown identifiers and self-claimed conformance, sorts semantically unordered records, and uses **no model inference, implicit timestamp or live data lookup**. The same input and generator revision give identical Markdown bytes. Missing data is a refusal addressed to its original source owner, not an invitation to hallucinate material to fill a template.
-
-**Precise scope:** This is an architecture *description* candidate generator, **not** an architect, a proof of source→design refinement, an ISO 42010:2022 audit, the high-/low-level design generator, a pre-fabrication Proof receipt or an installed end-to-end `engineering()` operation. The existing historical 2011-edition review does not establish 2022 conformance. Those different effects remain separately owed by the [original Engineering Work #137](https://github.com/red-cup-engineering/engineering-services-section/issues/137) and its [source PR #138](https://github.com/red-cup-engineering/engineering-services-section/pull/138). The proof gate is mandatory **before effectful Fabricating**, after Design(Architecture → High-level → Low-level).
-
-In a package-equipped Node environment:
-
-```sh
-node scripts/render-architecture-description.mjs < admitted-architecture-candidate.json > architecture-description.md
-node --test test/architecture-description.test.mjs
-```
-
-**Packaging correction:** Both `specification.schema.json` (already read by the existing specification renderer) and `architecture-description.schema.json` are now included in the package's `files` whitelist. Original independent Node 24 checks now exercise the full source suite, a real packed archive, both schemas and a separately installed consumer's architecture-description import; the resulting candidate is still not a deployed Engineering closure or standards certificate. Four source JSON stdin commands share one byte-preserving, fatal UTF-8, **8 MiB maximum input** reader and refuse invalid/oversized requests before writing any product. No accepted customer or native release is inferred.
-
-## Source-cut Requirements traceability: exact buyer condition to architecture model
-
-A valid whole-document source revision, a Specification clause, and a model
-addressing another Architecture concern do not mean the original buyer
-condition was designed. An external enterprise-KM RFP can demand permissioned
-source-cited answers, governed taxonomy and SharePoint term-store publishing
-as independent deliverables; sourcing the whole RFP at the System level
-must not falsely imply all three have an architecture implementation.
-
-The ORIGINAL architecture-description module now exports
-readRequirementArchitectureTrace(architecture,{requirement,specification})
-alongside existing full source-cut validation and renderer. It builds
-the complete deterministic trace from each original Requirement
-met-when[].cell through the **exact source-backed** Specification
-clauses[].backedBy generated by the original deriveSpecificationFromRequirementReview,
-to an **explicit** Architecture concern.requirementCellIds and
-concern.specificationClauseIds pair, and through its existing model,
-view and governing viewpoint. The model must genuinely address that concern
-in the original Architecture graph. Neither concern nor model proves
-working code, permission rights or buyer acceptance.
-
-Both concern arrays must exist, refer to the actual source-cut Requirement
-and Specification, and concern.sourceIds must name both original stage
-sources. Every selected buyer cell needs a selected Specification clause
-that backs exactly that cell, and every declared clause must back at least
-one selected cell. Foreign buyer cells, cross-work substitution, missing
-source stages, stale revisions, speculative matches and inconsistent rows
-are rejected. A source-only system/view citation **never** establishes
-per-clause mapping. Optional mapping fields can be absent so historical
-architectures remain readable, but those original cells remain explicitly
-untraced, rather than counted as qualified architecture.
-
-The existing native CLI accepts an opt-in complete source-cut input:
-
-    node scripts/render-architecture-description.mjs --source-cut < three-sources.json > source-trace.md
-
-The input is one typed JSON object containing exactly requirement,
-specification and architecture, each acquired and authorized independently.
-The same original 8-MiB UTF-8 byte reader applies. The normal architecture
-description is followed by a **complete original buyer-cell trace**
-(not a 42010/29148 certification), retaining exact normative clause IDs,
-authored concern/model/view paths and untraced source cells. The ordinary
-bare architecture-input CLI remains compatible.
-
-**Real source test:** The public
-[NYPA Q26-7821RJM knowledge management RFP](https://rfp.nypa.gov/)
-Attachment 1 sections 2.1–2.2 separately demands permission-respecting
-citation answers, governed ontology and SharePoint model publication.
-The existing original source suite models all three as unadmitted source
-conditions, explicitly reviews three clauses, and maps ONLY the first to
-a candidate rights-related architecture model. It reports **1/3 authored
-model mappings, 2/3 not yet architected**, even though all three clauses
-were interpreted. This does not authorize an NYPA bid, imply implemented
-SharePoint connectors, qualify current vendor references/insurance,
-establish independent Engineering Proof, produce purchased customer work,
-or generate revenue. Current NYPA Ariba registration and addenda are the
-original Opportunity/Coesite seller's separate responsibilities.
-
-Formal correspondence in these source stages is analogous to a restricted
-local gluing question, but it is **not** an Obsmetrologia theorem about
-generated Kinematic Space, L-Space fibers or hypertensor sections. Those
-require source-derived occurrence-pair incidence, genuine cover/restriction,
-gluing and kernel-qualified proof. A documentary association must not
-be promoted to full sheaf mathematics, Gotham-equivalent authorization,
-or tested Asana/Jira workflow. Native Node/package receiving and actual
-original Engineering design/proof/customer acceptance remain distinct.
-
-## Requirement → reviewed Specification → generated Architecture candidate
-
-The original Engineering Requirement
-[`requirements-generate-specifications-designs-and-normative-code`](https://github.com/red-cup-engineering/engineering-services-section/blob/main/data/records/service-records/requirements-management-service-records/requirements-generate-specifications-designs-and-normative-code.json)
-requires Architecture artifacts to be generated from the original admitted
-Requirement and Specification, rather than copying stage digests into an
-unattributed prose draft. The existing `./architecture-description` now
-exports `deriveArchitectureDescriptionFromSpecificationReview({requirement,
-specification,review})`. The new entry to the existing bounded CLI is:
-
-```sh
-node scripts/render-architecture-description.mjs --reviewed-source-cut \
-  < requirement-specification-authored-review.json > architecture-candidate.md
-```
-
-The single input object has exactly `requirement`, `specification`, `review`.
-The review is *authored architectural data* with exactly
-`identity: {id,title,owner}`, `sourceCut: {requirementRevision,specificationRevision}`,
-`applicability`,
-`system: {name,description,supportingSourceIds?}`,
-`supportingSources: [{id,locator,revision},...]`,
-`stakeholders`, `concerns`, `viewpoints`, `views`, `models`,
-`correspondences`, `decisions` and `openQuestions`—the original
-Architecture graph arrays, **not** a new stage ledger. The review must itself identify the exact source cut it was authored against;
-the derived output binds `req` and `spec` to the *actual* content identities,
-rejecting stale
-Specification lineage, unsupported review fields, unauthored architectural
-decisions, missing model references, mismatched buyer cells and foreign
-normative clauses. Reviewer status/approval, revision hashes, Proof and
-conformance fields cannot be supplied: revision identity is derived from the
-source cut and review; the existing schema fixes status at `candidate` and
-42010:2022 conformance at `unassessed`. The original exact buyer-cell trace
-still reports **untraced** obligations instead of counting them as satisfied.
-No operating rights are inferred from `identity.owner`; the original custodian
-must authenticate the reviewer separately.
-
-This changes a real source-to-stage projection, not whether architectural
-choices exist. A reviewer must still furnish appropriate stakeholder concerns,
-models, decisions and source references; a deterministic renderer cannot decide
-architecture or make a source reviewer legitimate. Neither this method nor a
-green source/package test closes Engineering #137: HLD, LLD, independent
-pre-fabrication Proof, original maker effect, installed operation and independent
-beneficiary acceptance remain separate gates.
-
-## Renderings
-
-One record, two carriers:
-
-- `renderSpecificationMarkdown` (`./specification`, `scripts/render-specification.mjs`)
-  writes the house Markdown carrier.
-- `renderSpecificationRfcXml` (`./specification-rfcxml`,
-  `scripts/render-specification-rfcxml.mjs`) writes an RFCXML v3 (RFC 7991)
-  Internet-Draft from a record that carries an `rfc` block. The block holds
-  the draft name, category, stream, IPR, abstract, authors and references.
-  The IETF submission tool accepts RFCXML v3 directly, so no xml2rfc,
-  kramdown-rfc or mmark is needed.
-
-The RFCXML rendering maps the house sections onto the venue's:
-
-- `What this is` becomes the Introduction.
-- A BCP 14 section is added, with the exact RFC 8174 text and RFC 2119 and
-  RFC 8174 as normative references.
-- A clause renders as "<actor> <bcp14>KEYWORD</bcp14> <statement>." A clause
-  alone in its paragraph gives that paragraph the clause id as its anchor.
-- `Implementations` becomes the Implementation Status section of RFC 7942.
-- `Open questions` becomes an Open Issues appendix.
-
-It refuses a record that has no Security Considerations or IANA Considerations
-topic.
-
-Topic bodies are read through the Markdown section's
-`projectMarkdownBlocks` and `projectMarkdownInline`, the same projections its
-HTML renderer uses.
-## Requirement-first revision pressure, before renewed Specification or Architecture
-
-The additive public interface is carried as the **unpublished**
-`0.1.3-dev.0` source candidate, distinct from previously signed
-`0.1.2` archives. An archive being independently installable and
-source-attested does not prove that the same SemVer has been accepted by
-the house registry; dependent services must not select this prerelease
-without original supplier release receiving.
-
-
-The public `./architecture-description` interface exports
-`readRequirementRevisionPressure(before, after)` for **two complete original
-Requirement records with the same source-owned ID**. It compares the original
-native EAVT `artifactId` content identities and each exact source condition,
-not a reimplemented JSON-to-hash format. It records added, removed and
-changed acceptance-cell **addresses**, changed original speaker/request
-counts, target/content/metadata changes, and condition ordering. It emits no
-customer-private `asks` or `says` text.
-
-Use this original tool **before** a new, separately interpreted Specification
-and Architecture exists. A changed source with 3 original requests becoming
-4 and all 8 acceptance cells extended reports `firstOpenStage:
-"requirement-admission"`, 8 revised conditions and
-`downstreamRegenerationRequired:true`. A source-provenance-only change
-requires source requalification without falsely claiming that an unchanged
-code operation needs rebuilding.
-
-The existing public source reader also exposes the same operation through
-`scripts/render-architecture-description.mjs --requirement-pressure`, with
-a bounded, fatal-UTF8 JSON stdin carrier shaped exactly like this:
-
-```json
-{"before":{"kind":"requirement","id":"original-work","met-when":[{"cell":"original-work:source","target":"held","says":"Preserve source."}]},"after":{"kind":"requirement","id":"original-work","met-when":[{"cell":"original-work:source","target":"held","says":"Preserve source and independently receive the change."}]}}
-```
-
-This does **not** change the separate, strictly source-qualified
-`readRequirementArchitectureImpact(before,after)` API. That later operation
-still requires **both** Requirement/Specification/Architecture triples to
-validate; the new Requirement-first reading does not misrepresent an obsolete
-Specification as current.
-
-The outcome always declares `originalEffect:"none-read-only"`,
-`independentProof:false` and
-`independentlyAcceptedCustomerWork:false`. The original Requirements
-Office must authenticate, adopt and interpret the revised source;
-Specifying/Architecting/Designing/Code fabrication must receive separate
-independent evidence and budgets before operating. A green test or a signed
-package is not an authority grant. The Moneyday CDE owner retains its
-actual eight conditions and source-change hold; this software does not
-modify or publish that private consumer's records.
-
-## Detect revision drift without manufacturing accepted Work
-
-Original \`readRequirementArchitectureImpact(before,after)\` consumes two already
-source-verified {requirement,specification,architecture} triples. It first
-exercises the existing full Requirement→Specification→Architecture source-cut
-admission on **both** sides. It compares the exact source revisions, original
-Requirement conditions, source-owned normative clause identities **and
-contents**, authored model/view mappings, and original model contents. Reusing
-the same clause or model identifier with altered content is an explicit
-regeneration obligation, never mistaken for stable software.
-
-Its deterministic \`changes\` separate \`regenerate-and-requalify\` from
-\`requalify-source-only\`. The latter means a changed source revision invalidates
-old custody even when that particular condition's declared logic is unchanged;
-it is not an instruction to recreate an unchanged model. It reports the
-affected original model/view IDs for a competent downstream Work consumer,
-preserves untraced source conditions, and never opens Work, issues authority,
-executes code, blesses a proof, self-accepts or settles a customer benefit.
-
-The already-shipped Architecture CLI adds \`--source-impact\`: one bounded
-JSON stdin request with exactly
-\`{before:{requirement,specification,architecture},after:{requirement,specification,architecture}}\`
-yields this read-only typed JSON result. Extra purported \`accepted\` or
-\`execute\` fields refuse before output. Native tests exercise identical replay,
-changed original customer words, same-ID normative source and same-ID model
-content changes, genuinely new model mappings, stale cuts and CLI admission.
-There is no additional lifecycle journal or shadow requirement database.
+Substitute the actual downloaded archive path above, not an invented published filename. The signed statement is a provenance claim for the tested source artifact. It is **not** Stage Proof, a SLSA Build Level 3 assessment, npm release, installed Bare Cedar Fog or MetroPlat operation, SignChain institutional receipt, or independent customer acceptance. The original Engineering [#137](https://github.com/red-cup-engineering/engineering-services-section/issues/137), source owners and affected buyers retain each distinct remaining obligation.
