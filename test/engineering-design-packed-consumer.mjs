@@ -7,6 +7,7 @@ import { spawnSync } from 'node:child_process';
 import {
   planEngineeringDesign,
   receiveEngineeringDesign,
+  receiveEngineeringHighLevelReview,
   readEngineeringDesignInferenceWork,
   readEngineeringCodeWork,
 } from '@red-cup-engineering/specification-engineering-services-section/engineering-design';
@@ -52,6 +53,45 @@ assert.throws(()=>indexJavaScriptModuleBindings([],{}),RangeError);
 const original = sourcesFixture();
 const plan = planEngineeringDesign({ stage: 'high-level', sources: original });
 assert.equal(plan.type, 'EngineeringDesignDerivationPlan');
+
+// Native packed-consumer composition: original review projector → original
+// HLD receiver through the public, separately installed package export.
+// No model output, Proof or original Work grant is synthesized.
+const review={components:[
+  {id:'component-a',owner:'fixture-data-owner',layer:'data',
+    responsibility:'Maintain source A.',requires:[],specificationClauseIds:['clause-a']},
+  {id:'component-b',owner:'fixture-data-owner',layer:'data',
+    responsibility:'Maintain source B.',requires:[],specificationClauseIds:['clause-b']},
+],openQuestions:['Independent admission and Proof have not been received.']};
+const reviewText=JSON.stringify(review);
+const reviewDigest='sha256:'+createHash('sha256').update(reviewText,'utf8').digest('hex');
+const reviewedSourceCut=plan.sources.map(({kind,digest})=>({kind,digest}));
+const reviewRequest={sources:original,reviewText,
+  expectedReviewSha256:reviewDigest,reviewedSourceCut,
+  limits:{maxReviewBytes:65536,maxComponents:16,maxRequirements:32,maxTraceRows:16}};
+const receivedReview=receiveEngineeringHighLevelReview(reviewRequest);
+assert.equal(receivedReview.type,'EngineeringDesignReviewProjection');
+assert.equal(receivedReview.candidate.type,'EngineeringDesignCandidate');
+assert.equal(receivedReview.candidate.admitted,false);
+assert.equal(receivedReview.candidate.proof,'unreceived');
+assert.deepEqual(receivedReview.candidate,receiveEngineeringDesign({
+  stage:'high-level',sources:original,plan,
+  deliveryText:receivedReview.deliveryText,
+}));
+const command='node_modules/@red-cup-engineering/specification-engineering-services-section/scripts/receive-engineering-high-level-review.mjs';
+const cliReview=spawnSync(process.execPath,[command],{
+  input:JSON.stringify(reviewRequest),encoding:'utf8',
+  maxBuffer:2*1024*1024,timeout:20_000,
+});
+assert.equal(cliReview.status,0,cliReview.stderr);
+assert.deepEqual(JSON.parse(cliReview.stdout),receivedReview,
+  'packed CLI and package API must read the exact same original source review');
+const alteredReview=spawnSync(process.execPath,[command],{
+  input:JSON.stringify({...reviewRequest,expectedReviewSha256:'sha256:'+'0'.repeat(64)}),
+  encoding:'utf8',maxBuffer:2*1024*1024,timeout:20_000,
+});
+assert.equal(alteredReview.status,1,'stale review digest must refuse in installed consumer');
+assert.equal(alteredReview.stdout,'','source disagreement cannot emit a partial product');
 const hld = {
   components: [
     { id: 'source-component', owner: 'fixture-only', layer: 'data',
