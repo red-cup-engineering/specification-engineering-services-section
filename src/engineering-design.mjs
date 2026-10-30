@@ -163,7 +163,7 @@ function sourceContext(stage, supplied) {
   const cells = new Map();
   for (const condition of r['met-when']) {
     requireThat(object(condition) && nonblank(condition.cell) && condition.cell.startsWith(r.id + ':') && !cells.has(condition.cell));
-    requireThat(condition.target === 'held' && nonblank(condition.says) && !/[\r\n\u0000]/.test(condition.says));
+    requireThat(['held','denied'].includes(condition.target) && nonblank(condition.says) && !/[\r\n\u0000]/.test(condition.says));
     cells.set(condition.cell, []);
   }
   // This is the complete native parsed Requirement, including ignored fields.
@@ -630,6 +630,13 @@ export function readEngineeringCodeWork({
   // expectations. Source revisions and per-clause trace were already
   // re-received above against the complete Requirement/Architecture/HLD cut.
   const originalSpecification = parseObject(designCandidate.sources[1].text);
+  // Exact selected Requirement source was re-received by the incumbent LLD
+  // reader above. Carry the original two-sided desired evidence TARGET into
+  // each prospective Code Work relation; a cell ID alone loses this polarity.
+  // A target is not observed evidence, an executed test or a permission grant.
+  const originalRequirement = parseObject(designCandidate.sources[0].text);
+  const sourceTargets = new Map(originalRequirement['met-when'].map(row =>
+    [row.cell, row.target]));
   const declaredSourceTests = new Map(originalSpecification.topics.flatMap(topic =>
     topic.clauses.map(clause => [clause.id, clause.test ?? null])));
   const originalOwners = new Map(highLevel.design.components.map(row =>
@@ -678,9 +685,12 @@ export function readEngineeringCodeWork({
   // no model-generated refines edge, new Requirement or proof is invented.
   const traced = new Map(designCandidate.design.operations.map(x => [x.id, []]));
   for (const row of designCandidate.design.traceability) {
+    const sourceTarget = sourceTargets.get(row.requirementCellId);
+    requireThat(sourceTarget === 'held' || sourceTarget === 'denied');
     for (const operationId of row.designElementIds) {
       traced.get(operationId).push({
         requirementCellId: row.requirementCellId,
+        sourceTarget,
         specificationClauseIds: [...row.specificationClauseIds],
         architectureModelIds: [...row.architectureModelIds],
       });

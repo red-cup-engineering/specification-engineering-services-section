@@ -22,7 +22,9 @@ const REPO_RELATIVE_TARGET = /^(?:lib\/|\.claude\/|CLAUDE\.md$)/u;
  * @returns {object} The parsed Draft 2020-12 schema document.
  */
 export function loadSpecificationSchema() {
-  return SPECIFICATION_SCHEMA;
+  // The module's original validation law is private. A public schema
+  // inspection cannot mutate subsequent source-admission decisions.
+  return structuredClone(SPECIFICATION_SCHEMA);
 }
 
 /**
@@ -451,7 +453,7 @@ export function deriveSpecificationFromRequirementReview(requirement, {
         !condition.cell.startsWith(requirement.id + ":") ||
         typeof condition.says !== "string" || !condition.says.trim() ||
         /[\r\n\u0000]/u.test(condition.says) ||
-        condition.target !== "held" ||
+        !["held", "denied"].includes(condition.target) ||
         (condition.inference !== undefined && typeof condition.inference !== "boolean") ||
         (condition["leader-words"] !== undefined &&
           (typeof condition["leader-words"] !== "string" ||
