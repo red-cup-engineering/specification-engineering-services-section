@@ -165,7 +165,7 @@ test("unknown, duplicate, dropped or unreviewed original Work conditions refuse 
   multiline["met-when"][0].says="one original clause\n## Fake approval";
   assert.throws(()=>deriveSpecificationFromRequirementReview(multiline,review),
     /unadmitted or malformed original source condition/u);
-  for (const target of ["denied","contested",null]) {
+  for (const target of ["contested",null]) {
     const changed=structuredClone(source);
     changed["met-when"][0].target=target;
     denial(changed);
@@ -341,4 +341,32 @@ test("a requirement cut of a section's one record generates only its cells and k
   assert.throws(() => deriveSpecificationFromRequirementReview(requirement, { identity, interpretations, at, reviewedBy, cells: ["lagoon:not-a-cell"] }), /requirement cut/u);
   assert.throws(() => deriveSpecificationFromRequirementReview(requirement, { identity, interpretations: [...interpretations, { cell: "lagoon:one-home", clauseId: "one-home", keyword: "MUST", actor: "LAGOON" }], at, reviewedBy, cells }), /exactly one/u);
   assert.throws(() => deriveSpecificationFromRequirementReview(requirement, { identity, interpretations, at, reviewedBy }), /exactly one/u);
+});
+
+test("a reviewed denied target remains source-exact and a normative prohibition, not a false acceptance",()=>{
+  // The original Requirement writer admits held OR denied desired evidence.
+  // A denied target is not an observed denial, an Office assent, or a proof.
+  const requirement=sourceRequirement();
+  const denied=requirement["met-when"][1];
+  denied.target="denied";
+  denied.says="count an unreceived vendor check as independent buyer acceptance";
+  const review=sourceReview(requirement);
+  assert.equal(review.interpretations[1].keyword,"MUST NOT",
+    "an original reviewer explicitly selected the prohibition");
+  const result=deriveSpecificationFromRequirementReview(requirement,review);
+  assert.equal(validateSpecificationRecord(result).valid,true);
+  assert.equal(result.identity.status,"draft");
+  assert.equal(result.topics[0].clauses[1].keyword,"MUST NOT");
+  assert.equal(result.topics[0].clauses[1].statement,denied.says);
+  assert.deepEqual(result.topics[0].clauses[1].backedBy,[
+    "Original Requirement "+requirement.id+" ("+artifactId(requirement)+"), cell "+denied.cell,
+  ]);
+  assert.equal(requirement["met-when"][1].target,"denied",
+    "the original negative satisfaction target is still only source data");
+  assert.match(renderSpecificationMarkdown(result),
+    /MUST NOT.*count an unreceived vendor check/u);
+  assert.throws(()=>deriveSpecificationFromRequirementReview(requirement,{
+    ...review,interpretations:review.interpretations.slice(0,2),
+  }),/every source condition requires exactly one/u,
+  "a negative condition cannot disappear under a partial review");
 });
