@@ -481,22 +481,20 @@ export function deriveSpecificationFromRequirementReview(requirement, {
   });
   const result = deriveSpecificationRecord({
     identity: {
-      ...identity, profile: "prose", stability: "draft",
-      status: "requires-independent-requirement-and-interpretation-admission",
+      ...identity, profile: "prose", stability: "draft", status: "draft",
     },
-    whatThisIs: "An unadmitted candidate reading of Requirement " +
-      requirement.id + " at " + sourceAddress +
-      ". External authority and specification acceptance remain open.",
+    // A specification states what it specifies; skill writing-a-specification-from-requirements.
+    whatThisIs: "The specification of Requirement " + requirement.id +
+      (typeof requirement.name === "string" && requirement.name.trim() &&
+        !/[\r\n\u0000]/u.test(requirement.name) ? ": " + requirement.name.trim() : "") +
+      " (" + sourceAddress + ").",
     topics: [{
       heading: "Source-owned requirement conditions",
       body: clauses.map(clause => "{{clause:" + clause.id + "}}").join("\n\n"),
       clauses,
     }],
     implementations: [],
-    openQuestions: [{
-      question: "Has the original source Requirement and each BCP 14 interpretation been independently admitted?",
-      blockedBy: "An original competent Office and external reviewer; no approval is inferred from this record",
-    }],
+    openQuestions: [],
     provenance: {
       derivedFrom: [requirement.id + "@" + sourceAddress],
       derivedAt: at,
