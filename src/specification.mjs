@@ -412,20 +412,11 @@ export function deriveSpecificationFromRequirementReview(requirement, {
       !Array.isArray(requirement["met-when"]) ||
       requirement["met-when"].length === 0)
     fail("one source-owned Requirement with nonempty met-when conditions is required");
-  const normativeCount = requirement["met-when"]
-    .filter(condition => !(condition && condition.inference === true)).length;
-  if (normativeCount === 0)
-    fail("every condition is an agent inference not stated by the Leader; " +
-      "nothing normative remains to specify until the Leader accepts one");
-  for (const decision of Array.isArray(interpretations) ? interpretations : []) {
-    const named = decision && requirement["met-when"].find(condition =>
-      condition && condition.inference === true && condition.cell === decision.cell);
-    if (named)
-      fail("an interpretation names inference cell " + named.cell +
-        ": an agent inference is not normative until the Leader accepts it");
-  }
-  if (!Array.isArray(interpretations) || interpretations.length !== normativeCount)
-    fail("every non-inference source condition requires exactly one explicit normative interpretation");
+  // A cell an agent inferred is an engineering decision the engineering owner took, normative like any other:
+  // it is never left open for the Leader (rule engineering-decisions-are-made-not-deferred-to-the-leader).
+  if (!Array.isArray(interpretations) ||
+      interpretations.length !== requirement["met-when"].length)
+    fail("every source condition requires exactly one explicit normative interpretation");
   if (!identity || typeof identity !== "object" || Array.isArray(identity) ||
       typeof identity.id !== "string" ||
       !/^[a-z0-9]+(?:-[a-z0-9]+)*$/u.test(identity.id) ||
@@ -468,9 +459,6 @@ export function deriveSpecificationFromRequirementReview(requirement, {
           !["cell","clauseId","keyword","actor","test"].includes(key)) ||
         typeof decision.cell !== "string" || !source.has(decision.cell))
       fail("an interpretation names an unknown source condition or an unapproved rewrite field");
-    if (source.get(decision.cell).inference === true)
-      fail("an interpretation names inference cell " + decision.cell +
-        ": an agent inference is not normative until the Leader accepts it");
     if (choices.has(decision.cell)) fail("duplicate normative interpretation " + decision.cell);
     if (typeof decision.clauseId !== "string" ||
         !/^[a-z0-9]+(?:-[a-z0-9]+)*$/u.test(decision.clauseId) ||
@@ -494,16 +482,7 @@ export function deriveSpecificationFromRequirementReview(requirement, {
     choices.set(decision.cell, decision);
   }
   const sourceAddress = artifactId(requirement);
-  const openQuestions = requirement["met-when"]
-    .filter(condition => condition.inference === true)
-    .map(condition => ({
-      question: "Agent inference, not stated by the Leader, to be accepted or struck: \"" +
-        condition.says + "\" (cell " + condition.cell + ")." +
-        (condition["leader-words"] === undefined ? "" :
-          " Leader's words: " + condition["leader-words"]),
-      blockedBy: "Leader acceptance or striking of cell " + condition.cell,
-    }));
-  const clauses = requirement["met-when"].filter(condition => condition.inference !== true).map(condition => {
+  const clauses = requirement["met-when"].map(condition => {
     const decision = choices.get(condition.cell);
     if (!decision) fail("missing review of source condition " + condition.cell);
     return Object.freeze({
@@ -511,6 +490,10 @@ export function deriveSpecificationFromRequirementReview(requirement, {
       actor: decision.actor,
       statement: condition.says,
       ...(decision.test === undefined ? {} : { test: decision.test }),
+      // Original Requirement cell identity is a machine-readable relation.
+      // Its inference/leader-words origin stays in the exact referenced
+      // Requirement source, not in an alternate free-text citation key.
+      // Architecture and Design require this precise same source coordinate.
       backedBy: [
         "Original Requirement " + requirement.id + " (" + sourceAddress +
           "), cell " + condition.cell,
@@ -532,7 +515,7 @@ export function deriveSpecificationFromRequirementReview(requirement, {
       clauses,
     }],
     implementations: [],
-    openQuestions,
+    openQuestions: [],
     provenance: {
       derivedFrom: [requirement.id + "@" + sourceAddress],
       derivedAt: at,

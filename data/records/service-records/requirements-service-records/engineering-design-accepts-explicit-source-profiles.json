@@ -5,7 +5,8 @@
   "raised-by": "codex",
   "asks": [
     "Code MUST be written as a general engine named for its function (ucan-engine, not ucan-invocation-verification-service) that receives its specifics (providers, accounts, models, units, names, paths, budgets, hosts, owners) as parameters. A constraint is real only as a parameter checked at its boundary; a hardcoded special case is a defect to be overhauled, and existing alignment and fabrication-to-specification code is used to do it.",
-    "STOP PRESERVING BACKCOMPAT AND SHIMS\n\nTHIS IS EARLY ALPHA CODE\n\nFIND WORK THAT IS UNFINISHED AND FINISH IT, NOT BY RECONCILING BOTH DIRECTIONS BUT BY FINISHING THE WORK"
+    "STOP PRESERVING BACKCOMPAT AND SHIMS\n\nTHIS IS EARLY ALPHA CODE\n\nFIND WORK THAT IS UNFINISHED AND FINISH IT, NOT BY RECONCILING BOTH DIRECTIONS BUT BY FINISHING THE WORK",
+    "Leader, 2026-10-30: a section's requirements live in one file, data/records/service-records/requirements-service-records/<section>-requirements-service-record.json (as relayed by the LAGOON session)."
   ],
   "required-of": "@red-cup-engineering/specification-engineering-services-section",
   "derived-from": [
@@ -80,6 +81,13 @@
       "cell": "engineering-design-accepts-explicit-source-profiles:source-and-operation-evidence",
       "target": "held",
       "says": "ensure that evidence binds the actual source revision, original profile/request, provider task and exact delivery, generated artifacts, independent native receiving and actual consuming CDE/Engineering paths. Actual provider availability and qualitative source completeness are separate; a catalog label, quota failure, memory refusal or transport success cannot stand in for a qualified Design or operating Koios outcome."
+    },
+    {
+      "cell": "engineering-design-accepts-explicit-source-profiles:requirement-cut",
+      "target": "held",
+      "decided-by": "engineering",
+      "rationale": "A section keeps all its requirement cells in one record, so a Specification covering one capability must be generated from a selected set of that record's cells; requiring one interpretation per cell of the whole record made deriveSpecificationFromRequirementReview unusable for LAGOON's release-baselines specification on 2026-10-30, and the specification was drafted by hand instead.",
+      "says": "deriveSpecificationFromRequirementReview and the Architecture source cut SHALL accept a requirement cut: the section's one original Requirement record together with the explicit list of met-when cells it covers. Every listed cell SHALL require exactly one interpretation, unlisted cells SHALL be neither required nor rendered, and the cut's revision SHALL bind the whole record's digest with the sorted cell list, so a change to any listed cell or to the record makes a downstream review stale."
     }
   ],
   "owners": [

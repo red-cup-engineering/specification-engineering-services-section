@@ -196,11 +196,11 @@ jobs:
           assert.match(renderSpecificationMarkdown(candidate),/Group MUST/u);
           assert.throws(()=>deriveSpecificationFromRequirementReview(requirement,{
             ...review, interpretations:review.interpretations.slice(1),
-          }),/every non-inference source condition requires exactly one/u);
-          // The source-authority rule must hold for the actual independently
-          // INSTALLED package, not just generator-authored tests in the checkout.
-          // This additional retention demand is explicitly an agent inference,
-          // NOT a Leader/customer Requirement and NOT a normative clause.
+          }),/every source condition requires exactly one/u);
+          const { artifactId } = await import("@red-cup-engineering/semiotic-eavt-services-section/identity");
+          // A source-inferred engineering decision is a reviewed normative
+          // clause. Its original machine address MUST remain an exact key for
+          // Architecture and Design, not a prose-annotated citation.
           const withAgentInference=structuredClone(requirement);
           withAgentInference["met-when"].push({
             cell:"buyer-work-continuity:guessed-retention",target:"held",
@@ -208,48 +208,58 @@ jobs:
             inference:true,
             "leader-words":"the customer made no ten-year retention request",
           });
-          const readWithInference=deriveSpecificationFromRequirementReview(
-            withAgentInference,review);
-          assert.equal(validateSpecificationRecord(readWithInference).valid,true);
-          assert.deepEqual(readWithInference.topics[0].clauses.map(c=>c.id),
-            ["original-work","independent-recipient"],
-            "only independently reviewed non-inference source conditions become normative");
-          assert.deepEqual(readWithInference.topics[0].clauses.map(c=>c.statement),
-            requirement["met-when"].map(c=>c.says),
-            "the original buyer clauses remain intact and in their source order");
-          assert.equal(readWithInference.openQuestions.length,1);
-          assert.match(readWithInference.openQuestions[0].question,
-            /Agent inference, not stated by the Leader/u);
-          assert.match(readWithInference.openQuestions[0].question,
-            /retain every buyer record for ten years/u);
-          assert.match(readWithInference.openQuestions[0].question,
-            /buyer-work-continuity:guessed-retention/u);
-          assert.match(readWithInference.openQuestions[0].question,
-            /the customer made no ten-year retention request/u);
-          assert.match(readWithInference.openQuestions[0].blockedBy,
-            /Leader acceptance or striking/u);
-          assert.equal(readWithInference.identity.status,"draft");
-          assert.notEqual(readWithInference.provenance.derivedFrom[0],
-            candidate.provenance.derivedFrom[0],
-            "the added open inference still changes original source identity");
-          assert.doesNotMatch(renderSpecificationMarkdown(readWithInference),
-            /Group MUST retain every buyer record for ten years/u,
-            "an unadopted inference cannot render as a normative clause");
-          const forgedReview=structuredClone(review);
-          forgedReview.interpretations.push({
+          const inferredReview=structuredClone(review);
+          inferredReview.interpretations.push({
             cell:"buyer-work-continuity:guessed-retention",
-            clauseId:"guessed-retention",keyword:"MUST",actor:"Unadopted agent",
+            clauseId:"guessed-retention",keyword:"MUST",actor:"The Group",
           });
           assert.throws(()=>deriveSpecificationFromRequirementReview(
+            withAgentInference,review),
+            /every source condition requires exactly one/u,
+            "an engineering decision needs an explicit original reviewer");
+          const readWithInference=deriveSpecificationFromRequirementReview(
+            withAgentInference,inferredReview);
+          assert.equal(validateSpecificationRecord(readWithInference).valid,true);
+          assert.deepEqual(readWithInference.topics[0].clauses.map(c=>c.id),
+            ["original-work","independent-recipient","guessed-retention"]);
+          assert.deepEqual(readWithInference.topics[0].clauses.map(c=>c.statement),
+            withAgentInference["met-when"].map(c=>c.says));
+          assert.deepEqual(readWithInference.openQuestions,[],
+            "engineering decisions must not be deferred to the Leader");
+          assert.equal(readWithInference.identity.status,"draft",
+            "reviewing engineering decisions is not institutional proof");
+          const inferredClause=readWithInference.topics[0].clauses[2];
+          assert.deepEqual(inferredClause.backedBy,[
+            "Original Requirement "+withAgentInference.id+
+              " ("+artifactId(withAgentInference)+"), cell buyer-work-continuity:guessed-retention"
+          ],"a provenance annotation must not mutate a machine-readable source address");
+          assert.equal(withAgentInference["met-when"][2].inference,true);
+          assert.equal(withAgentInference["met-when"][2]["leader-words"],
+            "the customer made no ten-year retention request");
+          assert.notEqual(readWithInference.provenance.derivedFrom[0],
+            candidate.provenance.derivedFrom[0],
+            "engineering source selection changes the original full-source identity");
+          assert.match(renderSpecificationMarkdown(readWithInference),
+            /\*\*The Group MUST\*\* retain every buyer record for ten years/u,
+            "the reviewed engineering decision is genuinely normative");
+          const forgedReview=structuredClone(inferredReview);
+          forgedReview.interpretations[2].cell="buyer-work-continuity:forged";
+          assert.throws(()=>deriveSpecificationFromRequirementReview(
             withAgentInference,forgedReview),
-            /an interpretation names inference cell buyer-work-continuity:guessed-retention/u);
+            /an interpretation names an unknown source condition/u);
+          const malformed=structuredClone(withAgentInference);
+          malformed["met-when"][2].inference="untyped";
+          assert.throws(()=>deriveSpecificationFromRequirementReview(
+            malformed,inferredReview),
+            /malformed original source condition/u);
           const onlyInferences=structuredClone(withAgentInference);
           for(const condition of onlyInferences["met-when"])
             condition.inference=true;
-          assert.throws(()=>deriveSpecificationFromRequirementReview(
-            onlyInferences,{...review,interpretations:[]}),
-            /nothing normative remains to specify/u,
-            "a source with no customer conditions cannot create a Specification");
+          const allDecisions=deriveSpecificationFromRequirementReview(
+            onlyInferences,inferredReview);
+          assert.equal(allDecisions.topics[0].clauses.length,3,
+            "a fully reviewed engineering decision cut is normative");
+          assert.deepEqual(allDecisions.openQuestions,[]);
           const revised=structuredClone(requirement);
           revised["met-when"][0].says="retain one NEW source obligation";
           const subsequent=deriveSpecificationFromRequirementReview(revised,review);
@@ -260,7 +270,6 @@ jobs:
           // Architecture metadata alone can pass while its referenced Work
           // has changed. Run the original source-cut reader on the same
           // independently INSTALLED package, not the build checkout.
-          const { artifactId } = await import("@red-cup-engineering/semiotic-eavt-services-section/identity");
           const {
             validateArchitectureDescriptionAgainstSourceCut,
             renderArchitectureDescriptionFromSourceCut,
@@ -313,6 +322,51 @@ jobs:
             "normative-but-architecture-untraced");
           assert.match(renderArchitectureDescriptionFromSourceCut(sourceBoundArchitecture,cut),
             /Exact original Requirement-to-model traceability/u);
+          // Independently installed original Architecture and Design consumers
+          // receive the SAME engineering-inferred source with exact addresses.
+          const inferredArchitecture=structuredClone(sourceBoundArchitecture);
+          inferredArchitecture.sources.find(x=>x.id==="req").revision=artifactId(withAgentInference);
+          inferredArchitecture.sources.find(x=>x.id==="spec").revision=artifactId(readWithInference);
+          inferredArchitecture.concerns[0].requirementCellIds.push(
+            "buyer-work-continuity:independent-recipient",
+            "buyer-work-continuity:guessed-retention");
+          inferredArchitecture.concerns[0].specificationClauseIds.push(
+            "independent-recipient","guessed-retention");
+          const inferredCut={requirement:withAgentInference,specification:readWithInference};
+          const inferredAccepted=validateArchitectureDescriptionAgainstSourceCut(
+            inferredArchitecture,inferredCut);
+          assert.equal(inferredAccepted.valid,true,JSON.stringify(inferredAccepted.issues));
+          const decisionTrace=readRequirementArchitectureTrace(
+            inferredArchitecture,inferredCut);
+          assert.deepEqual(decisionTrace.counts,
+            {sourceCells:3,authoredModelMapped:3,untraced:0});
+          assert.deepEqual(decisionTrace.rows.find(
+            x=>x.cell==="buyer-work-continuity:guessed-retention").normativeClauseIds,
+            ["guessed-retention"]);
+          const {planEngineeringDesign}=await import(
+            "@red-cup-engineering/specification-engineering-services-section/engineering-design");
+          const sourcePlan=planEngineeringDesign({stage:"high-level",sources:[
+            {kind:"requirement",text:JSON.stringify(withAgentInference)},
+            {kind:"specification",text:JSON.stringify(readWithInference)},
+            {kind:"architecture",text:JSON.stringify(inferredArchitecture)},
+          ]});
+          assert.equal(sourcePlan.type,"EngineeringDesignDerivationPlan");
+          assert.equal(sourcePlan.stage,"high-level");
+          const annotated=structuredClone(readWithInference);
+          annotated.topics[0].clauses[2].backedBy[0]+=" (engineering decision)";
+          const annotatedArchitecture=structuredClone(inferredArchitecture);
+          annotatedArchitecture.sources.find(x=>x.id==="spec").revision=artifactId(annotated);
+          assert.equal(validateArchitectureDescriptionAgainstSourceCut(
+            annotatedArchitecture,{
+              requirement:withAgentInference,specification:annotated,
+            }).valid,false,
+            "even a digest-refreshed prose-suffixed source key must be refused");
+          assert.throws(()=>planEngineeringDesign({stage:"high-level",sources:[
+            {kind:"requirement",text:JSON.stringify(withAgentInference)},
+            {kind:"specification",text:JSON.stringify(annotated)},
+            {kind:"architecture",text:JSON.stringify(annotatedArchitecture)},
+          ]}),TypeError);
+          console.log("Packed inferred engineering decision: exact Requirement->Specification->Architecture->Design work received; false source annotation refused; Proof unreceived");
           console.log("Packed buyer condition->Specification clause->architecture model: 1 mapped, 1 untraced; no fabricated proof");
           assert.equal(validateArchitectureDescriptionAgainstSourceCut(sourceBoundArchitecture,{
             requirement:revised,specification:subsequent,

@@ -106,9 +106,9 @@ A reviewed Requirement can be interpreted into a draft with
 `deriveSpecificationFromRequirementReview`. Each normative clause retains its original
 supported source condition rather than relying on the entire source document's presence as
 blanket coverage. A condition marked `"inference": true` (added by an agent, not stated by
-the Leader) is never turned into a clause: it becomes an `openQuestions` entry, quoting its
-`says` and any `leader-words`, for the Leader to accept or strike, and a Requirement whose
-conditions are all inference is refused. A rendered Specification is a reproducible Markdown carrier with source
+the Leader) is an engineering decision: it is reviewed and becomes a clause like any other,
+and its backing names it as an engineering decision with any `leader-words`. It is never left
+open for the Leader (rule engineering-decisions-are-made-not-deferred-to-the-leader). A rendered Specification is a reproducible Markdown carrier with source
 identities, topic sections and BCP 14 clauses.
 [Specification tests](test/specification.test.mjs) and
 [Requirement-derivation tests](test/derive-specification.test.mjs) exercise the existing
