@@ -112,10 +112,10 @@ export function clausesSplitAcrossModels({ completeArchitecture = false } = {}) 
  * exact whole-Requirement, normative clause and 42010-model source addresses.
  * It cannot claim authority, generator conformance or a measured refusal.
  */
-export function sourceWithDeniedCondition() {
+export function sourceWithDeniedCondition({target='denied'}={}) {
   const sources=sourcesFixture();
   const requirement=JSON.parse(sources[0].text);
-  requirement['met-when'][1].target='denied';
+  requirement['met-when'][1].target=target;
   requirement['met-when'][1].says='Release supplier output without independent recipient acceptance.';
   const specification=JSON.parse(sources[1].text);
   specification.provenance.derivedFrom=[
