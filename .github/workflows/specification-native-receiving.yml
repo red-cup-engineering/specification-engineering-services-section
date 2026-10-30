@@ -196,7 +196,7 @@ jobs:
           assert.match(renderSpecificationMarkdown(candidate),/Group MUST/u);
           assert.throws(()=>deriveSpecificationFromRequirementReview(requirement,{
             ...review, interpretations:review.interpretations.slice(1),
-          }),/every non-inference source condition requires exactly one/u);
+          }),/every source condition requires exactly one/u);
           // The source-authority rule must hold for the actual independently
           // INSTALLED package, not just generator-authored tests in the checkout.
           // This additional retention demand is explicitly an agent inference,
