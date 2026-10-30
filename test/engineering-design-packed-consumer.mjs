@@ -623,6 +623,10 @@ const deniedCode=readEngineeringCodeWork({
 });
 assert.deepEqual(deniedCode.targets[0].originalTrace.map(row=>row.requirementCellId),
   deniedRequirement['met-when'].map(row=>row.cell));
+assert.deepEqual(deniedCode.targets[0].originalTrace.map(row=>row.sourceTarget),
+  ['held','denied'],
+  'actual installed Code Work consumer retains source evidence polarity, not only IDs');
+assert.equal(Object.isFrozen(deniedCode.targets[0].originalTrace[1]),true);
 assert.equal(deniedRequirement['met-when'][1].target,'denied');
 assert.equal(JSON.parse(deniedSources[1].text).topics[0].clauses[1].keyword,'MUST NOT');
 assert.equal(deniedCode.sourceVerification.status,'source-tests-missing');
