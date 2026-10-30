@@ -7,6 +7,7 @@ import { spawnSync } from 'node:child_process';
 import {
   planEngineeringDesign,
   receiveEngineeringDesign,
+  readEngineeringDesignInferenceWork,
   readEngineeringCodeWork,
 } from '@red-cup-engineering/specification-engineering-services-section/engineering-design';
 import { indexJavaScriptModuleBindings } from '@red-cup-engineering/specification-engineering-services-section/javascript-module-bindings';
@@ -135,6 +136,29 @@ const low = receiveEngineeringDesign({
 assert.equal(low.type, 'EngineeringDesignCandidate');
 assert.equal(low.admitted, false);
 assert.equal(low.proof, 'unreceived');
+
+// The actual separately installed PUBLIC npm Design consumer must project a
+// request that the original CIE typed root can admit, not pass abstract
+// messages/schema fields silently ignored or refused by CIE.
+for (const stagePlan of [plan,lowPlan]) {
+  const oldPlan=structuredClone(stagePlan);
+  const work=readEngineeringDesignInferenceWork(stagePlan);
+  assert.deepEqual(Object.keys(work).sort(),[
+    'objective','context','contextOptimization','taskClass',
+    'outputSchema','enforceProviderSchema','requiredCapabilities',
+  ].sort());
+  assert.deepEqual(JSON.parse(work.context),{stage:stagePlan.stage,sources:stagePlan.sources});
+  assert.equal(work.contextOptimization.mode,'exact');
+  assert.equal(work.enforceProviderSchema,true);
+  assert.deepEqual(work.requiredCapabilities,['json-schema-output']);
+  assert.deepEqual(work.outputSchema,stagePlan.request.schema);
+  work.outputSchema.type='array';
+  assert.deepEqual(stagePlan,oldPlan);
+  const forged=structuredClone(stagePlan);
+  forged.request.schema={type:'string'};
+  assert.throws(()=>readEngineeringDesignInferenceWork(forged),TypeError);
+}
+
 
 // The distinct, independently installed npm consumer must exercise the
 // shared strict JSON reader INSIDE both original Design interface schemas.

@@ -383,6 +383,55 @@ export function planEngineeringDesign(input) {
 }
 
 /**
+ * Project an unchanged Design derivation plan into the ORIGINAL Computer
+ * Inference Engine's closed, typed work-request input, without invoking it.
+ *
+ * The historic plan.request is an abstract Design intent: CIE does not admit
+ * its "messages"/"schema" keys. CIE instead consumes "objective"/"context"/
+ * "outputSchema" and only offers provider-side constrained JSON when explicitly
+ * enabled for a provider advertising "json-schema-output". Preserve this
+ * original plan (including earlier HLD/negative-lot source identities) and
+ * translate it deterministically rather than rewriting a prior receipt.
+ *
+ * Source contracts: CIE inference-work-request.schema.json at blob
+ * 81608c2608df119d8ddb0f2ecd5cee42fce879a0; inference-dispatch.mjs at
+ * 91c2176454d93dcbf103f24e96e1b69b9f9b27dc; direct-endpoint-provider.mjs
+ * at a17f7759fc5b17fa9f2e8f3980c8fd3a240ad956 (observed 2026-10-29).
+ * CIE's plain inference route has a generic host system message, so Design's
+ * former system instructions must now travel explicitly in the objective.
+ * This changes prompt-role priority; it is NOT a proven equivalent inference
+ * delivery. The original Design receiver must independently assay the result.
+ *
+ * Caller/host still owns Work, resource ceilings, provider capability evidence,
+ * credentials, authorized spend and actual CIE invocation. Missing availability
+ * is a refusal, not a reason to silently fall back to an unconstrained model.
+ * The output is not a provider request receipt, adopted Design or Proof.
+ */
+export function readEngineeringDesignInferenceWork(plan) {
+  requireThat(exact(plan, ['type', 'stage', 'sources', 'request']) &&
+    plan.type === 'EngineeringDesignDerivationPlan' && Array.isArray(plan.sources));
+  const supplied = plan.sources.map(source => {
+    requireThat(exact(source, ['kind', 'text', 'digest']) &&
+      typeof source.text === 'string' && typeof source.digest === 'string');
+    return { kind: source.kind, text: source.text };
+  });
+  // Re-derive the COMPLETE original unmodified plan and its verified upstream
+  // Requirement/Specification/Architecture/HLD source cut. No caller-supplied
+  // request fragment or source digest may be substituted after this check.
+  const derived = makePlan(plan.stage, sourceContext(plan.stage, supplied));
+  requireThat(equal(plan, derived));
+  return {
+    objective: plan.request.objective + '\n\n' + plan.request.messages[0].content,
+    context: plan.request.messages[1].content,
+    contextOptimization: { mode: 'exact' },
+    taskClass: plan.request.taskClass,
+    outputSchema: structuredClone(plan.request.schema),
+    enforceProviderSchema: true,
+    requiredCapabilities: ['json-schema-output']
+  };
+}
+
+/**
  * Receive an actual HLD or LLD candidate against its complete current plan.
  * Structural correspondence does not receive semantic refinement, Proof, source
  * adoption or effect authority; all independent review obligations remain owed.
