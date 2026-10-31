@@ -160,6 +160,28 @@ test('preserve authored model identity into low-level operations for both cells'
   assert.equal(derive('low-level',lowSources(),crossed).reason,'invalid-design');
 });
 
+test('real Engineering #137 Design planner refuses a schema-invalid Specification even with a matching Architecture digest',()=>{
+  const originalHld=JSON.parse(readFileSync(new URL(
+    '../data/records/service-records/high-level-design-service-records/engineering-design-explicit-source-profiles.json',
+    import.meta.url),'utf8'));
+  const original=originalHld.sources.map(({kind,text})=>({kind,text}));
+  assert.equal(planEngineeringDesign({stage:'high-level',sources:original}).stage,'high-level');
+  const changed=original.map(source=>({...source}));
+  const specSource=changed.find(source=>source.kind==='specification');
+  const changedSpec=JSON.parse(specSource.text);
+  changedSpec.topics[0].clauses[0].admitted=true;
+  assert.equal(validateSpecificationRecord(changedSpec).valid,false);
+  specSource.text=JSON.stringify(changedSpec);
+  const archSource=changed.find(source=>source.kind==='architecture');
+  const changedArchitecture=JSON.parse(archSource.text);
+  changedArchitecture.sources.find(source=>
+    source.id===changedArchitecture.upstream.specificationSourceId
+  ).revision=artifactId(changedSpec);
+  archSource.text=JSON.stringify(changedArchitecture);
+  assert.throws(()=>planEngineeringDesign({stage:'high-level',sources:changed}),
+    /Invalid engineering design input or source projection|selected source cut/u);
+});
+
 test('the original refused LLD provider delivery remains refused at the current exact source cut', () => {
   // These are original recorded sources, not synthetic examples or repaired
   // model output. Reconstruct a NEW read-only plan at today's source parser,

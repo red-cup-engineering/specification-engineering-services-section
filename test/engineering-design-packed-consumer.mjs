@@ -56,6 +56,24 @@ const original = sourcesFixture();
 const plan = planEngineeringDesign({ stage: 'high-level', sources: original });
 assert.equal(plan.type, 'EngineeringDesignDerivationPlan');
 
+// Independently clean-installed public API must enforce the upstream
+// Specification's native source admission, not accept a refreshed hash as
+// evidence of a valid Specification or an independently reviewed stage.
+const malformedSpecificationCut=original.map(source=>({...source}));
+const malformedSpecification=JSON.parse(malformedSpecificationCut[1].text);
+malformedSpecification.topics[0].clauses[0].admitted=true;
+malformedSpecificationCut[1].text=JSON.stringify(malformedSpecification);
+const relabeledArchitecture=JSON.parse(malformedSpecificationCut[2].text);
+relabeledArchitecture.sources.find(source=>
+  source.id===relabeledArchitecture.upstream.specificationSourceId
+).revision=artifactId(malformedSpecification);
+malformedSpecificationCut[2].text=JSON.stringify(relabeledArchitecture);
+assert.throws(()=>planEngineeringDesign({
+  stage:'high-level',sources:malformedSpecificationCut,
+}),/selected source cut|Invalid engineering design input or source projection/u,
+'installed Design consumer must reject an invalid Specification even under an exact content address');
+
+
 // Native packed-consumer composition: original review projector → original
 // HLD receiver through the public, separately installed package export.
 // No model output, Proof or original Work grant is synthesized.
