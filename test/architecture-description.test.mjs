@@ -1022,3 +1022,59 @@ test("root buyer requests, condition order and metadata propagate from Requireme
   assert.equal(citationOnly.impact.originalEffect,"none-read-only");
   assert.equal(citationOnly.impact.independentlyAcceptedCustomerWork,false);
 });
+
+test('changing only an independently authored verification procedure requalifies source without regenerating application behavior',()=>{
+  // Source-only NYPA buyer reference, not an accepted work order or executed
+  // verification. The incumbent original Specification clause.test is an
+  // INERT authored verification procedure, not part of product behavior.
+  const prior=publishedUtilityBuyerTrace();
+  const changed=structuredClone(prior);
+  changed.specification.topics[0].clauses[0].test=
+    'node --test test/original-reader-permission-refusal.test.mjs';
+  changed.architecture.sources.find(source=>source.id==='spec').revision=
+    artifactId(changed.specification);
+  assert.equal(validateArchitectureDescriptionAgainstSourceCut(
+    changed.architecture,changed).valid,true);
+  const result=readRequirementArchitectureImpact(prior,changed);
+  assert.equal(result.summary.affectedCells,3);
+  assert.equal(result.summary.regenerationCells,0,
+    'reviewing a test witness must not fabricate a need to rewrite unchanged Code');
+  assert.equal(result.summary.requalificationOnlyCells,3,
+    'every original source relation still needs its new Specification cut received');
+  const targeted=result.changes.find(row=>
+    row.cell.endsWith(':permission-filtered-answers'));
+  assert.equal(targeted.kind,'requalify-source-only');
+  assert.ok(targeted.reasons.includes('verification-declaration-changed'));
+  assert.ok(!targeted.reasons.includes('normative-clause-content-changed'));
+  assert.equal(result.independentlyAcceptedCustomerWork,false);
+  assert.equal(result.originalEffect,'none-read-only');
+  assert.ok(Object.isFrozen(targeted.reasons));
+
+  // A second unaudited test declaration still demands requalification
+  // without changing original software behavior or original Code owner.
+  const revised=structuredClone(changed);
+  revised.specification.topics[0].clauses[0].test=
+    'node --test test/new-permission-counterexample.test.mjs';
+  revised.architecture.sources.find(source=>source.id==='spec').revision=
+    artifactId(revised.specification);
+  const testOnly=readRequirementArchitectureImpact(changed,revised);
+  assert.equal(testOnly.summary.regenerationCells,0);
+  assert.equal(testOnly.summary.requalificationOnlyCells,3);
+  assert.ok(testOnly.changes.find(row=>
+    row.cell.endsWith(':permission-filtered-answers')).reasons.includes(
+    'verification-declaration-changed'));
+
+  // A genuinely changed normative statement is a different obligation:
+  // still regenerate its one mapped implementation responsibility.
+  const semantic=structuredClone(changed);
+  semantic.specification.topics[0].clauses[0].statement=
+    'Original permission filtering must reject unauthenticated readers.';
+  semantic.architecture.sources.find(source=>source.id==='spec').revision=
+    artifactId(semantic.specification);
+  const material=readRequirementArchitectureImpact(changed,semantic);
+  assert.equal(material.summary.regenerationCells,1);
+  assert.equal(material.summary.requalificationOnlyCells,2);
+  assert.ok(material.changes.find(row=>
+    row.cell.endsWith(':permission-filtered-answers')).reasons.includes(
+    'normative-clause-content-changed'));
+});

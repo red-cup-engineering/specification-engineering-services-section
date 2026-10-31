@@ -685,3 +685,22 @@ assert.ok(installedImpact.changes.every(row=>
 assert.equal(installedImpact.originalEffect,'none-read-only');
 assert.equal(installedImpact.independentlyAcceptedCustomerWork,false);
 console.log('Packed original Architecture change impact: root Requirement speech changes propagate two selected code-facing regenerations; no native Work or Proof effect.');
+
+// Packed independent verification-declaration-only impact: use the actual
+// public npm-installed Architecture reader, not a checkout or separate
+// factory. An authored Specification.test changes which test needs receiving
+// but cannot by itself rewrite the implementation's normative behavior.
+const testOnlyCut=structuredClone(sourceImpactBefore);
+testOnlyCut.specification.topics[0].clauses[0].test=
+  'node --test test/independently-authored-source-check.test.mjs';
+testOnlyCut.architecture.sources.find(x=>x.id==='specification').revision=
+  artifactId(testOnlyCut.specification);
+const verificationOnly=readRequirementArchitectureImpact(
+  sourceImpactBefore,testOnlyCut);
+assert.equal(verificationOnly.summary.regenerationCells,0);
+assert.equal(verificationOnly.summary.requalificationOnlyCells,2);
+assert.ok(verificationOnly.changes.find(x=>x.cell==='source-req:a').reasons.includes(
+  'verification-declaration-changed'));
+assert.equal(verificationOnly.originalEffect,'none-read-only');
+assert.equal(verificationOnly.independentlyAcceptedCustomerWork,false);
+console.log('Packed independent verification-declaration-only impact: two original requirements require source requalification, zero Code rewrites, and Proof remains unreceived.');
