@@ -370,3 +370,34 @@ test("a reviewed denied target remains source-exact and a normative prohibition,
   }),/every source condition requires exactly one/u,
   "a negative condition cannot disappear under a partial review");
 });
+
+test("stale original normative interpretation review cannot silently be rebound to changed Requirement source",()=>{
+  // The saved review is NOT permission to reinterpret a later source under
+  // its original reviewer's identity. The exact whole-record NI is a
+  // necessary source-cut boundary, not proof of Office authority.
+  const original=sourceRequirement();
+  const review={...sourceReview(original),
+    reviewedRequirementRevision:artifactId(original)};
+  const first=deriveSpecificationFromRequirementReview(original,review);
+  assert.equal(validateSpecificationRecord(first).valid,true);
+  const amended=structuredClone(original);
+  amended['met-when'][1].says='A different, independently unreviewed buyer claim';
+  assert.throws(()=>deriveSpecificationFromRequirementReview(amended,review),
+    /reviewed Requirement revision.*mismatch/u,
+    'changing the buyer clause must not silently reuse a historical BCP14 decision');
+  const contextOnly=structuredClone(original);
+  contextOnly.asks='The buyer changed an original, source-addressed request';
+  assert.throws(()=>deriveSpecificationFromRequirementReview(contextOnly,review),
+    /reviewed Requirement revision.*mismatch/u,
+    'source metadata changes also change the whole source-cut correspondence');
+  const fresh={...review,reviewedRequirementRevision:artifactId(amended)};
+  const next=deriveSpecificationFromRequirementReview(amended,fresh);
+  assert.notEqual(first.provenance.derivedFrom[0],next.provenance.derivedFrom[0]);
+  assert.equal(next.identity.status,'draft');
+  assert.equal(next.topics[0].clauses[1].statement,amended['met-when'][1].says);
+  for(const invalid of [undefined,'',artifactId(original).replace('ni:///sha-256;',''),null]){
+    assert.throws(()=>deriveSpecificationFromRequirementReview(original,{
+      ...review,reviewedRequirementRevision:invalid,
+    }),/reviewed Requirement revision/u);
+  }
+});
