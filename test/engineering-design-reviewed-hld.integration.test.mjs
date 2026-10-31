@@ -3,6 +3,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createHash } from 'node:crypto';
+import { validateJsonSchema } from '@red-cup-engineering/json-schema-services-section/validation';
 import { sourcesFixture } from './engineering-design-source-cut.fixture.mjs';
 import {
   planEngineeringDesign, receiveEngineeringDesign,
@@ -126,8 +127,13 @@ test('a cyclic but trace-shaped projection is refused by the original Design che
   const bad=reviewFixture();
   bad.components[0].layer='code';
   bad.components[1].layer='code';
-  bad.components[0].requires=[{componentId:'comp-b',port:'b-value'}];
-  bad.components[1].requires=[{componentId:'comp-a',port:'a-value'}];
+  // The two original components independently offer valid compatible ports.
+  // Their graph, not a missing port contract, must be what refuses the cycle.
+  const s='{"type":"string"}';
+  bad.components[0].provides=[{port:'a-value',schemaJson:s}];
+  bad.components[1].provides=[{port:'b-value',schemaJson:s}];
+  bad.components[0].requires=[{componentId:'comp-b',port:'b-value',schemaJson:s}];
+  bad.components[1].requires=[{componentId:'comp-a',port:'a-value',schemaJson:s}];
   const value=receiveEngineeringHighLevelReview(request(bad));
   assert.deepEqual(value,{type:'EngineeringDesignDerivationRefusal',
     reason:'invalid-design'});
@@ -158,6 +164,14 @@ test('ENG-20: independently authored provider port contract and consumer demand 
     $schema:'https://json-schema.org/draft/2020-12/schema',
     type:'string',minLength:1,
   });
+  // Independent incumbent Draft 2020-12 evaluator: the two proposed
+  // contracts are genuinely different predicates over actual values, not
+  // merely two hashes or self-asserted source labels.
+  assert.equal(validateJsonSchema(7,JSON.parse(positiveSchema)).valid,true);
+  assert.equal(validateJsonSchema('value',JSON.parse(positiveSchema)).valid,false);
+  assert.equal(validateJsonSchema('value',JSON.parse(incompatibleSchema)).valid,true);
+  assert.equal(validateJsonSchema(7,JSON.parse(incompatibleSchema)).valid,false);
+
   const linked=reviewFixture();
   linked.components[0].provides=[{port:'source-values',schemaJson:positiveSchema}];
   linked.components[1].provides=[];
@@ -191,6 +205,18 @@ test('ENG-20: independently authored provider port contract and consumer demand 
   assert.deepEqual(receiveEngineeringHighLevelReview(request(contradictory)),{
     type:'EngineeringDesignDerivationRefusal',reason:'invalid-review',
   },'locally admissible integer and string boundaries do not compose');
+  const ungrounded=structuredClone(linked);
+  ungrounded.components[0].provides[0].independentlyReceived=true;
+  assert.deepEqual(receiveEngineeringHighLevelReview(request(ungrounded)),{
+    type:'EngineeringDesignDerivationRefusal',reason:'invalid-review',
+  },'a purported review flag is not an authored or independently received contract');
+
+  const controls=structuredClone(linked);
+  controls.components[1].requires[0].port='source-values'+String.fromCharCode(10);
+  assert.deepEqual(receiveEngineeringHighLevelReview(request(controls)),{
+    type:'EngineeringDesignDerivationRefusal',reason:'invalid-review',
+  },'control characters must not survive the original typed port boundary');
+
   const duplicate=structuredClone(linked);
   duplicate.components[0].provides.push({
     port:'source-values',schemaJson:positiveSchema,
