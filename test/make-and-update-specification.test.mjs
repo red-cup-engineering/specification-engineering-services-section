@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdtempSync, rmSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
@@ -87,5 +87,57 @@ test("updateSpecification re-renders an existing carrier and reports whether it 
     assert.equal(repeated.changed, false);
   } finally {
     rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test("makeSpecification rejects a lookalike source root before misattributing a citation", async () => {
+  const sourceRoot = mkdtempSync(join(tmpdir(), "specification-source-cut-"));
+  const sibling = sourceRoot + "lib"; // NOT a child: lexical suffix matches 'lib/carrier.md'.
+  try {
+    mkdirSync(sibling, { recursive: true });
+    await writeFileText(join(sourceRoot, "CLAUDE.md"), "# Authority in the other tree\\n");
+    const record = minimalRecord("Do not borrow source evidence");
+    record.identity.carrier = "lib/carrier.md";
+    record.topics = [{
+      heading: "Traceability",
+      body: "{{clause:retain-evidence}}",
+      clauses: [{
+        id: "retain-evidence", actor: "The source reader", keyword: "MUST",
+        statement: "use evidence from the actual destination repository",
+        backedBy: ["[source record](CLAUDE.md)"],
+      }],
+    }];
+    const recordPath = join(sourceRoot, "record.json");
+    const destinationPath = join(sibling, "carrier.md");
+    await writeFileText(recordPath, JSON.stringify(record));
+    // Old behavior finds sourceRoot/CLAUDE.md, then writes sibling/carrier.md.
+    await assert.rejects(() => makeSpecification(recordPath, destinationPath),
+      /does not end with identity\\.carrier/u);
+    assert.equal(existsSync(destinationPath), false,
+      "refused source roots must not manufacture a cross-tree carrier");
+  } finally {
+    rmSync(sibling, { recursive: true, force: true });
+    rmSync(sourceRoot, { recursive: true, force: true });
+  }
+});
+
+test("updateSpecification leaves an existing carrier untouched on lookalike root refusal", async () => {
+  const sourceRoot = mkdtempSync(join(tmpdir(), "specification-update-cut-"));
+  const sibling = sourceRoot + "lib";
+  try {
+    mkdirSync(sibling, { recursive: true });
+    const recordPath = join(sourceRoot, "record.json");
+    const destinationPath = join(sibling, "carrier.md");
+    const record = minimalRecord("Wrong repository");
+    record.identity.carrier = "lib/carrier.md";
+    await writeFileText(recordPath, JSON.stringify(record));
+    await writeFileText(destinationPath, "Existing source-owned carrier\\n");
+    await assert.rejects(() => updateSpecification(recordPath, destinationPath),
+      /does not end with identity\\.carrier/u);
+    assert.equal(await readFileText(destinationPath), "Existing source-owned carrier\\n",
+      "unadmitted source selection cannot rewrite another tree");
+  } finally {
+    rmSync(sibling, { recursive: true, force: true });
+    rmSync(sourceRoot, { recursive: true, force: true });
   }
 });
