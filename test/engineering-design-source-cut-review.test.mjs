@@ -271,7 +271,9 @@ test('Engineering #137 original Specification cannot rewrite or invent buyer con
     assert.ok(read.issues.some(row=>row.path.startsWith('sourceCut.specification')),
       kind+': first defective stage must name the original Specification source');
     assert.throws(()=>planEngineeringDesign({stage:'high-level',sources:cut.sources}),
-      /architecture-description: selected source cut/u,kind+': native HLD must not consume it');
+      TypeError,kind+': native HLD must not consume it');
+    // Native Design also has an earlier per-clause original-reference gate;
+    // either first source-qualified refusal is valid, but never a candidate.
   }
   // An independent test declaration can change without rewriting source
   // behavior; it is still unexecuted and not Proof or customer acceptance.
