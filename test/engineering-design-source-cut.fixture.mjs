@@ -10,8 +10,6 @@ export function sourcesFixture() {
     ],
   };
   const requirementRevision = artifactId(requirement);
-  const reference = cell =>
-    'Original Requirement source-req (' + requirementRevision + '), cell source-req:' + cell;
   // Use the original Specification maker even for explicitly synthetic cuts.
   // A deliberately incomplete shape here previously let 41 downstream tests
   // treat invalid source as a valid predecessor and masked native admission.
@@ -94,6 +92,9 @@ export function clausesSplitAcrossModels({ completeArchitecture = false } = {}) 
     ...specification.topics[0].clauses[0],
     id: 'clause-a2',
   });
+  // The extra reviewed clause must also be projected by the original
+  // Specification carrier, not kept as an unrendered shadow obligation.
+  specification.topics[0].body+='\n\n{{clause:clause-a2}}';
   architecture.sources.find(source => source.id === 'specification').revision =
     artifactId(specification);
   if (completeArchitecture) {
