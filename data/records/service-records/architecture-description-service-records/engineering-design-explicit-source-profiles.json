@@ -308,7 +308,7 @@
     },
     {
       "id": "original-fabrication",
-      "statement": "Generated normative implementation and assays use the original house generation chain and generic Fabrication source-transformation carrier with writable snapshots, verified source views, source-independent review, development-history custody and the resumable CIE task; the input profile never chooses model, provider, account, grant, native command or acceptance authority.",
+      "statement": "Generated normative implementation and assays use the original group generation chain and generic Fabrication source-transformation carrier with writable snapshots, verified source views, source-independent review, development-history custody and the resumable CIE task; the input profile never chooses model, provider, account, grant, native command or acceptance authority.",
       "sourceIds": [
         "req",
         "spec",
@@ -554,7 +554,7 @@
     {
       "id": "original-fabrication",
       "kind": "component",
-      "content": "Generated normative implementation and assays use the original house generation chain and generic Fabrication source-transformation carrier with writable snapshots, verified source views, source-independent review, development-history custody and the resumable CIE task; input profile never chooses model, provider, account, grant, native command or acceptance authority.",
+      "content": "Generated normative implementation and assays use the original group generation chain and generic Fabrication source-transformation carrier with writable snapshots, verified source views, source-independent review, development-history custody and the resumable CIE task; input profile never chooses model, provider, account, grant, native command or acceptance authority.",
       "concernIds": [
         "original-fabrication"
       ],

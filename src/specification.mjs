@@ -124,7 +124,7 @@ export function resolveCitationText(text, carrierRepoRelativePath) {
  * Resolves one law/standard `locator` against the carrier it will be rendered into, wrapping it
  * as a clickable Markdown link when it is an external URL or a repo-relative path (recomputed via
  * `relativeLinkPath`, the same fix `resolveCitationText` applies to `backedBy` entries); any other
- * bare string (a locator that is neither, e.g. a house-internal identifier) passes through as
+ * bare string (a locator that is neither, e.g. a group-internal identifier) passes through as
  * plain text.
  * @param {string} locator
  * @param {string} carrierRepoRelativePath `identity.carrier` of the record being rendered.

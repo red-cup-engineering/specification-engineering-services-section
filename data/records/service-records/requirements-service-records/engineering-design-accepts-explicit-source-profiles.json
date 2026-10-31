@@ -111,7 +111,7 @@
         "revision": "48f6ed16eade45cabc9d9348441fc11e8e2a4622",
         "requirement": "ni:///sha-256;oJBTBcQ8qRwN78ZGaPuAtLN1zTApV_geIhvgRZkrvhQ",
         "cell": "engineering-design-accepts-explicit-source-profiles:original-fabrication",
-        "says": "ensure that generated normative implementation and assays use the original house generation chain and original generic Fabrication source-transformation carrier, with exact writable snapshots, complete verified source views, source-independent review, original development-history custody and the actual resumable CIE task. The input profile never chooses the model, provider, account, resource grant, native command or acceptance authority."
+        "says": "ensure that generated normative implementation and assays use the original group generation chain and original generic Fabrication source-transformation carrier, with exact writable snapshots, complete verified source views, source-independent review, original development-history custody and the actual resumable CIE task. The input profile never chooses the model, provider, account, resource grant, native command or acceptance authority."
       },
       "reason": "Original inferred generic-only condition unnecessarily narrowed the already explicit native-JSNode missing-generator bootstrap. Parent independently received this source contradiction; correct the owning Requirement rather than assert false satisfaction.",
       "authority": "https://github.com/red-cup-engineering/engineering-services-section/blob/d11f80170c947e18e695bdaa0dbfb713edac1252/data/records/service-records/requirements-management-service-records/requirements-generate-specifications-designs-and-normative-code.json",
