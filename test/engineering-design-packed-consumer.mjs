@@ -82,8 +82,8 @@ for(const [kind,mutate] of [
 ]){
   assert.throws(()=>planEngineeringDesign({
     stage:'high-level',sources:readdressSpecification(mutate),
-  }),/architecture-description: selected source cut/u,
-  'independently clean-installed source receiver must refuse '+kind);
+  }),TypeError,
+  'independently clean-installed Design must refuse '+kind);
 }
 const verificationDeclarationOnly=readdressSpecification(spec=>{
   spec.topics[0].clauses[0].test='node --test test/source-verification-only.test.mjs';
