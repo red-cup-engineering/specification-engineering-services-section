@@ -346,7 +346,7 @@ test("a requirement cut of a section's one record generates only its cells and k
   assert.equal(spec.provenance.derivedFrom[0], exact);
   assert.equal(spec.provenance.derivedFrom[1], exact + "#cells=" + [...cells].sort().join(","));
   assert.match(spec.whatThisIs, /cells lagoon:release-baseline-at-formation, lagoon:release-baseline-no-cascade\.$/u);
-  assert.throws(() => deriveSpecificationFromRequirementReview(requirement, { identity, interpretations, at, reviewedBy, cells, reviewedRequirementRevision: ["lagoon:not-a-cell"] }), /requirement cut/u);
+  assert.throws(() => deriveSpecificationFromRequirementReview(requirement, { identity, interpretations, at, reviewedBy, reviewedRequirementRevision, cells: ["lagoon:not-a-cell"] }), /requirement cut/u);
   assert.throws(() => deriveSpecificationFromRequirementReview(requirement, { identity, interpretations: [...interpretations, { cell: "lagoon:one-home", clauseId: "one-home", keyword: "MUST", actor: "LAGOON" }], at, reviewedBy, cells, reviewedRequirementRevision }), /exactly one/u);
   assert.throws(() => deriveSpecificationFromRequirementReview(requirement, { identity, interpretations, at, reviewedBy, reviewedRequirementRevision }), /exactly one/u);
 });
