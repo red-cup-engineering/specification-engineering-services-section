@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 import {
   renderArchitectureDescriptionMarkdown, validateArchitectureDescriptionRecord,
   renderArchitectureDescriptionFromSourceCut, validateArchitectureDescriptionAgainstSourceCut,
-  readRequirementArchitectureTrace, readRequirementArchitectureImpact,
+  readRequirementArchitectureTrace, readRequirementArchitectureImpact, readRequirementRevisionPressure,
   deriveArchitectureDescriptionFromSpecificationReview, loadArchitectureDescriptionSchema,
 } from "../src/architecture-description.mjs";
 import { deriveSpecificationFromRequirementReview } from "../src/specification.mjs";
@@ -957,4 +957,68 @@ test("public Architecture schema projection cannot remove original source admiss
     // Restore the old live reference when running this RED test against main.
     view.required.splice(0, view.required.length, ...originalRequired);
   }
+});
+
+test("root buyer requests, condition order and metadata propagate from Requirement pressure to Architecture fabrication impact",()=>{
+  // Existing real published NYPA requirements/trace test carrier, not a
+  // customer order or an adopted Design. Re-review under NEW source revision
+  // only as unadmitted test data; reuse the original production generators.
+  const original=publishedUtilityBuyerTrace();
+  const revise=mutate=>{
+    const next=structuredClone(original);
+    mutate(next.requirement);
+    next.review.reviewedRequirementRevision=artifactId(next.requirement);
+    next.specification=deriveSpecificationFromRequirementReview(next.requirement,next.review);
+    next.architecture.sources.find(x=>x.id==="req").revision=artifactId(next.requirement);
+    next.architecture.sources.find(x=>x.id==="spec").revision=artifactId(next.specification);
+    assert.equal(validateArchitectureDescriptionAgainstSourceCut(
+      next.architecture,next).valid,true);
+    return {
+      pressure:readRequirementRevisionPressure(original.requirement,next.requirement),
+      impact:readRequirementArchitectureImpact(original,next),
+    };
+  };
+  const newRequest=revise(req=>{
+    req.asks=["The original buyer now requires an additional access-control refusal."];
+  });
+  assert.equal(newRequest.pressure.summary.originalRequestsChanged,true);
+  assert.equal(newRequest.pressure.downstreamRegenerationRequired,true);
+  assert.equal(newRequest.impact.summary.regenerationCells,3,
+    "changing root original customer demands invalidates all selected code-facing responsibilities");
+  assert.equal(newRequest.impact.summary.requalificationOnlyCells,0);
+  assert.ok(newRequest.impact.changes.every(change=>
+    change.reasons.includes("original-requests-changed")));
+  assert.deepEqual(newRequest.impact.affectedModels,["auth-model"],
+    "mapped original code owner must be marked even without rewritten clause IDs");
+
+  const reordered=revise(req=>req["met-when"].reverse());
+  assert.equal(reordered.pressure.summary.sourceConditionOrderChanged,true);
+  assert.equal(reordered.pressure.downstreamRegenerationRequired,true);
+  assert.equal(reordered.impact.summary.regenerationCells,3);
+  assert.ok(reordered.impact.changes.every(change=>
+    change.reasons.includes("source-condition-order-changed")));
+
+  const metadata=revise(req=>{
+    req["met-when"][0].inference=true;
+    req["met-when"][0]["leader-words"]="Not an original buyer quote";
+  });
+  assert.equal(metadata.pressure.summary.changedCells,1);
+  assert.ok(metadata.pressure.changes[0].otherConditionMetadataChanged);
+  assert.equal(metadata.impact.summary.regenerationCells,1,
+    "a changed selected engineering-inference origin demands renewed design work");
+  assert.equal(metadata.impact.summary.requalificationOnlyCells,2);
+  assert.ok(metadata.impact.changes.find(row=>
+    row.cell.endsWith(":permission-filtered-answers")).reasons.includes(
+      "original-condition-metadata-changed"));
+
+  const citationOnly=revise(req=>{
+    req["x-provenance"]={sourceRecordReview:"new unadmitted original reviewer metadata"};
+  });
+  assert.equal(citationOnly.pressure.summary.otherSourceContextChanged,true);
+  assert.equal(citationOnly.pressure.downstreamRegenerationRequired,false);
+  assert.equal(citationOnly.impact.summary.regenerationCells,0,
+    "non-normative provenance changes require source requalification, not automatic regeneration");
+  assert.equal(citationOnly.impact.summary.requalificationOnlyCells,3);
+  assert.equal(citationOnly.impact.originalEffect,"none-read-only");
+  assert.equal(citationOnly.impact.independentlyAcceptedCustomerWork,false);
 });
