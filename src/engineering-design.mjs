@@ -635,10 +635,19 @@ export function readEngineeringCodeWork({
   // each prospective Code Work relation; a cell ID alone loses this polarity.
   // A target is not observed evidence, an executed test or a permission grant.
   const originalRequirement = parseObject(designCandidate.sources[0].text);
+  const originalArchitecture = parseObject(designCandidate.sources[2].text);
+  // The same incumbent Architecture trace already knows which exact
+  // Requirement cell owns each source-authored Specification test. Reuse that
+  // canonical readout instead of independently recounting tests after an LLD
+  // has been obtained; no LLD or Code view creates a new test declaration.
+  const verificationTrace=readRequirementArchitectureTrace(originalArchitecture,{
+    requirement:originalRequirement,specification:originalSpecification,
+  });
   const sourceTargets = new Map(originalRequirement['met-when'].map(row =>
     [row.cell, row.target]));
-  const declaredSourceTests = new Map(originalSpecification.topics.flatMap(topic =>
-    topic.clauses.map(clause => [clause.id, clause.test ?? null])));
+  const sourceTestsByClause=new Map(
+    verificationTrace.sourceVerification.declarations.map(row=>
+      [row.specificationClauseId,row]));
   const originalOwners = new Map(highLevel.design.components.map(row =>
     [row.id, row.owner]));
   const keyOf = (owner, path) => JSON.stringify([owner, path]);
@@ -762,13 +771,13 @@ export function readEngineeringCodeWork({
           // declared procedures are carried only as inert test descriptions.
           sourceVerification: traced.get(operation.id).flatMap(row =>
             row.specificationClauseIds.map(specificationClauseId => {
-              const test = declaredSourceTests.get(specificationClauseId) ?? null;
+              const declaration=sourceTestsByClause.get(specificationClauseId);
+              requireThat(declaration?.requirementCellId===row.requirementCellId);
               return {
-                requirementCellId: row.requirementCellId,
+                requirementCellId:row.requirementCellId,
                 specificationClauseId,
-                test,
-                status: test === null
-                  ? 'verification-test-not-declared' : 'declared-unverified',
+                test:declaration.test,
+                status:declaration.status,
               };
             })),
           status: 'unreceived',
@@ -783,16 +792,13 @@ export function readEngineeringCodeWork({
   // one clause can demand multiple modules and still needs one independently
   // authored behavioral verification. Valid exports alone never close this gap.
   // A declared test is inert source testimony, not executed evidence or Proof.
-  const missingSourceTests = [...declaredSourceTests]
-    .filter(([, test]) => test === null)
-    .map(([clauseId]) => clauseId).sort();
+  const upstreamCoverage=verificationTrace.sourceVerification;
   const sourceVerification = {
-    scope: 'original-specification-clauses',
-    status: missingSourceTests.length
-      ? 'source-tests-missing' : 'source-tests-declared-unverified',
-    clauseCount: declaredSourceTests.size,
-    declaredTestCount: declaredSourceTests.size - missingSourceTests.length,
-    missingClauseIds: missingSourceTests,
+    scope:upstreamCoverage.scope,
+    status:upstreamCoverage.status,
+    clauseCount:upstreamCoverage.clauseCount,
+    declaredTestCount:upstreamCoverage.declaredTestCount,
+    missingClauseIds:[...upstreamCoverage.missingClauseIds],
   };
   const readout = {
     type: 'EngineeringDesignCodeWorkReadout', version: 1,
