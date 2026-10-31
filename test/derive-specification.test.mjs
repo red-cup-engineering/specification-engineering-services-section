@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { spawnSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
 import { artifactId } from "@red-cup-engineering/semiotic-eavt-services-section/identity";
 import {
   deriveSpecificationRecord, deriveSpecificationFromRequirementReview,
@@ -406,4 +408,31 @@ test("stale original normative interpretation review cannot silently be rebound 
       ...review,reviewedRequirementRevision:invalid,
     }),/reviewed Requirement revision/u);
   }
+});
+
+test("original CLI refuses a stale authored Requirement revision without emitting partial normative source",()=>{
+  const original=sourceRequirement();
+  const review=sourceReview(original);
+  const runner=fileURLToPath(new URL("../scripts/derive-specification-from-requirement.mjs",import.meta.url));
+  const cli=(req,review)=>spawnSync(process.execPath,[runner],{
+    input:JSON.stringify({requirement:req,review}),
+    encoding:"utf8",timeout:20000,maxBuffer:1024*1024,
+  });
+  const positive=cli(original,review);
+  assert.equal(positive.status,0,positive.stderr);
+  const projected=JSON.parse(positive.stdout);
+  assert.equal(projected.identity.status,"draft");
+  assert.deepEqual(projected,deriveSpecificationFromRequirementReview(original,review));
+  const altered=structuredClone(original);
+  altered["met-when"][0].says+=" Unreviewed buyer amendment.";
+  const negative=cli(altered,review);
+  assert.equal(negative.status,1,negative.stderr);
+  assert.equal(negative.stdout,"","a stale review cannot produce a partial Specification");
+  assert.match(negative.stderr,/reviewed Requirement revision mismatch/u);
+  const unaddressed=structuredClone(review);
+  delete unaddressed.reviewedRequirementRevision;
+  const missing=cli(original,unaddressed);
+  assert.equal(missing.status,1,missing.stderr);
+  assert.equal(missing.stdout,"","unknown source revision cannot emit a candidate");
+  assert.match(missing.stderr,/reviewed Requirement revision/u);
 });
