@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { readRequirementArchitectureTrace } from './architecture-description.mjs';
 import { semanticIdOf } from '@red-cup-engineering/computer-data-engineering-services-section/semiotic-expression-notation/semantic-content-identity';
 import { admitCanonicalJson, UNBOUNDED_JSON_ENVELOPE } from '@red-cup-engineering/json-services-section/canonical-json';
-import { createSchema } from '@red-cup-engineering/json-schema-services-section';
+import { readEngineeringInterfaceSchema } from './engineering-interface-schema.mjs';
 import { indexJavaScriptModuleBindings } from './javascript-module-bindings.mjs';
 
 /*
@@ -326,18 +326,7 @@ function validHld(design, context) {
 // string. JSON.parse silently erases earlier duplicate keys and changes the
 // prospective Code contract, so share the original strict JSON admission.
 function parseSchemaText(text) {
-  const value = admitCanonicalJson(text, UNBOUNDED_JSON_ENVELOPE).value;
-  if (typeof value !== 'boolean' && !object(value))
-    throw new TypeError('Invalid Engineering Design interface schema JSON');
-  // JSON syntax is not Schema vocabulary syntax: preserve the original source
-  // text, but ask the incumbent bounded Draft 2020-12 supplier to refuse
-  // malformed keyword contracts before projecting prospective Code Work.
-  // This temporary validation address is never returned as source identity,
-  // admitted Design, independent Proof or a native Code effect.
-  if (object(value)) createSchema(value,
-    value.$id ?? 'urn:engineering-design:unadmitted-interface',
-    { allowUnknownAnnotations: true });
-  return value;
+  return readEngineeringInterfaceSchema(text).schema;
 }
 function schemaTextValid(text) {
   try { parseSchemaText(text); return true; }
