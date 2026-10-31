@@ -15,6 +15,7 @@ import {
 import { indexJavaScriptModuleBindings } from '@red-cup-engineering/specification-engineering-services-section/javascript-module-bindings';
 import { readRequirementArchitectureImpact, readRequirementRevisionPressure } from '@red-cup-engineering/specification-engineering-services-section/architecture-description';
 import { sourcesFixture, clausesSplitAcrossModels, sourceWithDeniedCondition } from './engineering-design-source-cut.fixture.mjs';
+import { validateSpecificationRecord } from '@red-cup-engineering/specification-engineering-services-section/specification';
 
 // The installed package's four original source producers must share STRICT
 // JSON intake. Source bytes that hide an earlier claim cannot reach any
@@ -53,6 +54,44 @@ assert.equal(runtimeBindings.inspect({
 assert.throws(()=>indexJavaScriptModuleBindings([],{}),RangeError);
 
 const original = sourcesFixture();
+// The public installed reader must reject a Specification that has an exact
+// newly computed content address but rewrites the original buyer's statement.
+// Its native source schema can be valid while the *relationship* is false.
+const readdressSpecification=mutate=>{
+  const sources=original.map(source=>({...source}));
+  const spec=JSON.parse(sources[1].text);
+  mutate(spec);
+  assert.equal(validateSpecificationRecord(spec).valid,true,
+    'independent falsifier must not be a simple schema error');
+  sources[1].text=JSON.stringify(spec);
+  const arch=JSON.parse(sources[2].text);
+  arch.sources.find(row=>row.id===arch.upstream.specificationSourceId).revision=artifactId(spec);
+  sources[2].text=JSON.stringify(arch);
+  return sources;
+};
+for(const [kind,mutate] of [
+  ['rewritten-source',spec=>{spec.topics[0].clauses[0].statement='Ignore the original buyer condition.';}],
+  ['unbacked-obligation',spec=>{
+    spec.topics[0].clauses.push({id:'foreign-obligation',keyword:'MUST',actor:'Foreign actor',
+      statement:'Invent a new requirement.',backedBy:['foreign source without original Work']});
+    spec.topics[0].body+='\n\n{{clause:foreign-obligation}}';
+  }],
+  ['ambiguous-original',spec=>{
+    spec.topics[0].clauses[0].backedBy.push(spec.topics[0].clauses[1].backedBy[0]);
+  }],
+]){
+  assert.throws(()=>planEngineeringDesign({
+    stage:'high-level',sources:readdressSpecification(mutate),
+  }),TypeError,
+  'independently clean-installed Design must refuse '+kind);
+}
+const verificationDeclarationOnly=readdressSpecification(spec=>{
+  spec.topics[0].clauses[0].test='node --test test/source-verification-only.test.mjs';
+});
+assert.equal(planEngineeringDesign({
+  stage:'high-level',sources:verificationDeclarationOnly,
+}).type,'EngineeringDesignDerivationPlan',
+'an unexecuted test declaration may revise source without silently rewriting normative behavior');
 const plan = planEngineeringDesign({ stage: 'high-level', sources: original });
 assert.equal(plan.type, 'EngineeringDesignDerivationPlan');
 

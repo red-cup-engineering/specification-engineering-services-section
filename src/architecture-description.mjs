@@ -252,14 +252,35 @@ export function validateArchitectureDescriptionAgainstSourceCut(record, {
   // cannot afford to rescan its full record for every selected clause.
   const cellOfRef=new Map([...sourceCells].map(([cell])=>[backref(cell),cell]));
   const backed=new Set();
-  for(const clause of clauses)for(const ref of clause.backedBy??[]) {
-    const cell=cellOfRef.get(ref);
-    if(cell===undefined)continue;
-    if(!selected.has(cell))
-      refuse("sourceCut.specification.topics",
-        "unselected original Requirement cell appears as normative "+cell);
-    backed.add(cell);
-  }
+  // A source hash identifies the Specification bytes, but does not prove that
+  // its normative claims actually come from the named original Requirement.
+  // The incumbent Requirement→Specification maker copies the original says
+  // verbatim and interprets one source cell per clause. Recheck that relation
+  // before Architecture can accept a freshly rehashed, but rewritten, clause.
+  // Other independent evidence references may coexist without being mistaken
+  // for an additional original Requirement condition.
+  for(const [topicIndex,topic] of specification.topics.entries())
+    for(const [clauseIndex,clause] of topic.clauses.entries()) {
+      const originalCells=[];
+      for(const ref of clause.backedBy??[]) {
+        const cell=cellOfRef.get(ref);
+        if(cell===undefined)continue;
+        if(!selected.has(cell))
+          refuse("sourceCut.specification.topics",
+            "unselected original Requirement cell appears as normative "+cell);
+        originalCells.push(cell);
+        backed.add(cell);
+      }
+      const path="sourceCut.specification.topics["+topicIndex+
+        "].clauses["+clauseIndex+"]";
+      if(originalCells.length!==1)
+        refuse(path,"normative Specification clause "+clause.id+
+          " must identify exactly one original selected Requirement condition");
+      else if(clause.statement!==sourceCells.get(originalCells[0])?.says)
+        refuse(path,"normative Specification clause "+clause.id+
+          " rewrites the exact original Requirement statement for "+
+          originalCells[0]);
+    }
   // No cut may silently delete a LISTED original requirement.
   for(const cell of selected)if(!backed.has(cell))
     refuse("sourceCut.specification.topics",
