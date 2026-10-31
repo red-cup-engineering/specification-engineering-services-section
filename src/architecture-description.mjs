@@ -404,6 +404,34 @@ export function readRequirementArchitectureTrace(record,sources) {
   }).sort((a,b)=>a.cell.localeCompare(b.cell));
   const mapped=rows.filter(row=>row.authoredPaths.length>0).length;
   const frozenRows=Object.freeze(rows);
+  // Verification is a separate source-authored obligation of each normative
+  // Specification clause, not a property of the HLD/LLD Code targets. Surface
+  // its coverage at the first source-qualified Architecture read, before an
+  // expensive model request or a fabricated WorkCell could be considered.
+  // This is source testimony only: a declared procedure is NOT an executed
+  // independent test, proof, accepted behavior or recipient approval.
+  const clauseById=new Map(specification.topics.flatMap(topic=>
+    topic.clauses.map(clause=>[clause.id,clause])));
+  const declarations=Object.freeze(rows.flatMap(row=>
+    row.normativeClauseIds.map(specificationClauseId=>{
+      const test=clauseById.get(specificationClauseId)?.test??null;
+      return Object.freeze({
+        requirementCellId:row.cell,specificationClauseId,test,
+        status:test===null?'verification-test-not-declared':'declared-unverified',
+      });
+    })).sort((a,b)=>
+      a.specificationClauseId.localeCompare(b.specificationClauseId) ||
+      a.requirementCellId.localeCompare(b.requirementCellId)));
+  const missingClauseIds=Object.freeze(declarations
+    .filter(row=>row.test===null).map(row=>row.specificationClauseId));
+  const sourceVerification=Object.freeze({
+    scope:'original-specification-clauses',
+    status:missingClauseIds.length?'source-tests-missing':'source-tests-declared-unverified',
+    clauseCount:declarations.length,
+    declaredTestCount:declarations.length-missingClauseIds.length,
+    missingClauseIds,declarations,
+    independentlyExecuted:false,
+  });
   return Object.freeze({
     kind:"specification.requirement-architecture-trace.v1",
     originalRequirementId:requirement.id,
@@ -415,7 +443,7 @@ export function readRequirementArchitectureTrace(record,sources) {
       authoredModelMapped:mapped,
       untraced:rows.length-mapped,
     }),
-    rows:frozenRows,
+    rows:frozenRows,sourceVerification,
     standardsConformance:"unassessed",
     independentProof:false,
     independentlyAcceptedCustomerWork:false,
