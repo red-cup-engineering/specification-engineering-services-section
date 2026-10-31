@@ -11,7 +11,8 @@ import { planEngineeringDesign, receiveEngineeringDesign,
 import { deriveSpecificationFromRequirementReview,
   validateSpecificationRecord } from '../src/specification.mjs';
 import { deriveArchitectureDescriptionFromSpecificationReview,
-  readRequirementArchitectureTrace } from '../src/architecture-description.mjs';
+  readRequirementArchitectureTrace, readRequirementRevisionPressure,
+  readRequirementArchitectureImpact } from '../src/architecture-description.mjs';
 
 const artifactId = semanticIdOf('metroplat.artifact');
 const clone = value => JSON.parse(JSON.stringify(value));
@@ -329,6 +330,68 @@ test('original 14-condition source reprojects its reviewed 13-cell selection thr
   assert.throws(()=>deriveArchitectureDescriptionFromSpecificationReview({
     requirement:R,specification,review:stale,
   }),/source cut refused/u);
+
+  // Held-out actual original Engineering Design (14 original cells, 13
+  // deliberately selected, seven HLD components): the first Requirement
+  // pressure reader and the downstream Architecture fabrication impact MUST
+  // agree about which changed original source demands regeneration.
+  // No new original buyer assertion is admitted here: proposed amendments
+  // are adversarial test inputs and generated drafts remain unreceived.
+  const originalCut={requirement:R,specification,architecture};
+  const compareChange=mutate=>{
+    const current=structuredClone(R);
+    mutate(current);
+    const laterReview={...currentReview,
+      reviewedRequirementRevision:artifactId(current)};
+    const laterSpecification=deriveSpecificationFromRequirementReview(current,laterReview);
+    const laterArchitectureReview=structuredClone(review);
+    laterArchitectureReview.sourceCut.requirementRevision=artifactId(current);
+    laterArchitectureReview.sourceCut.specificationRevision=artifactId(laterSpecification);
+    const laterArchitecture=deriveArchitectureDescriptionFromSpecificationReview({
+      requirement:current,specification:laterSpecification,review:laterArchitectureReview,
+    });
+    return {
+      pressure:readRequirementRevisionPressure(R,current),
+      impact:readRequirementArchitectureImpact(originalCut,{
+        requirement:current,specification:laterSpecification,architecture:laterArchitecture,
+      }),
+    };
+  };
+  const changedBuyerRequest=compareChange(current=>{
+    current.asks.push('A newly authored original customer purpose affecting the selected Design.');
+  });
+  assert.equal(changedBuyerRequest.pressure.summary.originalRequestsChanged,true);
+  assert.equal(changedBuyerRequest.pressure.downstreamRegenerationRequired,true);
+  assert.equal(changedBuyerRequest.impact.summary.regenerationCells,13,
+    "new original global buyer purpose must not leave all 13 Design duties source-only");
+  assert.equal(changedBuyerRequest.impact.summary.requalificationOnlyCells,0);
+  assert.ok(changedBuyerRequest.impact.changes.every(row=>
+    row.reasons.includes('original-requests-changed')));
+
+  const selectedMetadata=compareChange(current=>{
+    current['met-when'].find(row=>row.cell.endsWith(':original-fabrication')).inference=true;
+  });
+  assert.equal(selectedMetadata.pressure.summary.changedCells,1);
+  assert.equal(selectedMetadata.impact.summary.regenerationCells,1,
+    'changed origin of the real selected fabrication source must reach its Code Work owner');
+  assert.equal(selectedMetadata.impact.summary.requalificationOnlyCells,12);
+  assert.ok(selectedMetadata.impact.changes.find(row=>
+    row.cell.endsWith(':original-fabrication')).reasons.includes(
+    'original-condition-metadata-changed'));
+
+  const changedOnlyExcluded=compareChange(current=>{
+    current['met-when'].find(row=>row.cell.endsWith(':requirement-cut')).says+=' New independent context.';
+  });
+  assert.equal(changedOnlyExcluded.pressure.summary.changedCells,1);
+  assert.equal(changedOnlyExcluded.impact.summary.regenerationCells,0,
+    "an excluded section-wide cell changes the whole source address, but must not generate 13 unrelated Code modules");
+  assert.equal(changedOnlyExcluded.impact.summary.requalificationOnlyCells,13);
+
+  const reorderedSelected=compareChange(current=>current['met-when'].reverse());
+  assert.equal(reorderedSelected.pressure.summary.sourceConditionOrderChanged,true);
+  assert.equal(reorderedSelected.impact.summary.regenerationCells,13);
+  assert.equal(reorderedSelected.impact.originalEffect,'none-read-only');
+  assert.equal(reorderedSelected.impact.independentlyAcceptedCustomerWork,false);
 
   const sources=[
     {kind:'requirement',text:JSON.stringify(R)},
