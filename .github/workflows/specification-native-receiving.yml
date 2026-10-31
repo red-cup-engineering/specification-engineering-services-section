@@ -128,9 +128,9 @@ jobs:
           assert.equal(repoRootFromDestination("/tmp/source/lib/carrier.md",
             "lib/carrier.md"), "/tmp/source/");
           assert.throws(() => repoRootFromDestination("/tmp/sourcelib/carrier.md",
-            "lib/carrier.md"), /does not end with identity\\.carrier/u);
+            "lib/carrier.md"), /does not end with identity\.carrier/u);
           assert.throws(() => repoRootFromDestination("/tmp/source/../sourcelib/carrier.md",
-            "lib/carrier.md"), /does not end with identity\\.carrier/u);
+            "lib/carrier.md"), /does not end with identity\.carrier/u);
           const valid = {
             identity: { id: "original-receiving", title: "Original receiving",
               seat: "source-owner", carrier: "original-receiving.md",
