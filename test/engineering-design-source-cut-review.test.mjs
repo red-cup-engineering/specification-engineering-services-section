@@ -471,6 +471,13 @@ test('original 14-condition source reprojects its reviewed 13-cell selection thr
   assert.deepEqual(trace.counts,{
     sourceCells:13,authoredModelMapped:13,untraced:0,
   });
+  // This is the actual current 14-cell Requirement's selected 13-cell
+  // projection, before LLD. The historical Specification has no authored
+  // independently executable verification procedures to receive.
+  assert.equal(trace.sourceVerification.clauseCount,13);
+  assert.equal(trace.sourceVerification.declaredTestCount,0);
+  assert.equal(trace.sourceVerification.missingClauseIds.length,13);
+  assert.equal(trace.sourceVerification.independentlyExecuted,false);
   assert.equal(trace.independentProof,false);
   assert.equal(trace.independentlyAcceptedCustomerWork,false);
   assert.equal(architecture.standard.conformance,'unassessed');
