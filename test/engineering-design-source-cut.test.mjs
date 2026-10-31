@@ -109,6 +109,55 @@ test('exact HLD and LLD plans produce closed original CIE work inputs without ch
   }
 });
 
+test('CIE submission boundary distinguishes missing, partial and complete independently authored source test declarations without executing them',()=>{
+  // Format-only original source maker. A declaration is inert: this test does
+  // not assert the named tests exist, run, verify behavior or grant effects.
+  for(const declared of [0,1,2]){
+    const sources=sourcesFixture();
+    if(declared){
+      const specification=JSON.parse(sources[1].text);
+      for(let n=0;n<declared;n++)
+        specification.topics[0].clauses[n].test=
+          'node --test test/source-clause-'+n+'.test.mjs';
+      sources[1].text=JSON.stringify(specification);
+      const architecture=JSON.parse(sources[2].text);
+      architecture.sources.find(row=>
+        row.id===architecture.upstream.specificationSourceId).revision=
+        semanticIdOf('metroplat.artifact')(specification);
+      sources[2].text=JSON.stringify(architecture);
+    }
+    const plan=planEngineeringDesign({stage:'high-level',sources});
+    const result=readEngineeringDesignInferenceWork(plan);
+    if(declared===2){
+      assert.equal(result.enforceProviderSchema,true);
+      assert.deepEqual(result.requiredCapabilities,['json-schema-output']);
+      assert.equal(result.outputSchema.type,'object');
+      assert.equal('type' in result,false);
+    }else{
+      assert.equal(result.type,'EngineeringDesignInferenceWorkRefusal');
+      assert.equal(result.reason,'source-verification-procedures-not-declared');
+      assert.equal(result.stage,'high-level');
+      assert.equal(result.originalRequirementId,'source-req');
+      assert.deepEqual(result.sourceVerification,{
+        scope:'original-specification-clauses',clauseCount:2,
+        declaredTestCount:declared,
+        missingClauseIds:['clause-a','clause-b'].slice(declared),
+      });
+      assert.equal(result.inferenceSubmitted,false);
+      assert.equal(result.executableWork,false);
+      assert.equal('outputSchema' in result,false);
+    }
+  }
+  // A denied original requirement still requires an independent refusal
+  // verification procedure before asking a model to build that boundary.
+  const denied=planEngineeringDesign({
+    stage:'high-level',sources:sourceWithDeniedCondition(),
+  });
+  const refusal=readEngineeringDesignInferenceWork(denied);
+  assert.equal(refusal.type,'EngineeringDesignInferenceWorkRefusal');
+  assert.equal(refusal.sourceVerification.missingClauseIds.length,2);
+});
+
 test('forged or changed Design sources, schema or prompt cannot be translated to CIE work', () => {
   const plan=planEngineeringDesign({stage:'high-level',sources:sourcesFixture()});
   const changes=[
