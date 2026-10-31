@@ -132,9 +132,9 @@ assert.throws(()=>planEngineeringDesign({
 // No model output, Proof or original Work grant is synthesized.
 const review={components:[
   {id:'component-a',owner:'fixture-data-owner',layer:'data',
-    responsibility:'Maintain source A.',requires:[],specificationClauseIds:['clause-a']},
+    responsibility:'Maintain source A.',provides:[],requires:[],specificationClauseIds:['clause-a']},
   {id:'component-b',owner:'fixture-data-owner',layer:'data',
-    responsibility:'Maintain source B.',requires:[],specificationClauseIds:['clause-b']},
+    responsibility:'Maintain source B.',provides:[],requires:[],specificationClauseIds:['clause-b']},
 ],openQuestions:['Independent admission and Proof have not been received.']};
 const reviewText=JSON.stringify(review);
 const reviewDigest='sha256:'+createHash('sha256').update(reviewText,'utf8').digest('hex');
