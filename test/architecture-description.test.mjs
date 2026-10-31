@@ -826,6 +826,33 @@ test("original Requirement and Specification derive a source-addressed Architect
     /source-to-authored-model-only-not-proved/u);
 });
 
+test("Architecture refuses schema-invalid Specification under a freshly recomputed exact source revision",()=>{
+  const {requirement,specification,review}=reviewedArchitectureCut();
+  const original=deriveArchitectureDescriptionFromSpecificationReview({requirement,specification,review});
+  assert.equal(validateArchitectureDescriptionAgainstSourceCut(original,{requirement,specification}).valid,true);
+  for(const corrupt of [
+    x=>{x.topics[0].clauses[0].admitted=true;},
+    x=>{x.identity.authors=[];},
+    x=>{x.topics[0].clauses[0].test=["not an executable verification declaration"];}
+  ]){
+    const altered=structuredClone(specification);
+    corrupt(altered);
+    assert.equal(validateSpecificationRecord(altered).valid,false,"test must actually violate source-owned Specification admission");
+    // A matching digest is content identity, not approval of the bytes.
+    const relabeled=structuredClone(original);
+    relabeled.sources.find(source=>source.id===relabeled.upstream.specificationSourceId).revision=artifactId(altered);
+    const verdict=validateArchitectureDescriptionAgainstSourceCut(relabeled,{
+      requirement,specification:altered,
+    });
+    assert.equal(verdict.valid,false,JSON.stringify(verdict));
+    assert.ok(verdict.issues.some(issue=>issue.path.startsWith("sourceCut.specification")),
+      "the earliest failed source owner must be named");
+    assert.throws(()=>readRequirementArchitectureTrace(relabeled,{
+      requirement,specification:altered,
+    }),/selected source cut/u);
+  }
+});
+
 test("fresh source revision changes derived identity; stale Specification lineage must refuse",()=>{
   const {requirement,specification,review}=reviewedArchitectureCut();
   const before=deriveArchitectureDescriptionFromSpecificationReview({requirement,specification,review});
