@@ -180,7 +180,9 @@ jobs:
                 says:"independently receive a useful buyer outcome, not a provider claim"},
             ],
           };
+          const { artifactId } = await import("@red-cup-engineering/semiotic-eavt-services-section/identity");
           const review = {
+            reviewedRequirementRevision:artifactId(requirement),
             identity:{id:"buyer-work-continuity-spec",title:"Buyer Work continuity",
               seat:"review-only-office",carrier:"candidate/work.md",
               authors:["attributed candidate reviewer"]},
@@ -208,7 +210,7 @@ jobs:
           assert.throws(()=>deriveSpecificationFromRequirementReview(requirement,{
             ...review, interpretations:review.interpretations.slice(1),
           }),/every source condition requires exactly one/u);
-          const { artifactId } = await import("@red-cup-engineering/semiotic-eavt-services-section/identity");
+
           // A source-inferred engineering decision is a reviewed normative
           // clause. Its original machine address MUST remain an exact key for
           // Architecture and Design, not a prose-annotated citation.
@@ -220,6 +222,7 @@ jobs:
             "leader-words":"the customer made no ten-year retention request",
           });
           const inferredReview=structuredClone(review);
+          inferredReview.reviewedRequirementRevision=artifactId(withAgentInference);
           inferredReview.interpretations.push({
             cell:"buyer-work-continuity:guessed-retention",
             clauseId:"guessed-retention",keyword:"MUST",actor:"The Group",
@@ -267,7 +270,8 @@ jobs:
           for(const condition of onlyInferences["met-when"])
             condition.inference=true;
           const allDecisions=deriveSpecificationFromRequirementReview(
-            onlyInferences,inferredReview);
+            onlyInferences,{...inferredReview,
+              reviewedRequirementRevision:artifactId(onlyInferences)});
           assert.equal(allDecisions.topics[0].clauses.length,3,
             "a fully reviewed engineering decision cut is normative");
           assert.deepEqual(allDecisions.openQuestions,[]);
@@ -277,6 +281,7 @@ jobs:
           // deterministic, source-addressed partial Specifications.
           const cutReview={
             ...review,
+            reviewedRequirementRevision:artifactId(withAgentInference),
             interpretations:review.interpretations.slice(0,1),
             cells:[requirement["met-when"][0].cell],
           };
@@ -319,7 +324,11 @@ jobs:
           console.log("Packed LAGOON-style Requirement cut: exact selected cells, source identity, native CLI and adverse refusal independently received; draft not Proof");
           const revised=structuredClone(requirement);
           revised["met-when"][0].says="retain one NEW source obligation";
-          const subsequent=deriveSpecificationFromRequirementReview(revised,review);
+          assert.throws(()=>deriveSpecificationFromRequirementReview(revised,review),
+            /reviewed Requirement revision mismatch/u);
+          const subsequent=deriveSpecificationFromRequirementReview(revised,{
+            ...review,reviewedRequirementRevision:artifactId(revised),
+          });
           assert.notEqual(candidate.provenance.derivedFrom[0],
             subsequent.provenance.derivedFrom[0]);
           assert.equal(subsequent.identity.stability,"draft",

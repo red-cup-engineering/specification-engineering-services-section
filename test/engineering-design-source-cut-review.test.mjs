@@ -6,7 +6,12 @@ import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { semanticIdOf } from '@red-cup-engineering/computer-data-engineering-services-section/semiotic-expression-notation/semantic-content-identity';
-import { planEngineeringDesign, receiveEngineeringDesign } from '../src/engineering-design.mjs';
+import { planEngineeringDesign, receiveEngineeringDesign,
+  readEngineeringDesignInferenceWork } from '../src/engineering-design.mjs';
+import { deriveSpecificationFromRequirementReview,
+  validateSpecificationRecord } from '../src/specification.mjs';
+import { deriveArchitectureDescriptionFromSpecificationReview,
+  readRequirementArchitectureTrace } from '../src/architecture-description.mjs';
 
 const artifactId = semanticIdOf('metroplat.artifact');
 const clone = value => JSON.parse(JSON.stringify(value));
@@ -218,4 +223,150 @@ test('current fourteen-condition original Requirement cannot silently receive it
   assert.throws(()=>planEngineeringDesign({stage:'high-level',sources}),TypeError,
     'actual current original source and superseded Design cut cannot produce a new native plan');
   assert.equal(arch.standard.conformance,'unassessed');
+});
+
+test('original 14-condition source reprojects its reviewed 13-cell selection through original Spec, Architecture and HLD into a bounded LLD request',()=>{
+  // The original PR #19 Work, not a new Requirements registry or synthetic
+  // customer. Its historical thirteen-cell LLD was refused, and that raw
+  // delivery is retained unchanged. The new section-level Requirement added
+  // one cell and changed the complete source NI; no old Plan/Proof can be
+  // implicitly reused under the revised source.
+  const root='../data/records/service-records/';
+  const read=(path)=>readFileSync(new URL(root+path,import.meta.url),'utf8');
+  const R=JSON.parse(read('requirements-service-records/engineering-design-accepts-explicit-source-profiles.json'));
+  const G=JSON.parse(read('specification-service-records/engineering-design-accepts-explicit-source-profiles.generation.json'));
+  const oldArchitecture=JSON.parse(read('architecture-description-service-records/engineering-design-explicit-source-profiles.json'));
+  const oldHld=JSON.parse(read('high-level-design-service-records/engineering-design-explicit-source-profiles.json'));
+  const raw=read('engineering-generation-records/engineering-design-source-profiles-low-level-v1-raw-delivery.txt');
+  const historicalRefusal=JSON.parse(read('engineering-generation-records/engineering-design-source-profiles-low-level-v1-native-refusal.json'));
+
+  const selected=G.review.interpretations.map(x=>x.cell);
+  assert.equal(R['met-when'].length,14);
+  assert.equal(selected.length,13);
+  assert.deepEqual(selected,R['met-when'].slice(0,13).map(x=>x.cell));
+  assert.ok(!selected.includes(R.id+':requirement-cut'));
+  assert.equal(oldHld.design.components.length,7);
+  assert.equal(oldHld.design.traceability.length,13);
+  assert.equal(oldHld.admitted,false);
+  assert.equal(oldHld.proof,'unreceived');
+
+  // These are the historically authored thirteen interpretations, now
+  // projected against the *complete current* Requirement source. This is
+  // structural reuse proposed for an external review, NOT a new Office
+  // attestation that the modified original-fabrication clause is accepted.
+  assert.throws(()=>deriveSpecificationFromRequirementReview(R,{
+    ...G.review,cells:selected,
+  }),/reviewed Requirement revision/u,
+  "archived original review cannot re-attest the changed full Requirement");
+  const currentReview={
+    ...G.review,cells:selected,
+    reviewedRequirementRevision:artifactId(R),
+    reviewedBy:"unadmitted-source-cut-assay-not-an-Office-approval",
+  };
+  const specification=deriveSpecificationFromRequirementReview(R,currentReview);
+  assert.equal(validateSpecificationRecord(specification).valid,true);
+  assert.equal(specification.topics.flatMap(t=>t.clauses).length,13);
+  assert.equal(specification.identity.status,'draft');
+  assert.equal(specification.provenance.derivedFrom[0],R.id+'@'+artifactId(R));
+  assert.ok(specification.provenance.derivedFrom[1].startsWith(
+    R.id+'@'+artifactId(R)+'#cells='));
+  assert.notEqual(artifactId(R),
+    oldArchitecture.sources.find(x=>x.id==='req').revision);
+  assert.deepEqual(
+    deriveSpecificationFromRequirementReview(structuredClone(R),{
+      ...structuredClone(currentReview),cells:[...selected].reverse(),
+    }).provenance.derivedFrom,
+    specification.provenance.derivedFrom,
+    'selection identity must use sorted cell IDs, never review order');
+
+  // Reuse the actual archived authored 42010 decisions, model assignments
+  // and supporting-source references. Only the *review input sourceCut*
+  // advances to the new original identities. The original Architecture
+  // derivation remains the ONLY candidate maker and does not adopt choices.
+  const review={
+    identity:{
+      id:oldArchitecture.identity.id,
+      title:oldArchitecture.identity.title,
+      owner:oldArchitecture.identity.owner,
+    },
+    sourceCut:{
+      requirementRevision:artifactId(R),
+      specificationRevision:artifactId(specification),
+    },
+    applicability:oldArchitecture.standard.applicability,
+    system:{
+      name:oldArchitecture.system.name,
+      description:oldArchitecture.system.description,
+      supportingSourceIds:oldArchitecture.system.sourceIds
+        .filter(x=>x!=='req'&&x!=='spec'),
+    },
+    supportingSources:oldArchitecture.sources.filter(x=>
+      x.id!=='req'&&x.id!=='spec'),
+    stakeholders:oldArchitecture.stakeholders,
+    concerns:oldArchitecture.concerns,
+    viewpoints:oldArchitecture.viewpoints,
+    views:oldArchitecture.views,
+    models:oldArchitecture.models,
+    correspondences:oldArchitecture.correspondences,
+    decisions:oldArchitecture.decisions,
+    openQuestions:oldArchitecture.openQuestions,
+  };
+  const architecture=deriveArchitectureDescriptionFromSpecificationReview({
+    requirement:R,specification,review,
+  });
+  const trace=readRequirementArchitectureTrace(architecture,{
+    requirement:R,specification,
+  });
+  assert.deepEqual(trace.counts,{
+    sourceCells:13,authoredModelMapped:13,untraced:0,
+  });
+  assert.equal(trace.independentProof,false);
+  assert.equal(trace.independentlyAcceptedCustomerWork,false);
+  assert.equal(architecture.standard.conformance,'unassessed');
+  assert.notEqual(architecture.identity.revision,oldArchitecture.identity.revision);
+  const stale=structuredClone(review);
+  stale.sourceCut.requirementRevision=oldArchitecture.sources.find(x=>x.id==='req').revision;
+  assert.throws(()=>deriveArchitectureDescriptionFromSpecificationReview({
+    requirement:R,specification,review:stale,
+  }),/source cut refused/u);
+
+  const sources=[
+    {kind:'requirement',text:JSON.stringify(R)},
+    {kind:'specification',text:JSON.stringify(specification)},
+    {kind:'architecture',text:JSON.stringify(architecture)},
+  ];
+  const highPlan=planEngineeringDesign({stage:'high-level',sources});
+  // The immutable historic HLD allocation is an *input proposal* for a
+  // new source-bound receiving. No provider call, source rewrite, semantic
+  // refinement, original Work discharge or source author authorization.
+  const high=receiveEngineeringDesign({
+    stage:'high-level',sources,plan:highPlan,
+    deliveryText:JSON.stringify(oldHld.design),
+  });
+  assert.equal(high.type,'EngineeringDesignCandidate');
+  assert.equal(high.admitted,false);
+  assert.equal(high.proof,'unreceived');
+  assert.equal(high.design.traceability.length,13);
+
+  const lowSources=[...sources,{kind:'high-level',text:JSON.stringify(high)}];
+  const lowPlan=planEngineeringDesign({stage:'low-level',sources:lowSources});
+  const originalNativeWork=readEngineeringDesignInferenceWork(lowPlan);
+  assert.equal(originalNativeWork.enforceProviderSchema,true);
+  assert.deepEqual(originalNativeWork.requiredCapabilities,['json-schema-output']);
+  assert.deepEqual(Object.keys(originalNativeWork.outputSchema.properties).sort(),
+    ['operations','traceability','openQuestions'].sort());
+  assert.equal(originalNativeWork.outputSchema.additionalProperties,false);
+  assert.deepEqual(JSON.parse(originalNativeWork.context),{
+    stage:'low-level',sources:lowPlan.sources,
+  });
+
+  // A native plan for the CURRENT source never repairs the historical model
+  // lot by dropping its invalid schema-root members. It must still refuse.
+  assert.deepEqual(receiveEngineeringDesign({
+    stage:'low-level',sources:lowSources,plan:lowPlan,
+    deliveryText:raw,
+  }),historicalRefusal);
+  assert.equal(historicalRefusal.reason,'invalid-design');
+  assert.equal(oldHld.admitted,false);
+  console.log('Original 14-condition Requirement, reviewed 13-cell selection, 13/13 Architecture and seven-component HLD project a NEW typed LLD request; old raw LLD refused, all stages unadmitted.');
 });
