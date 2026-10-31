@@ -10,6 +10,7 @@ import { planEngineeringDesign, receiveEngineeringDesign,
   readEngineeringDesignInferenceWork } from '../src/engineering-design.mjs';
 import { deriveSpecificationFromRequirementReview,
   validateSpecificationRecord } from '../src/specification.mjs';
+import { clausesSplitAcrossModels } from './engineering-design-source-cut.fixture.mjs';
 import { deriveArchitectureDescriptionFromSpecificationReview,
   validateArchitectureDescriptionAgainstSourceCut,
   readRequirementArchitectureTrace, readRequirementRevisionPressure,
@@ -183,7 +184,7 @@ test('real Engineering #137 Design planner refuses a schema-invalid Specificatio
     /Invalid engineering design input or source projection|selected source cut/u);
 });
 
-test('Engineering #137 source-traced verification is visible before LLD and duplicate original clauses refuse',()=>{
+test('Engineering #137 source-traced verification is visible before LLD and preserves legitimate multi-clause models',()=>{
   // Independent receiving: original recorded 13-cell HLD source (not a
   // fabricated Design, test result, or appointed reviewer).
   const hld=JSON.parse(readFileSync(new URL(
@@ -225,31 +226,21 @@ test('Engineering #137 source-traced verification is visible before LLD and dupl
   assert.equal(declaration.test,named.test);
   assert.equal(declaration.status,'declared-unverified');
 
-  // Original Requirement->Specification generator demands one explicit
-  // interpretation per selected cell. A second (even byte-equal) normative
-  // declaration for that same condition is a separate unauthored duty.
-  // Matching fresh source digest does not authorize it.
-  const duplicated=structuredClone(specification);
-  const duplicate={...duplicated.topics[0].clauses[0],
-    id:'duplicate-original-condition'};
-  duplicated.topics[0].clauses.push(duplicate);
-  duplicated.topics[0].body+='\n\n{{clause:duplicate-original-condition}}';
-  assert.equal(validateSpecificationRecord(duplicated).valid,true);
-  const duplicateArchitecture=structuredClone(architecture);
-  duplicateArchitecture.sources.find(row=>
-    row.id===duplicateArchitecture.upstream.specificationSourceId
-  ).revision=artifactId(duplicated);
-  const refused=validateArchitectureDescriptionAgainstSourceCut(
-    duplicateArchitecture,{requirement,specification:duplicated});
-  assert.equal(refused.valid,false,JSON.stringify(refused));
-  assert.ok(refused.issues.some(row=>
-    row.path.startsWith('sourceCut.specification') &&
-    /multiple normative clauses|exactly one normative clause/u.test(row.message)));
-  assert.throws(()=>planEngineeringDesign({stage:'high-level',sources:[
-    {kind:'requirement',text:JSON.stringify(requirement)},
-    {kind:'specification',text:JSON.stringify(duplicated)},
-    {kind:'architecture',text:JSON.stringify(duplicateArchitecture)},
-  ]}),TypeError);
+  // One original requirement may legitimately have independently modeled
+  // normative clauses (e.g. separate positive/negative obligations). Count
+  // each original clause once, never confuse cell count with test coverage.
+  const multi=clausesSplitAcrossModels({completeArchitecture:true});
+  const [manyR,manyS,manyA]=multi.map(row=>JSON.parse(row.text));
+  const manyTrace=readRequirementArchitectureTrace(manyA,{
+    requirement:manyR,specification:manyS,
+  });
+  assert.equal(manyTrace.counts.sourceCells,2);
+  assert.equal(manyTrace.sourceVerification.clauseCount,3);
+  assert.equal(manyTrace.sourceVerification.declaredTestCount,0);
+  assert.equal(manyTrace.sourceVerification.missingClauseIds.length,3);
+  assert.equal(manyTrace.sourceVerification.declarations.filter(row=>
+    row.requirementCellId==='source-req:a').length,2);
+
 });
 
 test('the original refused LLD provider delivery remains refused at the current exact source cut', () => {
