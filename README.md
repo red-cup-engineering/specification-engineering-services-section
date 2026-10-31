@@ -256,8 +256,16 @@ independently qualified complete {Requirement, Specification, Architecture} trip
 compares exact source and stage revisions, original conditions, normative clause identities
 **and contents**, and model/view mappings. Its `--source-impact` CLI mode distinguishes
 `regenerate-and-requalify` from `requalify-source-only`. Changed source identity can require
-requalification without justifying regeneration of unchanged logic. Both readouts have no
-effect on original Work, rights, Proof or the beneficiary. See
+requalification without justifying regeneration of unchanged logic. The Architecture
+impact reader **reuses the same original Requirement revision-pressure verdict**:
+changed whole-Requirement `asks` (buyer purpose) or original condition ordering
+requires renewed regeneration across the selected source domain; changed metadata
+about the origin of one selected condition regenerates only that responsibility.
+Changes confined to **excluded** conditions, or source-level provenance alone,
+require complete source requalification without manufacturing unrelated Code
+work. Each reason remains source-addressed and unreceived; a change-impact
+report is neither a maker command nor authorization to spend, merge or accept.
+Both readouts have no effect on original Work, rights, Proof or the beneficiary. See
 [revision-pressure tests](test/requirement-revision-pressure.test.mjs) and
 [the independent packed consumer](test/requirement-revision-packed-consumer.mjs).
 

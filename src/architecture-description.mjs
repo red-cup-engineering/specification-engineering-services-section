@@ -549,6 +549,17 @@ export function readRequirementArchitectureImpact(before, after) {
   const older = select(before), newer = select(after);
   if (older.trace.originalRequirementId !== newer.trace.originalRequirementId)
     throw new TypeError("architecture impact cannot combine independent original Requirements");
+  // Reuse the original Requirement-first reader, not a second interpretation
+  // of customer intent. A global buyer request and original condition order
+  // can change the meaning of every selected Code duty without changing any
+  // local clause/model ID. A metadata edit to one selected source condition
+  // can change its authorial origin and also needs design regeneration.
+  // Changes confined to excluded cells still requalify the full source NI,
+  // but do not manufacture new implementation work for unrelated cells.
+  const requirementPressure = readRequirementRevisionPressure(
+    before.requirement, after.requirement);
+  const conditionChanges = new Map(requirementPressure.changes.map(row=>
+    [row.cell, row]));
   const earlier = new Map(older.trace.rows.map(row => [row.cell, row]));
   const later = new Map(newer.trace.rows.map(row => [row.cell, row]));
   const sourceRevised = older.revision.requirement !== newer.revision.requirement ||
@@ -566,6 +577,12 @@ export function readRequirementArchitectureImpact(before, after) {
     if (!a) reasons.push("new-source-condition");
     if (!z) reasons.push("removed-source-condition");
     if (a && z) {
+      if (requirementPressure.summary.originalRequestsChanged)
+        reasons.push("original-requests-changed");
+      if (requirementPressure.summary.sourceConditionOrderChanged)
+        reasons.push("source-condition-order-changed");
+      if (conditionChanges.get(cell)?.otherConditionMetadataChanged)
+        reasons.push("original-condition-metadata-changed");
       if (a.originalStatement !== z.originalStatement) reasons.push("source-statement-changed");
       if (a.sourceTarget !== z.sourceTarget) reasons.push("source-target-changed");
       if (!equal(a.normativeClauseIds, z.normativeClauseIds)) reasons.push("normative-clause-mapping-changed");
