@@ -14,7 +14,7 @@
 Specification Engineering turns source-admitted Requirements and reviewed decisions into
 **source-traceable Specification and Architecture records**, and reads proposed high- and
 low-level Design without granting implementation or publication rights. The package
-[manifest](package.json) currently names source edition `0.1.3-dev.1`. A source edition or
+[manifest](package.json) currently names source edition `0.1.4`. A source edition or
 passing generator test is not a released, installed, independently proved or
 beneficiary-received engineering product.
 
@@ -56,6 +56,29 @@ Requirement, Specification and Architecture text, the separately pinned source
 cut from the review's author, and the exact unchanged review JSON. The review
 source is identified by both its literal SHA-256 bytes and the incumbent Data
 semantic NI, without treating either identity as authorization.
+
+**ENG-20: typed review interfaces are independent source claims.** Each
+`review.components[]` must author its own `provides: [{port,schemaJson}]`
+and `requires: [{componentId,port,schemaJson}]`. Each `schemaJson` is
+canonical-JSON-admitted and checked by the original Draft 2020-12 supplier;
+a reviewed port schema is finite (at most 64 KiB), completely supplied and
+reference-free because no external schema bundle or resolver has been
+received. The original projector compares the original Data semantic content
+identities of the *offered provider schema* and *required consumer schema*.
+It refuses absent provider offers, duplicate declarations and mismatched
+contracts even when names and graph edges agree. In particular, **it never
+derives a provider's offered interface from another component's wishes**.
+Exact schema identity is a conservative structural gluing rule, not a general
+schema-subtyping theorem. A lawful nonidentical refinement needs an
+independently qualified source and receiving relation, not a guessed
+compatibility of names or example values. Unreceived `$ref` links are refused.
+
+The existing HLD output still carries its original name-only `providedPorts`
+and `requiredPorts` fields; the pinned `reviewText` carries the complete
+reviewed contract source. A standalone HLD from the independent inference
+receiver has **not** thereby acquired typed port semantics, and the HLD→LLD
+and LLD→Code refinements remain separately owed. Without the original
+review, an old HLD cannot be retroactively granted these guarantees.
 
 The implementation reconstructs the original Architecture's authored trace;
 calls the existing source-generated
