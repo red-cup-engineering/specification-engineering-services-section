@@ -13,6 +13,7 @@ import {
   readEngineeringCodeWork,
 } from '@red-cup-engineering/specification-engineering-services-section/engineering-design';
 import { indexJavaScriptModuleBindings } from '@red-cup-engineering/specification-engineering-services-section/javascript-module-bindings';
+import { readRequirementArchitectureImpact, readRequirementRevisionPressure } from '@red-cup-engineering/specification-engineering-services-section/architecture-description';
 import { sourcesFixture, clausesSplitAcrossModels, sourceWithDeniedCondition } from './engineering-design-source-cut.fixture.mjs';
 
 // The installed package's four original source producers must share STRICT
@@ -638,3 +639,49 @@ assert.throws(()=>planEngineeringDesign({
   stage:'high-level',sources:sourceWithDeniedCondition({target:'unknown'}),
 }),TypeError,'an unknown source target cannot enter Design even with refreshed source cuts');
 console.log('Packed Requirement target held + denied: original Design/Code Work traces survive; Proof, original native fabrication and recipient receiving remain open.');
+
+// Packed Architecture impact source revision pressure must preserve original root asks.
+// This independently installed package (not ../src) uses the original native
+// Requirement/Specification/Architecture fixture with its true SEN addresses.
+// Unadmitted fixture source values do not grant original Work or Proof.
+const sourceImpactTriples=()=>{
+  const [r,s,a]=sourcesFixture();
+  return {
+    requirement:JSON.parse(r.text),
+    specification:JSON.parse(s.text),
+    architecture:JSON.parse(a.text),
+  };
+};
+const sourceImpactBefore=sourceImpactTriples();
+const sourceImpactAfter=structuredClone(sourceImpactBefore);
+sourceImpactAfter.requirement.asks=[
+  'The original buyer now requires an additional independently tested refusal.',
+];
+const oldSourceAddress=artifactId(sourceImpactBefore.requirement);
+const nextSourceAddress=artifactId(sourceImpactAfter.requirement);
+sourceImpactAfter.specification.provenance.derivedFrom=[
+  sourceImpactAfter.requirement.id+'@'+nextSourceAddress,
+];
+for(const topic of sourceImpactAfter.specification.topics)
+  for(const clause of topic.clauses)
+    clause.backedBy=clause.backedBy.map(reference=>
+      reference.replace(' ('+oldSourceAddress+'), cell ',
+        ' ('+nextSourceAddress+'), cell '));
+sourceImpactAfter.architecture.sources.find(x=>x.id==='requirement').revision=
+  nextSourceAddress;
+sourceImpactAfter.architecture.sources.find(x=>x.id==='specification').revision=
+  artifactId(sourceImpactAfter.specification);
+const originalPressure=readRequirementRevisionPressure(
+  sourceImpactBefore.requirement,sourceImpactAfter.requirement);
+assert.equal(originalPressure.summary.originalRequestsChanged,true);
+assert.equal(originalPressure.downstreamRegenerationRequired,true);
+const installedImpact=readRequirementArchitectureImpact(
+  sourceImpactBefore,sourceImpactAfter);
+assert.equal(installedImpact.summary.regenerationCells,2,
+  'the real packed Architecture impact reader must propagate original root-level buyer demand changes');
+assert.equal(installedImpact.summary.requalificationOnlyCells,0);
+assert.ok(installedImpact.changes.every(row=>
+  row.reasons.includes('original-requests-changed')));
+assert.equal(installedImpact.originalEffect,'none-read-only');
+assert.equal(installedImpact.independentlyAcceptedCustomerWork,false);
+console.log('Packed original Architecture change impact: root Requirement speech changes propagate two selected code-facing regenerations; no native Work or Proof effect.');
