@@ -10,6 +10,7 @@ import { planEngineeringDesign, receiveEngineeringDesign,
   readEngineeringDesignInferenceWork } from '../src/engineering-design.mjs';
 import { deriveSpecificationFromRequirementReview,
   validateSpecificationRecord } from '../src/specification.mjs';
+import { clausesSplitAcrossModels } from './engineering-design-source-cut.fixture.mjs';
 import { deriveArchitectureDescriptionFromSpecificationReview,
   validateArchitectureDescriptionAgainstSourceCut,
   readRequirementArchitectureTrace, readRequirementRevisionPressure,
@@ -181,6 +182,65 @@ test('real Engineering #137 Design planner refuses a schema-invalid Specificatio
   archSource.text=JSON.stringify(changedArchitecture);
   assert.throws(()=>planEngineeringDesign({stage:'high-level',sources:changed}),
     /Invalid engineering design input or source projection|selected source cut/u);
+});
+
+test('Engineering #137 source-traced verification is visible before LLD and preserves legitimate multi-clause models',()=>{
+  // Independent receiving: original recorded 13-cell HLD source (not a
+  // fabricated Design, test result, or appointed reviewer).
+  const hld=JSON.parse(readFileSync(new URL(
+    '../data/records/service-records/high-level-design-service-records/engineering-design-explicit-source-profiles.json',
+    import.meta.url),'utf8'));
+  const [requirement,specification,architecture]=hld.sources.slice(0,3)
+    .map(source=>JSON.parse(source.text));
+  const original=readRequirementArchitectureTrace(architecture,{requirement,specification});
+  assert.equal(original.counts.sourceCells,13);
+  assert.equal(original.sourceVerification.clauseCount,13);
+  assert.equal(original.sourceVerification.declaredTestCount,0);
+  assert.equal(original.sourceVerification.missingClauseIds.length,13);
+  assert.equal(original.sourceVerification.status,'source-tests-missing');
+  assert.equal(original.sourceVerification.independentlyExecuted,false);
+  assert.equal(original.sourceVerification.declarations.length,13);
+  assert.ok(original.sourceVerification.declarations.every(row=>
+    row.test===null && row.status==='verification-test-not-declared' &&
+    row.requirementCellId.startsWith(requirement.id+':')));
+  assert.equal(Object.isFrozen(original.sourceVerification),true);
+  assert.equal(Object.isFrozen(original.sourceVerification.declarations),true);
+
+  // A newly authored *declaration*, not an executed test or proof, should
+  // update source/test qualification without spawning a Code rework.
+  const tested=structuredClone(specification);
+  const named=tested.topics[0].clauses[0];
+  named.test='node --test test/source-owned-qualification.test.mjs';
+  const testedArchitecture=structuredClone(architecture);
+  testedArchitecture.sources.find(row=>
+    row.id===testedArchitecture.upstream.specificationSourceId
+  ).revision=artifactId(tested);
+  const revised=readRequirementArchitectureTrace(testedArchitecture,{
+    requirement,specification:tested,
+  });
+  assert.equal(revised.sourceVerification.declaredTestCount,1);
+  assert.equal(revised.sourceVerification.missingClauseIds.length,12);
+  assert.equal(revised.sourceVerification.independentlyExecuted,false);
+  const declaration=revised.sourceVerification.declarations.find(row=>
+    row.specificationClauseId===named.id);
+  assert.equal(declaration.test,named.test);
+  assert.equal(declaration.status,'declared-unverified');
+
+  // One original requirement may legitimately have independently modeled
+  // normative clauses (e.g. separate positive/negative obligations). Count
+  // each original clause once, never confuse cell count with test coverage.
+  const multi=clausesSplitAcrossModels({completeArchitecture:true});
+  const [manyR,manyS,manyA]=multi.map(row=>JSON.parse(row.text));
+  const manyTrace=readRequirementArchitectureTrace(manyA,{
+    requirement:manyR,specification:manyS,
+  });
+  assert.equal(manyTrace.counts.sourceCells,2);
+  assert.equal(manyTrace.sourceVerification.clauseCount,3);
+  assert.equal(manyTrace.sourceVerification.declaredTestCount,0);
+  assert.equal(manyTrace.sourceVerification.missingClauseIds.length,3);
+  assert.equal(manyTrace.sourceVerification.declarations.filter(row=>
+    row.requirementCellId==='source-req:a').length,2);
+
 });
 
 test('the original refused LLD provider delivery remains refused at the current exact source cut', () => {
@@ -411,6 +471,13 @@ test('original 14-condition source reprojects its reviewed 13-cell selection thr
   assert.deepEqual(trace.counts,{
     sourceCells:13,authoredModelMapped:13,untraced:0,
   });
+  // This is the actual current 14-cell Requirement's selected 13-cell
+  // projection, before LLD. The historical Specification has no authored
+  // independently executable verification procedures to receive.
+  assert.equal(trace.sourceVerification.clauseCount,13);
+  assert.equal(trace.sourceVerification.declaredTestCount,0);
+  assert.equal(trace.sourceVerification.missingClauseIds.length,13);
+  assert.equal(trace.sourceVerification.independentlyExecuted,false);
   assert.equal(trace.independentProof,false);
   assert.equal(trace.independentlyAcceptedCustomerWork,false);
   assert.equal(architecture.standard.conformance,'unassessed');

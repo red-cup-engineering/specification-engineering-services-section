@@ -13,7 +13,10 @@ import {
   readEngineeringCodeWork,
 } from '@red-cup-engineering/specification-engineering-services-section/engineering-design';
 import { indexJavaScriptModuleBindings } from '@red-cup-engineering/specification-engineering-services-section/javascript-module-bindings';
-import { readRequirementArchitectureImpact, readRequirementRevisionPressure } from '@red-cup-engineering/specification-engineering-services-section/architecture-description';
+import {
+  readRequirementArchitectureTrace, readRequirementArchitectureImpact,
+  readRequirementRevisionPressure,
+} from '@red-cup-engineering/specification-engineering-services-section/architecture-description';
 import { sourcesFixture, clausesSplitAcrossModels, sourceWithDeniedCondition } from './engineering-design-source-cut.fixture.mjs';
 import { validateSpecificationRecord } from '@red-cup-engineering/specification-engineering-services-section/specification';
 
@@ -54,6 +57,17 @@ assert.equal(runtimeBindings.inspect({
 assert.throws(()=>indexJavaScriptModuleBindings([],{}),RangeError);
 
 const original = sourcesFixture();
+// Separate installed public API, before any HLD, LLD or Code fabrication:
+// the actual source relation already exposes missing independent tests.
+const originalSourceGraph=original.map(row=>JSON.parse(row.text));
+const earliest=readRequirementArchitectureTrace(originalSourceGraph[2],{
+  requirement:originalSourceGraph[0],specification:originalSourceGraph[1],
+});
+assert.equal(earliest.sourceVerification.clauseCount,2);
+assert.equal(earliest.sourceVerification.declaredTestCount,0);
+assert.deepEqual(earliest.sourceVerification.missingClauseIds,['clause-a','clause-b']);
+assert.equal(earliest.sourceVerification.independentlyExecuted,false);
+assert.ok(Object.isFrozen(earliest.sourceVerification.declarations));
 // The public installed reader must reject a Specification that has an exact
 // newly computed content address but rewrites the original buyer's statement.
 // Its native source schema can be valid while the *relationship* is false.
@@ -406,6 +420,22 @@ const verifiedWork=readEngineeringCodeWork({
   designCandidate:verifiedLow,originalPlan:verifiedLowPlan,
   originalDeliveryText:JSON.stringify(low.design),sourceViews:sourceCut,
 });
+// The late Code Work reader consumes the SAME source-owned declaration
+// projection as Architecture, rather than inventing a second test registry.
+const earlyDeclared=readRequirementArchitectureTrace(verifiedArchitecture,{
+  requirement:originalSourceGraph[0],specification:verifiedSpecification,
+});
+assert.equal(earlyDeclared.sourceVerification.clauseCount,2);
+assert.equal(earlyDeclared.sourceVerification.declaredTestCount,1);
+assert.deepEqual(earlyDeclared.sourceVerification.missingClauseIds,['clause-b']);
+assert.deepEqual(verifiedWork.sourceVerification,{
+  scope:earlyDeclared.sourceVerification.scope,
+  status:earlyDeclared.sourceVerification.status,
+  clauseCount:earlyDeclared.sourceVerification.clauseCount,
+  declaredTestCount:earlyDeclared.sourceVerification.declaredTestCount,
+  missingClauseIds:[...earlyDeclared.sourceVerification.missingClauseIds],
+});
+assert.equal(earlyDeclared.sourceVerification.independentlyExecuted,false);
 assert.deepEqual(verifiedWork.targets[0].testObligations.sourceVerification,[
   {requirementCellId:'source-req:a',specificationClauseId:'clause-a',
     test:'node --test test/original-source-a.test.mjs',status:'declared-unverified'},
