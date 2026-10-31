@@ -187,7 +187,7 @@ export function repoRootFromDestination(destinationPath, carrierRepoRelativePath
   // a genuine cross-tree evidence and manufacturing failure.
   const portableCarrier = typeof carrierRepoRelativePath === "string" &&
     carrierRepoRelativePath.length > 0 &&
-    !/[\\\\\\u0000-\\u001f\\u007f]/u.test(carrierRepoRelativePath) &&
+    !/[\\\u0000-\u001f\u007f]/u.test(carrierRepoRelativePath) &&
     carrierRepoRelativePath.split("/").every(part =>
       part !== "" && part !== "." && part !== "..");
   const suffix = portableCarrier
