@@ -1,4 +1,5 @@
 import { artifactId } from '@red-cup-engineering/semiotic-eavt-services-section/identity';
+import { deriveSpecificationFromRequirementReview } from '../src/specification.mjs';
 
 // Source-format fixtures only; no real review, proof or adoption is implied.
 export function sourcesFixture() {
@@ -11,14 +12,23 @@ export function sourcesFixture() {
   const requirementRevision = artifactId(requirement);
   const reference = cell =>
     'Original Requirement source-req (' + requirementRevision + '), cell source-req:' + cell;
-  const specification = {
-    identity: { id: 'source-spec' },
-    provenance: { derivedFrom: ['source-req@' + requirementRevision] },
-    topics: [{ clauses: [
-      { id: 'clause-a', backedBy: [reference('a')] },
-      { id: 'clause-b', backedBy: [reference('b')] },
-    ] }],
-  };
+  // Use the original Specification maker even for explicitly synthetic cuts.
+  // A deliberately incomplete shape here previously let 41 downstream tests
+  // treat invalid source as a valid predecessor and masked native admission.
+  const specification = deriveSpecificationFromRequirementReview(requirement,{
+    reviewedRequirementRevision: requirementRevision,
+    identity: { id:'source-spec',title:'Synthetic source-cut fixture',
+      seat:'fixture-only',carrier:'test/source-cut.md',
+      authors:['synthetic independent test author'] },
+    reviewedBy:'synthetic-source-review-not-an-office',
+    at:'2026-10-27T00:00:00Z',
+    interpretations:[
+      {cell:'source-req:a',clauseId:'clause-a',keyword:'MUST',
+        actor:'Synthetic data owner'},
+      {cell:'source-req:b',clauseId:'clause-b',keyword:'MUST',
+        actor:'Synthetic data owner'},
+    ],
+  });
   const sourceIds = ['requirement', 'specification'];
   const architecture = {
     type: 'ArchitectureDescriptionCandidate',
@@ -81,8 +91,8 @@ export function clausesSplitAcrossModels({ completeArchitecture = false } = {}) 
   // Both normative clauses belong to source-req:a; each independently
   // authored architectural model supplies only one of those clauses.
   specification.topics[0].clauses.push({
+    ...specification.topics[0].clauses[0],
     id: 'clause-a2',
-    backedBy: [specification.topics[0].clauses[0].backedBy[0]],
   });
   architecture.sources.find(source => source.id === 'specification').revision =
     artifactId(specification);
