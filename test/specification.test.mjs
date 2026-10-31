@@ -374,15 +374,15 @@ test("public Specification schema projection cannot mutate original validation l
 test("repoRootFromDestination requires a whole path-component suffix and normal source coordinates", () => {
   const carrier = "lib/carrier.md";
   assert.throws(() => repoRootFromDestination("/tmp/notlib/carrier.md", carrier),
-    /does not end with identity\\.carrier/u,
+    /does not end with identity\.carrier/u,
     "textual suffixes cannot authenticate a repository boundary");
   assert.throws(() => repoRootFromDestination("/tmp/owned/../other/lib/carrier.md", carrier),
-    /does not end with identity\\.carrier/u,
+    /does not end with identity\.carrier/u,
     "non-normal destination names cannot qualify source custody");
   for (const badCarrier of ["", "/carrier.md", "../carrier.md",
     "lib/../carrier.md", "lib//carrier.md", "lib/./carrier.md", "lib\\\\carrier.md"]) {
     assert.throws(() => repoRootFromDestination("/tmp/owner/" + badCarrier, badCarrier),
-      /does not end with identity\\.carrier/u,
+      /does not end with identity\.carrier/u,
       "unqualified identity.carrier must be refused: " + JSON.stringify(badCarrier));
   }
   assert.equal(repoRootFromDestination("/carrier.md", "carrier.md"), "/",
