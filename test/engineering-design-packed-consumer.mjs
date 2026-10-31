@@ -13,7 +13,10 @@ import {
   readEngineeringCodeWork,
 } from '@red-cup-engineering/specification-engineering-services-section/engineering-design';
 import { indexJavaScriptModuleBindings } from '@red-cup-engineering/specification-engineering-services-section/javascript-module-bindings';
-import { readRequirementArchitectureImpact, readRequirementRevisionPressure } from '@red-cup-engineering/specification-engineering-services-section/architecture-description';
+import {
+  readRequirementArchitectureTrace, readRequirementArchitectureImpact,
+  readRequirementRevisionPressure,
+} from '@red-cup-engineering/specification-engineering-services-section/architecture-description';
 import { sourcesFixture, clausesSplitAcrossModels, sourceWithDeniedCondition } from './engineering-design-source-cut.fixture.mjs';
 import { validateSpecificationRecord } from '@red-cup-engineering/specification-engineering-services-section/specification';
 
