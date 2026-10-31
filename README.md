@@ -109,7 +109,13 @@ architecture and independently installed package regressions exercise this bound
 ## Specification and venue rendering
 
 A reviewed Requirement can be interpreted into a draft with
-`deriveSpecificationFromRequirementReview`. Each normative clause retains its original
+`deriveSpecificationFromRequirementReview`. The review must explicitly carry
+`reviewedRequirementRevision`, the complete original Requirement content
+identity even when `cells` selects only some conditions. A missing, stale
+or foreign source revision refuses; re-deriving an output digest cannot
+silently transfer an old reviewer's interpretation to new source text.
+This source integrity check is not reviewer authentication or proof of
+Office adoption. Each normative clause retains its original
 supported source condition rather than relying on the entire source document's presence as
 blanket coverage. A condition marked `"inference": true` (added by an agent, not stated by
 the Leader) is an engineering decision: it is reviewed and becomes a clause like any other,
