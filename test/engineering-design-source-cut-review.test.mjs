@@ -183,6 +183,75 @@ test('real Engineering #137 Design planner refuses a schema-invalid Specificatio
     /Invalid engineering design input or source projection|selected source cut/u);
 });
 
+test('Engineering #137 source-traced verification is visible before LLD and duplicate original clauses refuse',()=>{
+  // Independent receiving: original recorded 13-cell HLD source (not a
+  // fabricated Design, test result, or appointed reviewer).
+  const hld=JSON.parse(readFileSync(new URL(
+    '../data/records/service-records/high-level-design-service-records/engineering-design-explicit-source-profiles.json',
+    import.meta.url),'utf8'));
+  const [requirement,specification,architecture]=hld.sources.slice(0,3)
+    .map(source=>JSON.parse(source.text));
+  const original=readRequirementArchitectureTrace(architecture,{requirement,specification});
+  assert.equal(original.counts.sourceCells,13);
+  assert.equal(original.sourceVerification.clauseCount,13);
+  assert.equal(original.sourceVerification.declaredTestCount,0);
+  assert.equal(original.sourceVerification.missingClauseIds.length,13);
+  assert.equal(original.sourceVerification.status,'source-tests-missing');
+  assert.equal(original.sourceVerification.independentlyExecuted,false);
+  assert.equal(original.sourceVerification.declarations.length,13);
+  assert.ok(original.sourceVerification.declarations.every(row=>
+    row.test===null && row.status==='verification-test-not-declared' &&
+    row.requirementCellId.startsWith(requirement.id+':')));
+  assert.equal(Object.isFrozen(original.sourceVerification),true);
+  assert.equal(Object.isFrozen(original.sourceVerification.declarations),true);
+
+  // A newly authored *declaration*, not an executed test or proof, should
+  // update source/test qualification without spawning a Code rework.
+  const tested=structuredClone(specification);
+  const named=tested.topics[0].clauses[0];
+  named.test='node --test test/source-owned-qualification.test.mjs';
+  const testedArchitecture=structuredClone(architecture);
+  testedArchitecture.sources.find(row=>
+    row.id===testedArchitecture.upstream.specificationSourceId
+  ).revision=artifactId(tested);
+  const revised=readRequirementArchitectureTrace(testedArchitecture,{
+    requirement,specification:tested,
+  });
+  assert.equal(revised.sourceVerification.declaredTestCount,1);
+  assert.equal(revised.sourceVerification.missingClauseIds.length,12);
+  assert.equal(revised.sourceVerification.independentlyExecuted,false);
+  const declaration=revised.sourceVerification.declarations.find(row=>
+    row.specificationClauseId===named.id);
+  assert.equal(declaration.test,named.test);
+  assert.equal(declaration.status,'declared-unverified');
+
+  // Original Requirement->Specification generator demands one explicit
+  // interpretation per selected cell. A second (even byte-equal) normative
+  // declaration for that same condition is a separate unauthored duty.
+  // Matching fresh source digest does not authorize it.
+  const duplicated=structuredClone(specification);
+  const duplicate={...duplicated.topics[0].clauses[0],
+    id:'duplicate-original-condition'};
+  duplicated.topics[0].clauses.push(duplicate);
+  duplicated.topics[0].body+='\n\n{{clause:duplicate-original-condition}}';
+  assert.equal(validateSpecificationRecord(duplicated).valid,true);
+  const duplicateArchitecture=structuredClone(architecture);
+  duplicateArchitecture.sources.find(row=>
+    row.id===duplicateArchitecture.upstream.specificationSourceId
+  ).revision=artifactId(duplicated);
+  const refused=validateArchitectureDescriptionAgainstSourceCut(
+    duplicateArchitecture,{requirement,specification:duplicated});
+  assert.equal(refused.valid,false,JSON.stringify(refused));
+  assert.ok(refused.issues.some(row=>
+    row.path.startsWith('sourceCut.specification') &&
+    /multiple normative clauses|exactly one normative clause/u.test(row.message)));
+  assert.throws(()=>planEngineeringDesign({stage:'high-level',sources:[
+    {kind:'requirement',text:JSON.stringify(requirement)},
+    {kind:'specification',text:JSON.stringify(duplicated)},
+    {kind:'architecture',text:JSON.stringify(duplicateArchitecture)},
+  ]}),TypeError);
+});
+
 test('the original refused LLD provider delivery remains refused at the current exact source cut', () => {
   // These are original recorded sources, not synthetic examples or repaired
   // model output. Reconstruct a NEW read-only plan at today's source parser,
