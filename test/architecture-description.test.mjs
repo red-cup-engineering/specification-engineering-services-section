@@ -9,7 +9,7 @@ import {
   readRequirementArchitectureTrace, readRequirementArchitectureImpact, readRequirementRevisionPressure,
   deriveArchitectureDescriptionFromSpecificationReview, loadArchitectureDescriptionSchema,
 } from "../src/architecture-description.mjs";
-import { deriveSpecificationFromRequirementReview } from "../src/specification.mjs";
+import { deriveSpecificationFromRequirementReview, validateSpecificationRecord } from "../src/specification.mjs";
 import { planEngineeringDesign } from "../src/engineering-design.mjs";
 import { artifactId } from "@red-cup-engineering/semiotic-eavt-services-section/identity";
 
