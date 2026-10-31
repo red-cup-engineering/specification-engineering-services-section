@@ -191,6 +191,17 @@ export function validateArchitectureDescriptionAgainstSourceCut(record, {
       !Array.isArray(specification.provenance?.derivedFrom))
     refuse("sourceCut.specification","a separately derived Specification is required");
   if (issues.length > 0) return Object.freeze({valid:false,issues:Object.freeze(issues)});
+  // A matching source address identifies the bytes; it does not establish
+  // their admissibility as the preceding Specification stage's native record.
+  // Reuse the one existing Specification validator before Architecture/Design
+  // may project any downstream source trace from those bytes.
+  const sourceAdmission = validateSpecificationRecord(specification);
+  if (!sourceAdmission.valid)
+    refuse("sourceCut.specification",
+      "original Specification fails native source admission: " +
+      sourceAdmission.issues.map(issue =>
+        issue.path + " (" + issue.keyword + ")").join("; "));
+  if (issues.length > 0) return Object.freeze({valid:false,issues:Object.freeze(issues)});
   // These identities are derived locally from the exact supplied source
   // graph, not self-attested strings in the Architecture Description.
   const expectedRequirement = artifactId(requirement);
