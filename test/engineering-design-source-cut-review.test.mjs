@@ -243,6 +243,54 @@ test('Engineering #137 source-traced verification is visible before LLD and pres
 
 });
 
+test('Engineering #137 real original thirteen-clause source refuses CIE work before HLD/LLD inference without independently authored test procedures',()=>{
+  // The historical original source includes a seven-component HLD and a
+  // refused seven-operation LLD. Do not simulate a paid provider or mutate its
+  // exact archived bytes to make this test pass.
+  const hld=JSON.parse(readFileSync(new URL(
+    '../data/records/service-records/high-level-design-service-records/engineering-design-explicit-source-profiles.json',
+    import.meta.url),'utf8'));
+  assert.equal(hld.admitted,false);
+  assert.equal(hld.proof,'unreceived');
+  const root=hld.sources.map(({kind,text})=>({kind,text}));
+  const currentSpec=JSON.parse(root[1].text);
+  assert.equal(currentSpec.topics.flatMap(t=>t.clauses).length,13);
+  assert.equal(currentSpec.topics.flatMap(t=>t.clauses).filter(c=>c.test!==undefined).length,0);
+  const stages=[
+    planEngineeringDesign({stage:'high-level',sources:root}),
+    planEngineeringDesign({stage:'low-level',sources:[
+      ...root,{kind:'high-level',text:JSON.stringify(hld)},
+    ]}),
+  ];
+  for(const plan of stages){
+    // Planning remains pure and useful for diagnosis; a CIE-compatible
+    // request, an actual inference task or original Work effect must not
+    // follow when all original verification procedures are still absent.
+    assert.equal(plan.type,'EngineeringDesignDerivationPlan');
+    const refusal=readEngineeringDesignInferenceWork(plan);
+    assert.deepEqual(refusal,{
+      type:'EngineeringDesignInferenceWorkRefusal',
+      reason:'source-verification-procedures-not-declared',
+      stage:plan.stage,
+      originalRequirementId:'engineering-design-accepts-explicit-source-profiles',
+      sourceCut:plan.sources.map(({kind,digest})=>({kind,digest})),
+      sourceVerification:{
+        scope:'original-specification-clauses',
+        clauseCount:13,declaredTestCount:0,
+        missingClauseIds:currentSpec.topics.flatMap(t=>t.clauses.map(c=>c.id)).sort(),
+      },
+      inferenceSubmitted:false,executableWork:false,independentProof:'unreceived',
+    });
+    assert.ok(Object.isFrozen(refusal));
+    assert.ok(Object.isFrozen(refusal.sourceVerification));
+    assert.ok(Object.isFrozen(refusal.sourceVerification.missingClauseIds));
+    assert.deepEqual(readEngineeringDesignInferenceWork(structuredClone(plan)),refusal,
+      'same immutable source replay never initiates a second inference');
+    assert.equal('outputSchema' in refusal,false,
+      'refusal is not itself a CIE-admissible inference work request');
+  }
+});
+
 test('the original refused LLD provider delivery remains refused at the current exact source cut', () => {
   // These are original recorded sources, not synthetic examples or repaired
   // model output. Reconstruct a NEW read-only plan at today's source parser,
