@@ -22,19 +22,44 @@ export function readEngineeringInterfaceSchema(text, { portableOnly = false } = 
   if (typeof value !== 'boolean' && !object(value))
     throw new TypeError('Engineering interface must be a JSON Schema object or boolean');
   if (portableOnly) {
-    // A remote $ref is a dependency on a schema not present in this exact
-    // source cut; matching strings do NOT authenticate or receive that schema.
-    // Local pointers are still structural declarations, not proven semantics.
-    const stack = [value];
-    while (stack.length) {
-      const entry = stack.pop();
-      if (entry === null || typeof entry !== 'object') continue;
-      if (Object.hasOwn(entry, '$ref') || Object.hasOwn(entry, '$dynamicRef')) {
-        for (const key of ['$ref', '$dynamicRef']) if (Object.hasOwn(entry, key) &&
-            (typeof entry[key] !== 'string' || !entry[key].startsWith('#')))
-          throw new TypeError('Engineering review port schema cannot depend on an unreceived external reference');
+    // An independently reviewed HLD schema is one bounded, completely
+    // materialized source object. An unreceived remote or locally unresolved
+    // $ref cannot be made real merely by writing the same URL on both sides.
+    if (Buffer.byteLength(text, 'utf8') > 65_536)
+      throw new TypeError('Engineering review port schema exceeds the original bounded source cut');
+    const localTarget = (ref) => {
+      if (ref === '#') return value;
+      if (!ref.startsWith('#/') || ref.includes('%'))
+        throw new TypeError('Engineering review cannot resolve an external or unqualified local schema reference');
+      let target = value;
+      for (const part of ref.slice(2).split('/')) {
+        if (/~(?![01])/u.test(part))
+          throw new TypeError('Engineering review schema reference has invalid JSON Pointer escaping');
+        const key=part.replaceAll('~1','/').replaceAll('~0','~');
+        if (target === null || typeof target !== 'object' ||
+            !Object.hasOwn(target,key))
+          throw new TypeError('Engineering review schema references an absent original definition');
+        target=target[key];
       }
-      stack.push(...Object.values(entry));
+      if (typeof target !== 'boolean' && !object(target))
+        throw new TypeError('Engineering review schema reference is not a schema');
+      return target;
+    };
+    const stack = [{node:value,root:true}];
+    while (stack.length) {
+      const {node,root}=stack.pop();
+      if (node === null || typeof node !== 'object') continue;
+      // Nested $id changes the base URI. Require a separate admitted source
+      // model for that more general JSON Schema composition.
+      if (!root && Object.hasOwn(node,'$id'))
+        throw new TypeError('Engineering review nested schema IDs need a qualified separate source');
+      if (Object.hasOwn(node,'$dynamicRef'))
+        throw new TypeError('Engineering review dynamic schema references require independent resolution');
+      if (Object.hasOwn(node,'$ref')) {
+        if (typeof node.$ref !== 'string') throw new TypeError('Invalid schema reference');
+        localTarget(node.$ref);
+      }
+      for (const child of Object.values(node)) stack.push({node:child,root:false});
     }
   }
   if (object(value)) createSchema(value,
