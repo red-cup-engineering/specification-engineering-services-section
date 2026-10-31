@@ -144,6 +144,40 @@ const reviewRequest={sources:original,reviewText,
   limits:{maxReviewBytes:65536,maxComponents:16,maxRequirements:32,maxTraceRows:16}};
 const receivedReview=receiveEngineeringHighLevelReview(reviewRequest);
 assert.equal(receivedReview.type,'EngineeringDesignReviewProjection');
+// The separately clean-installed consumer tests an INDEPENDENT reviewed
+// provider contract, not ports inferred from the downstream consumer request.
+const integerPort=JSON.stringify({
+  $schema:'https://json-schema.org/draft/2020-12/schema',
+  type:'integer',minimum:0,
+});
+const typedReview=structuredClone(review);
+typedReview.components[0].provides=[{
+  port:'source-facts',schemaJson:integerPort,
+}];
+typedReview.components[1].requires=[{
+  componentId:'component-a',port:'source-facts',schemaJson:integerPort,
+}];
+const reviewPortCut=changed=>{
+  const text=JSON.stringify(changed);
+  return { ...reviewRequest, reviewText:text,
+    expectedReviewSha256:'sha256:'+createHash('sha256').update(text).digest('hex') };
+};
+const typedProjection=receiveEngineeringHighLevelReview(reviewPortCut(typedReview));
+assert.equal(typedProjection.type,'EngineeringDesignReviewProjection');
+assert.deepEqual(typedProjection.candidate.design.connections,[{
+  fromComponentId:'component-a',toComponentId:'component-b',port:'source-facts',
+}]);
+assert.equal(typedProjection.reviewText,JSON.stringify(typedReview));
+const phantom=structuredClone(typedReview);
+phantom.components[0].provides=[];
+assert.deepEqual(receiveEngineeringHighLevelReview(reviewPortCut(phantom)),{
+  type:'EngineeringDesignDerivationRefusal',reason:'invalid-review',
+},'installed review receiver must never let the consumer fabricate a provider port');
+const incompatible=structuredClone(typedReview);
+incompatible.components[1].requires[0].schemaJson='{"type":"string"}';
+assert.deepEqual(receiveEngineeringHighLevelReview(reviewPortCut(incompatible)),{
+  type:'EngineeringDesignDerivationRefusal',reason:'invalid-review',
+},'source-owned typed schema mismatch must refuse even if a graph edge and name match');
 assert.equal(receivedReview.candidate.type,'EngineeringDesignCandidate');
 assert.equal(receivedReview.candidate.admitted,false);
 assert.equal(receivedReview.candidate.proof,'unreceived');
