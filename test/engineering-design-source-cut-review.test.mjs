@@ -11,6 +11,7 @@ import { planEngineeringDesign, receiveEngineeringDesign,
 import { deriveSpecificationFromRequirementReview,
   validateSpecificationRecord } from '../src/specification.mjs';
 import { deriveArchitectureDescriptionFromSpecificationReview,
+  validateArchitectureDescriptionAgainstSourceCut,
   readRequirementArchitectureTrace, readRequirementRevisionPressure,
   readRequirementArchitectureImpact } from '../src/architecture-description.mjs';
 
@@ -218,6 +219,73 @@ test('the original refused LLD provider delivery remains refused at the current 
   assert.deepEqual(next, receivedRefusal,
     'a later Design receiver may not silently accept a known refused source');
   assert.equal(next.reason, 'invalid-design');
+});
+
+test('Engineering #137 original Specification cannot rewrite or invent buyer conditions under freshly matched source digests',()=>{
+  // The original recorded 13-cell Design source is the independent consumer,
+  // not a newly fabricated Requirement or a synthetic replacement Work.
+  const hld=JSON.parse(readFileSync(new URL(
+    '../data/records/service-records/high-level-design-service-records/engineering-design-explicit-source-profiles.json',
+    import.meta.url),'utf8'));
+  const original=hld.sources.slice(0,3).map(({kind,text})=>({kind,text}));
+  const R=JSON.parse(original[0].text);
+  const S=JSON.parse(original[1].text);
+  const A=JSON.parse(original[2].text);
+  assert.equal(R['met-when'].length,13);
+  assert.equal(S.topics.flatMap(topic=>topic.clauses).length,13);
+  assert.equal(planEngineeringDesign({stage:'high-level',sources:original}).type,
+    'EngineeringDesignDerivationPlan','original historical source remains a readable candidate');
+  const readdress=(mutate)=>{
+    const specification=structuredClone(S);
+    mutate(specification);
+    assert.equal(validateSpecificationRecord(specification).valid,true,
+      'falsifier must pass the original one-record Specification schema');
+    const architecture=structuredClone(A);
+    architecture.sources.find(source=>
+      source.id===architecture.upstream.specificationSourceId
+    ).revision=artifactId(specification);
+    return {requirement:R,specification,architecture,sources:[
+      original[0],{kind:'specification',text:JSON.stringify(specification)},
+      {kind:'architecture',text:JSON.stringify(architecture)},
+    ]};
+  };
+  const falseStatement=readdress(spec=>{
+    spec.topics[0].clauses[0].statement=
+      'Different behavior asserted by the Specification instead of the original Requirement.';
+  });
+  const missingOrigin=readdress(spec=>{
+    spec.topics[0].clauses.push({id:'invented-condition',actor:'Unadmitted claimant',
+      keyword:'MUST',statement:'Perform functionality no original customer requested.',
+      backedBy:['unattributed external work']});
+    spec.topics[0].body+='\n\n{{clause:invented-condition}}';
+  });
+  const crossedOrigins=readdress(spec=>{
+    spec.topics[0].clauses[0].backedBy.push(spec.topics[0].clauses[1].backedBy[0]);
+  });
+  for(const [kind,cut] of [
+    ['altered-statement',falseStatement],['orphan-clause',missingOrigin],
+    ['many-original-cells-for-one-clause',crossedOrigins],
+  ]){
+    const read=validateArchitectureDescriptionAgainstSourceCut(cut.architecture,cut);
+    assert.equal(read.valid,false,kind+': '+JSON.stringify(read.issues));
+    assert.ok(read.issues.some(row=>row.path.startsWith('sourceCut.specification')),
+      kind+': first defective stage must name the original Specification source');
+    assert.throws(()=>planEngineeringDesign({stage:'high-level',sources:cut.sources}),
+      TypeError,kind+': native HLD must not consume it');
+    // Native Design also has an earlier per-clause original-reference gate;
+    // either first source-qualified refusal is valid, but never a candidate.
+  }
+  // An independent test declaration can change without rewriting source
+  // behavior; it is still unexecuted and not Proof or customer acceptance.
+  const verificationOnly=readdress(spec=>{
+    spec.topics[0].clauses[0].test='node --test test/independently-authored-source-verification.test.mjs';
+  });
+  const accepted=validateArchitectureDescriptionAgainstSourceCut(
+    verificationOnly.architecture,verificationOnly);
+  assert.equal(accepted.valid,true,JSON.stringify(accepted.issues));
+  assert.equal(planEngineeringDesign({
+    stage:'high-level',sources:verificationOnly.sources,
+  }).type,'EngineeringDesignDerivationPlan');
 });
 
 test('current fourteen-condition original Requirement cannot silently receive its historical thirteen-condition HLD cut',()=>{

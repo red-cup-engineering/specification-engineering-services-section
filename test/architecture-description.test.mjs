@@ -752,7 +752,14 @@ test("a stale, unpaired, or forged source cut never produces a change-impact Wor
 test("original source-impact CLI performs a bounded JSON read and returns source-qualified Work impact", () => {
   const prior=publishedUtilityBuyerTrace();
   const next=structuredClone(prior);
-  next.specification.topics[0].clauses[0].statement="Changed authored clause wording.";
+  // Behavioral change belongs first to the original Requirement. Reproject
+  // it using the already established reviewer/maker, not by hand-editing a
+  // Specification under an unchanged customer demand.
+  next.requirement["met-when"][0].says="Changed authored clause wording.";
+  next.review.reviewedRequirementRevision=artifactId(next.requirement);
+  next.specification=deriveSpecificationFromRequirementReview(
+    next.requirement,next.review);
+  next.architecture.sources.find(source=>source.id==="req").revision=artifactId(next.requirement);
   next.architecture.sources.find(source=>source.id==="spec").revision=artifactId(next.specification);
   const runner=fileURLToPath(new URL("../scripts/render-architecture-description.mjs",import.meta.url));
   const sourceCut=({requirement,specification,architecture})=>({requirement,specification,architecture});
@@ -1094,8 +1101,17 @@ test('changing only an independently authored verification procedure requalifies
   // A genuinely changed normative statement is a different obligation:
   // still regenerate its one mapped implementation responsibility.
   const semantic=structuredClone(changed);
-  semantic.specification.topics[0].clauses[0].statement=
+  semantic.requirement['met-when'][0].says=
     'Original permission filtering must reject unauthenticated readers.';
+  semantic.review.reviewedRequirementRevision=artifactId(semantic.requirement);
+  // Retain the exact independently authored (still unexecuted) test while
+  // revising original normative behavior through its Requirement source.
+  semantic.review.interpretations[0].test=
+    changed.specification.topics[0].clauses[0].test;
+  semantic.specification=deriveSpecificationFromRequirementReview(
+    semantic.requirement,semantic.review);
+  semantic.architecture.sources.find(source=>source.id==='req').revision=
+    artifactId(semantic.requirement);
   semantic.architecture.sources.find(source=>source.id==='spec').revision=
     artifactId(semantic.specification);
   const material=readRequirementArchitectureImpact(changed,semantic);
