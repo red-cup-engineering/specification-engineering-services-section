@@ -404,7 +404,7 @@ export function deriveSpecificationRecord(draft, options = {}) {
  * @returns {object} Existing house Specification record, unadmitted draft
  */
 export function deriveSpecificationFromRequirementReview(requirement, {
-  identity, interpretations, at, reviewedBy, cells,
+  identity, interpretations, at, reviewedBy, cells, reviewedRequirementRevision,
 } = {}) {
   const fail = message => { throw new TypeError("requirement-to-specification: " + message); };
   // A section keeps all its cells in one Requirement record (Leader, 2026-10-30), so a Specification of one
@@ -494,6 +494,14 @@ export function deriveSpecificationFromRequirementReview(requirement, {
     choices.set(decision.cell, decision);
   }
   const sourceAddress = artifactId(requirement);
+  // Recomputed output addresses never authorize reusing an old normative
+  // interpretation after the entire original Requirement has changed.
+  // This source pin is necessary, never a reviewer signature or assent.
+  if (typeof reviewedRequirementRevision !== "string" ||
+      !/^ni:\/\/\/sha-256;[A-Za-z0-9_-]+$/u.test(reviewedRequirementRevision))
+    fail("reviewed Requirement revision must name a complete original source address");
+  if (reviewedRequirementRevision !== sourceAddress)
+    fail("reviewed Requirement revision mismatch: source changed after review");
   const cut = selected === null ? "" : "#cells=" + [...selected].sort().join(",");
   const clauses = covered.map(condition => {
     const decision = choices.get(condition.cell);

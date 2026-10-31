@@ -332,6 +332,7 @@ function actualRequirementReviewSource({engineeringInference=false}={}) {
    requirement["met-when"][0]["leader-words"]="The original customer asked to preserve the Work identity";
  }
  const review={
+   reviewedRequirementRevision:artifactId(requirement),
    identity:{id:"work-acceptance-spec",title:"Customer receiving candidate",
      seat:"source-review",carrier:"candidate/source-work.md",authors:["review-only"]},
    at:"2026-10-24T19:00:00Z",reviewedBy:"unadmitted-review-test",
@@ -409,6 +410,7 @@ test("one section Requirement cut preserves selected cell identities into origin
  source.requirement["met-when"][0].inference=true;
  source.requirement["met-when"][0]["leader-words"]="Keep the original submitted Work identity";
  const review={
+   reviewedRequirementRevision:artifactId(source.requirement),
    identity:{id:"selected-source-spec",title:"Selected engineering source",seat:"source-review",
      carrier:"candidate/selected-source.md",authors:["original-review"]},
    at:"2026-10-30T00:00:00Z",reviewedBy:"source-review",
@@ -547,6 +549,7 @@ function publishedUtilityBuyerTrace() {
     ],
   };
   const review={
+    reviewedRequirementRevision:artifactId(requirement),
     identity:{id:"utility-knowledge-source-spec",title:"NYPA source-only knowledge workshare",
       seat:"review-with-original-contracting-office",
       carrier:"candidate/utility-knowledge.md",authors:["unadmitted-source-review"]},
@@ -690,6 +693,10 @@ test("changed buyer words invalidate the old source cut but identify only genuin
   const next = structuredClone(prior);
   next.requirement["met-when"][0].says =
     "The revised buyer now requires cited answers to omit inaccessible source snippets.";
+  assert.throws(()=>deriveSpecificationFromRequirementReview(next.requirement,next.review),
+    /reviewed Requirement revision mismatch/u,
+    "previously reviewed buyer source may not silently rebind after a change");
+  next.review.reviewedRequirementRevision=artifactId(next.requirement);
   next.specification = deriveSpecificationFromRequirementReview(next.requirement,next.review);
   next.architecture.sources.find(source=>source.id==="req").revision = artifactId(next.requirement);
   next.architecture.sources.find(source=>source.id==="spec").revision = artifactId(next.specification);

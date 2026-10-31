@@ -107,6 +107,7 @@ function sourceRequirement() {
 }
 function sourceReview(source=sourceRequirement()) {
   return {
+    reviewedRequirementRevision:artifactId(source),
     identity:{id:"enterprise-work-continuity-specification",
       title:"Source-qualified Work continuity",seat:"engineering-review",
       carrier:"content/work-continuity.md",authors:["original source reviewer"]},
@@ -190,7 +191,9 @@ test("source revision, unpinned time and untrusted identity cannot forge an acce
   const first=deriveSpecificationFromRequirementReview(source,review);
   const changed=structuredClone(source);
   changed["met-when"][1].says="never mark a vendor API acknowledgment as buyer receipt";
-  const second=deriveSpecificationFromRequirementReview(changed,review);
+  assert.throws(()=>deriveSpecificationFromRequirementReview(changed,review),
+    /reviewed Requirement revision mismatch/u);
+  const second=deriveSpecificationFromRequirementReview(changed,sourceReview(changed));
   assert.notEqual(first.provenance.derivedFrom[0],second.provenance.derivedFrom[0],
     "changing source without changing Work ID forces a new content-bound correspondence");
   assert.equal(second.topics[0].clauses[1].statement,changed["met-when"][1].says);
@@ -218,6 +221,7 @@ test("1,024 distinct original Work conditions survive deterministic specificatio
       target:"held",says:"preserve actual accepted Work obligation "+i,
     }))};
   const review={
+    reviewedRequirementRevision:artifactId(requirement),
     identity:{id:"multi-project-work-specification",title:"Multiple original Work cases",
       seat:"source-review",carrier:"candidate/multi-work.md",authors:["authored test reviewer"]},
     at:"2026-10-24T19:00:00Z",reviewedBy:"nonbinding diagnostic source",
@@ -294,6 +298,7 @@ test("an inferred condition is an engineering decision: a normative clause backe
   const review = sourceReview(sourceRequirement());
   review.interpretations.push({cell:"enterprise-work-continuity:audit",
     clauseId:"audit",keyword:"MUST",actor:"The software Work receiver"});
+  review.reviewedRequirementRevision=artifactId(source);
   const record = deriveSpecificationFromRequirementReview(source, review);
   const clauses = record.topics.flatMap(t => t.clauses);
   assert.equal(clauses.length, 4);
@@ -332,15 +337,16 @@ test("a requirement cut of a section's one record generates only its cells and k
     { cell: cells[0], clauseId: "no-ancestor-pin", keyword: "MUST NOT", actor: "LAGOON release formation" },
   ];
   const at = "2026-10-30T00:00:00.000Z", reviewedBy = "engineer";
-  const spec = deriveSpecificationFromRequirementReview(requirement, { identity, interpretations, at, reviewedBy, cells });
+  const reviewedRequirementRevision=artifactId(requirement);
+  const spec = deriveSpecificationFromRequirementReview(requirement, { identity, interpretations, at, reviewedBy, cells, reviewedRequirementRevision });
   assert.deepEqual(spec.topics[0].clauses.map(clause => clause.id), ["baseline-at-formation", "no-ancestor-pin"]);
   const exact = "lagoon@" + artifactId(requirement);
   assert.equal(spec.provenance.derivedFrom[0], exact);
   assert.equal(spec.provenance.derivedFrom[1], exact + "#cells=" + [...cells].sort().join(","));
   assert.match(spec.whatThisIs, /cells lagoon:release-baseline-at-formation, lagoon:release-baseline-no-cascade\.$/u);
-  assert.throws(() => deriveSpecificationFromRequirementReview(requirement, { identity, interpretations, at, reviewedBy, cells: ["lagoon:not-a-cell"] }), /requirement cut/u);
-  assert.throws(() => deriveSpecificationFromRequirementReview(requirement, { identity, interpretations: [...interpretations, { cell: "lagoon:one-home", clauseId: "one-home", keyword: "MUST", actor: "LAGOON" }], at, reviewedBy, cells }), /exactly one/u);
-  assert.throws(() => deriveSpecificationFromRequirementReview(requirement, { identity, interpretations, at, reviewedBy }), /exactly one/u);
+  assert.throws(() => deriveSpecificationFromRequirementReview(requirement, { identity, interpretations, at, reviewedBy, cells, reviewedRequirementRevision: ["lagoon:not-a-cell"] }), /requirement cut/u);
+  assert.throws(() => deriveSpecificationFromRequirementReview(requirement, { identity, interpretations: [...interpretations, { cell: "lagoon:one-home", clauseId: "one-home", keyword: "MUST", actor: "LAGOON" }], at, reviewedBy, cells, reviewedRequirementRevision }), /exactly one/u);
+  assert.throws(() => deriveSpecificationFromRequirementReview(requirement, { identity, interpretations, at, reviewedBy, reviewedRequirementRevision }), /exactly one/u);
 });
 
 test("a reviewed denied target remains source-exact and a normative prohibition, not a false acceptance",()=>{

@@ -254,9 +254,16 @@ test('original 14-condition source reprojects its reviewed 13-cell selection thr
   // projected against the *complete current* Requirement source. This is
   // structural reuse proposed for an external review, NOT a new Office
   // attestation that the modified original-fabrication clause is accepted.
-  const specification=deriveSpecificationFromRequirementReview(R,{
+  assert.throws(()=>deriveSpecificationFromRequirementReview(R,{
     ...G.review,cells:selected,
-  });
+  }),/reviewed Requirement revision/u,
+  "archived original review cannot re-attest the changed full Requirement");
+  const currentReview={
+    ...G.review,cells:selected,
+    reviewedRequirementRevision:artifactId(R),
+    reviewedBy:"unadmitted-source-cut-assay-not-an-Office-approval",
+  };
+  const specification=deriveSpecificationFromRequirementReview(R,currentReview);
   assert.equal(validateSpecificationRecord(specification).valid,true);
   assert.equal(specification.topics.flatMap(t=>t.clauses).length,13);
   assert.equal(specification.identity.status,'draft');
@@ -267,7 +274,7 @@ test('original 14-condition source reprojects its reviewed 13-cell selection thr
     oldArchitecture.sources.find(x=>x.id==='req').revision);
   assert.deepEqual(
     deriveSpecificationFromRequirementReview(structuredClone(R),{
-      ...structuredClone(G.review),cells:[...selected].reverse(),
+      ...structuredClone(currentReview),cells:[...selected].reverse(),
     }).provenance.derivedFrom,
     specification.provenance.derivedFrom,
     'selection identity must use sorted cell IDs, never review order');
