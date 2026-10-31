@@ -5,6 +5,7 @@ import { relativeLinkPath } from "@red-cup-engineering/markdown-engineering-serv
 import { statPath } from "@red-cup-engineering/computer-file-engineering-services-section/stat-path";
 import { validateJsonSchema } from "@red-cup-engineering/json-schema-services-section/validation";
 import { artifactId } from "@red-cup-engineering/semiotic-eavt-services-section/identity";
+import { isAbsolute, normalize, sep } from "node:path";
 
 const SCHEMA_PATH = projectFileUrlFilepath(new URL("../data/records/schema/specification.schema.json", import.meta.url).href);
 const SPECIFICATION_SCHEMA = JSON.parse(await readFileText(SCHEMA_PATH));
@@ -180,10 +181,26 @@ export async function verifyCitationTargetsExist(record, { repoRoot }) {
  * @throws {TypeError} When destinationPath does not end with carrierRepoRelativePath.
  */
 export function repoRootFromDestination(destinationPath, carrierRepoRelativePath) {
-  if (!destinationPath.endsWith(carrierRepoRelativePath)) {
-    throw new TypeError(`specification: destination "${destinationPath}" does not end with identity.carrier "${carrierRepoRelativePath}"`);
+  // identity.carrier is a portable repository-relative coordinate. A raw
+  // endsWith() check can accept /elsewhere/notlib/record.md for
+  // identity.carrier=lib/record.md, then test citations in /elsewhere/not:
+  // a genuine cross-tree evidence and manufacturing failure.
+  const portableCarrier = typeof carrierRepoRelativePath === "string" &&
+    carrierRepoRelativePath.length > 0 &&
+    !/[\\\u0000-\u001f\u007f]/u.test(carrierRepoRelativePath) &&
+    carrierRepoRelativePath.split("/").every(part =>
+      part !== "" && part !== "." && part !== "..");
+  const suffix = portableCarrier
+    ? sep + carrierRepoRelativePath.split("/").join(sep) : null;
+  if (!portableCarrier || typeof destinationPath !== "string" ||
+      !isAbsolute(destinationPath) || normalize(destinationPath) !== destinationPath ||
+      !destinationPath.endsWith(suffix)) {
+    throw new TypeError(`specification: destination "${destinationPath}" does not end with identity.carrier "${carrierRepoRelativePath}" as a normalized, whole path-component source coordinate`);
   }
-  return destinationPath.slice(0, destinationPath.length - carrierRepoRelativePath.length);
+  // Preserve the public trailing-separator contract for existing consumers.
+  // Lexical path qualification is not a symlink, source-rights, or Work receipt.
+  const root = destinationPath.slice(0, -suffix.length);
+  return root.length ? root + sep : sep;
 }
 
 function renderClause(clause, carrierRepoRelativePath) {
