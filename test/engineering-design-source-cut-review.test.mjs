@@ -338,6 +338,34 @@ test('original 14-condition source reprojects its reviewed 13-cell selection thr
   // No new original buyer assertion is admitted here: proposed amendments
   // are adversarial test inputs and generated drafts remain unreceived.
   const originalCut={requirement:R,specification,architecture};
+  // Original 14-condition / selected 13-cell Design Work, not a fabricated
+  // semantic LLD or new customer requirement. A proposed source-owned
+  // verification declaration is separate from normative implementation.
+  const testedSpecification=structuredClone(specification);
+  const revisedSourceClause=testedSpecification.topics.flatMap(t=>t.clauses)
+    .find(clause=>clause.id==='original-fabrication');
+  assert.equal(revisedSourceClause.test,undefined,
+    'the actual historical source does not declare an independent test');
+  revisedSourceClause.test=
+    'node --test test/original-fabrication-source-boundary.test.mjs';
+  const testedArchitecture=structuredClone(architecture);
+  testedArchitecture.sources.find(row=>
+    row.id===testedArchitecture.upstream.specificationSourceId).revision=
+    artifactId(testedSpecification);
+  const verificationOnlyImpact=readRequirementArchitectureImpact(originalCut,{
+    requirement:R,specification:testedSpecification,architecture:testedArchitecture,
+  });
+  assert.equal(verificationOnlyImpact.summary.regenerationCells,0,
+    'an authored verification procedure must not regenerate all thirteen Design implementations');
+  assert.equal(verificationOnlyImpact.summary.requalificationOnlyCells,13);
+  const fabricationVerification=verificationOnlyImpact.changes.find(row=>
+    row.cell.endsWith(':original-fabrication'));
+  assert.ok(fabricationVerification.reasons.includes(
+    'verification-declaration-changed'));
+  assert.ok(!fabricationVerification.reasons.includes(
+    'normative-clause-content-changed'));
+  assert.equal(verificationOnlyImpact.independentlyAcceptedCustomerWork,false);
+
   const compareChange=mutate=>{
     const current=structuredClone(R);
     mutate(current);
