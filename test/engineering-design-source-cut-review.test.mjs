@@ -243,6 +243,54 @@ test('Engineering #137 source-traced verification is visible before LLD and pres
 
 });
 
+test('Engineering #137 real original thirteen-clause source refuses CIE work before HLD/LLD inference without independently authored test procedures',()=>{
+  // The historical original source includes a seven-component HLD and a
+  // refused seven-operation LLD. Do not simulate a paid provider or mutate its
+  // exact archived bytes to make this test pass.
+  const hld=JSON.parse(readFileSync(new URL(
+    '../data/records/service-records/high-level-design-service-records/engineering-design-explicit-source-profiles.json',
+    import.meta.url),'utf8'));
+  assert.equal(hld.admitted,false);
+  assert.equal(hld.proof,'unreceived');
+  const root=hld.sources.map(({kind,text})=>({kind,text}));
+  const currentSpec=JSON.parse(root[1].text);
+  assert.equal(currentSpec.topics.flatMap(t=>t.clauses).length,13);
+  assert.equal(currentSpec.topics.flatMap(t=>t.clauses).filter(c=>c.test!==undefined).length,0);
+  const stages=[
+    planEngineeringDesign({stage:'high-level',sources:root}),
+    planEngineeringDesign({stage:'low-level',sources:[
+      ...root,{kind:'high-level',text:JSON.stringify(hld)},
+    ]}),
+  ];
+  for(const plan of stages){
+    // Planning remains pure and useful for diagnosis; a CIE-compatible
+    // request, an actual inference task or original Work effect must not
+    // follow when all original verification procedures are still absent.
+    assert.equal(plan.type,'EngineeringDesignDerivationPlan');
+    const refusal=readEngineeringDesignInferenceWork(plan);
+    assert.deepEqual(refusal,{
+      type:'EngineeringDesignInferenceWorkRefusal',
+      reason:'source-verification-procedures-not-declared',
+      stage:plan.stage,
+      originalRequirementId:'engineering-design-accepts-explicit-source-profiles',
+      sourceCut:plan.sources.map(({kind,digest})=>({kind,digest})),
+      sourceVerification:{
+        scope:'original-specification-clauses',
+        clauseCount:13,declaredTestCount:0,
+        missingClauseIds:currentSpec.topics.flatMap(t=>t.clauses.map(c=>c.id)).sort(),
+      },
+      inferenceSubmitted:false,executableWork:false,independentProof:'unreceived',
+    });
+    assert.ok(Object.isFrozen(refusal));
+    assert.ok(Object.isFrozen(refusal.sourceVerification));
+    assert.ok(Object.isFrozen(refusal.sourceVerification.missingClauseIds));
+    assert.deepEqual(readEngineeringDesignInferenceWork(structuredClone(plan)),refusal,
+      'same immutable source replay never initiates a second inference');
+    assert.equal('outputSchema' in refusal,false,
+      'refusal is not itself a CIE-admissible inference work request');
+  }
+});
+
 test('the original refused LLD provider delivery remains refused at the current exact source cut', () => {
   // These are original recorded sources, not synthetic examples or repaired
   // model output. Reconstruct a NEW read-only plan at today's source parser,
@@ -598,15 +646,30 @@ test('original 14-condition source reprojects its reviewed 13-cell selection thr
 
   const lowSources=[...sources,{kind:'high-level',text:JSON.stringify(high)}];
   const lowPlan=planEngineeringDesign({stage:'low-level',sources:lowSources});
+  // The historical 13-clause Specification has ZERO independent authored
+  // verification declarations. The read-only plan can be structurally
+  // reconstructed, but the original CIE work boundary may not manufacture
+  // a provider-ready request before the first open Specifying-stage duty.
   const originalNativeWork=readEngineeringDesignInferenceWork(lowPlan);
-  assert.equal(originalNativeWork.enforceProviderSchema,true);
-  assert.deepEqual(originalNativeWork.requiredCapabilities,['json-schema-output']);
-  assert.deepEqual(Object.keys(originalNativeWork.outputSchema.properties).sort(),
+  assert.equal(originalNativeWork.type,'EngineeringDesignInferenceWorkRefusal');
+  assert.equal(originalNativeWork.reason,'source-verification-procedures-not-declared');
+  assert.equal(originalNativeWork.originalRequirementId,R.id);
+  assert.equal(originalNativeWork.stage,'low-level');
+  assert.deepEqual(originalNativeWork.sourceCut,
+    lowPlan.sources.map(({kind,digest})=>({kind,digest})));
+  assert.equal(originalNativeWork.sourceVerification.clauseCount,13);
+  assert.equal(originalNativeWork.sourceVerification.declaredTestCount,0);
+  assert.equal(originalNativeWork.sourceVerification.missingClauseIds.length,13);
+  assert.equal(originalNativeWork.inferenceSubmitted,false);
+  assert.equal(originalNativeWork.executableWork,false);
+  assert.equal(originalNativeWork.independentProof,'unreceived');
+  assert.equal('outputSchema' in originalNativeWork,false);
+  assert.equal(Object.isFrozen(originalNativeWork.sourceVerification),true);
+  // Planning still retains the unmodified original CIE-shaped design intent
+  // for competent review, without authorizing its submission to inference.
+  assert.deepEqual(Object.keys(lowPlan.request.schema.properties).sort(),
     ['operations','traceability','openQuestions'].sort());
-  assert.equal(originalNativeWork.outputSchema.additionalProperties,false);
-  assert.deepEqual(JSON.parse(originalNativeWork.context),{
-    stage:'low-level',sources:lowPlan.sources,
-  });
+  assert.equal(lowPlan.request.schema.additionalProperties,false);
 
   // A native plan for the CURRENT source never repairs the historical model
   // lot by dropping its invalid schema-root members. It must still refuse.
@@ -616,5 +679,5 @@ test('original 14-condition source reprojects its reviewed 13-cell selection thr
   }),historicalRefusal);
   assert.equal(historicalRefusal.reason,'invalid-design');
   assert.equal(oldHld.admitted,false);
-  console.log('Original 14-condition Requirement, reviewed 13-cell selection, 13/13 Architecture and seven-component HLD project a NEW typed LLD request; old raw LLD refused, all stages unadmitted.');
+  console.log('Original 14-condition Requirement / selected 13-cell Specification and seven-component HLD remain structurally plannable, but 13 missing independent source verification procedures REFUSE CIE work; old LLD still refused, all stages unadmitted.');
 });

@@ -188,6 +188,23 @@ independently authorized inference provider supplies `deliveryText`. Receiving t
 checks stage, trace, authored model witnesses and allocation, but always leaves
 `admitted:false` and `proof:"unreceived"`.
 
+`readEngineeringDesignInferenceWork(plan)` is **the original Design→Computer
+Inference Engine work-request boundary**, not an alias for the read-only plan.
+It replays the exact original Requirement, Specification, Architecture and HLD
+source cut, including the already source-admitted
+`readRequirementArchitectureTrace().sourceVerification` inventory. When any
+selected normative Specification clause lacks an independently authored
+`clause.test` declaration, it returns an immutable
+`EngineeringDesignInferenceWorkRefusal` with original stage/source digests,
+the precise missing clause IDs, and `inferenceSubmitted:false`; **it does not
+return a CIE-submittable work request**. A fully declared but unexecuted set
+may be projected into the original strict CIE request after host qualification;
+declaration alone neither proves the tests exist nor authorizes procurement,
+effectful Work, payment, independent Proof or an accepted implementation.
+There is no caller override or fallback to another inference API. This is the
+first source-qualification gate before potential provider cost, not a fifth
+Engineering closure.
+
 An LLD `operations[].module` is a prospective canonical `src/...mjs` path. It cannot include
 NUL, unpaired Unicode surrogates or a decomposed spelling that is not NFC-stable. Do not
 silently rename an old candidate and keep its prior Design identity; receive it again from
