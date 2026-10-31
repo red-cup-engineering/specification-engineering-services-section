@@ -38,10 +38,17 @@ export function projectHighLevelDesignReview({ review, trace } = {}) {
   // need a separately received refinement law and cannot be guessed equal.
   const providedByComponent = new Map();
   const sourcePort = (entry, role) => {
+    // The direct projector must enforce the same closed source vocabulary
+    // as the received HLD review schema. Unknown fields cannot grant proof,
+    // authority or a second covert supplier-owned port description.
+    const keys=role==='provider'
+      ? ['port','schemaJson'] : ['componentId','port','schemaJson'];
     if (entry === null || typeof entry !== 'object' || Array.isArray(entry) ||
+        Object.keys(entry).length !== keys.length ||
+        !keys.every(key=>Object.hasOwn(entry,key)) ||
         typeof entry.port !== 'string' || !entry.port.trim() ||
         !entry.port.isWellFormed() || entry.port.normalize('NFC') !== entry.port ||
-        /[\\r\\n\\u0000]/u.test(entry.port) ||
+        /[\r\n\u0000]/u.test(entry.port) ||
         typeof entry.schemaJson !== 'string')
       throw new TypeError(`invalid source-owned ${role} port declaration`);
     return readEngineeringInterfaceSchema(entry.schemaJson,
