@@ -646,15 +646,30 @@ test('original 14-condition source reprojects its reviewed 13-cell selection thr
 
   const lowSources=[...sources,{kind:'high-level',text:JSON.stringify(high)}];
   const lowPlan=planEngineeringDesign({stage:'low-level',sources:lowSources});
+  // The historical 13-clause Specification has ZERO independent authored
+  // verification declarations. The read-only plan can be structurally
+  // reconstructed, but the original CIE work boundary may not manufacture
+  // a provider-ready request before the first open Specifying-stage duty.
   const originalNativeWork=readEngineeringDesignInferenceWork(lowPlan);
-  assert.equal(originalNativeWork.enforceProviderSchema,true);
-  assert.deepEqual(originalNativeWork.requiredCapabilities,['json-schema-output']);
-  assert.deepEqual(Object.keys(originalNativeWork.outputSchema.properties).sort(),
+  assert.equal(originalNativeWork.type,'EngineeringDesignInferenceWorkRefusal');
+  assert.equal(originalNativeWork.reason,'source-verification-procedures-not-declared');
+  assert.equal(originalNativeWork.originalRequirementId,R.id);
+  assert.equal(originalNativeWork.stage,'low-level');
+  assert.deepEqual(originalNativeWork.sourceCut,
+    lowPlan.sources.map(({kind,digest})=>({kind,digest})));
+  assert.equal(originalNativeWork.sourceVerification.clauseCount,13);
+  assert.equal(originalNativeWork.sourceVerification.declaredTestCount,0);
+  assert.equal(originalNativeWork.sourceVerification.missingClauseIds.length,13);
+  assert.equal(originalNativeWork.inferenceSubmitted,false);
+  assert.equal(originalNativeWork.executableWork,false);
+  assert.equal(originalNativeWork.independentProof,'unreceived');
+  assert.equal('outputSchema' in originalNativeWork,false);
+  assert.equal(Object.isFrozen(originalNativeWork.sourceVerification),true);
+  // Planning still retains the unmodified original CIE-shaped design intent
+  // for competent review, without authorizing its submission to inference.
+  assert.deepEqual(Object.keys(lowPlan.request.schema.properties).sort(),
     ['operations','traceability','openQuestions'].sort());
-  assert.equal(originalNativeWork.outputSchema.additionalProperties,false);
-  assert.deepEqual(JSON.parse(originalNativeWork.context),{
-    stage:'low-level',sources:lowPlan.sources,
-  });
+  assert.equal(lowPlan.request.schema.additionalProperties,false);
 
   // A native plan for the CURRENT source never repairs the historical model
   // lot by dropping its invalid schema-root members. It must still refuse.
@@ -664,5 +679,5 @@ test('original 14-condition source reprojects its reviewed 13-cell selection thr
   }),historicalRefusal);
   assert.equal(historicalRefusal.reason,'invalid-design');
   assert.equal(oldHld.admitted,false);
-  console.log('Original 14-condition Requirement, reviewed 13-cell selection, 13/13 Architecture and seven-component HLD project a NEW typed LLD request; old raw LLD refused, all stages unadmitted.');
+  console.log('Original 14-condition Requirement / selected 13-cell Specification and seven-component HLD remain structurally plannable, but 13 missing independent source verification procedures REFUSE CIE work; old LLD still refused, all stages unadmitted.');
 });
