@@ -442,8 +442,38 @@ export function readEngineeringDesignInferenceWork(plan) {
   // Re-derive the COMPLETE original unmodified plan and its verified upstream
   // Requirement/Specification/Architecture/HLD source cut. No caller-supplied
   // request fragment or source digest may be substituted after this check.
-  const derived = makePlan(plan.stage, sourceContext(plan.stage, supplied));
+  const context = sourceContext(plan.stage, supplied);
+  const derived = makePlan(plan.stage, context);
   requireThat(equal(plan, derived));
+  // The original Specifying/Architecture source trace already states which
+  // selected normative clauses lack even an authored verification procedure.
+  // Read-only planning and diagnosis may proceed, but the first exact
+  // provider-facing CIE work conversion MUST NOT order inference while that
+  // upstream omission remains. The source author/reviewer supplies the test
+  // declarations; a model may not manufacture them or obtain an override.
+  const verification=context.architectureTrace.sourceVerification;
+  if(verification.missingClauseIds.length){
+    return Object.freeze({
+      type:'EngineeringDesignInferenceWorkRefusal',
+      reason:'source-verification-procedures-not-declared',
+      stage:plan.stage,
+      originalRequirementId:context.architectureTrace.originalRequirementId,
+      sourceCut:Object.freeze(derived.sources.map(({kind,digest})=>
+        Object.freeze({kind,digest}))),
+      sourceVerification:Object.freeze({
+        scope:verification.scope,
+        clauseCount:verification.clauseCount,
+        declaredTestCount:verification.declaredTestCount,
+        missingClauseIds:Object.freeze([...verification.missingClauseIds]),
+      }),
+      inferenceSubmitted:false,executableWork:false,
+      independentProof:'unreceived',
+    });
+  }
+  // Complete declarations only permit constructing the original CIE request.
+  // Test existence, independent execution, competent semantic review, Office
+  // authority, provider availability, budgets and downstream Proof remain
+  // unreceived; this projection invokes no model and no Code maker.
   return {
     objective: plan.request.objective + '\n\n' + plan.request.messages[0].content,
     context: plan.request.messages[1].content,
