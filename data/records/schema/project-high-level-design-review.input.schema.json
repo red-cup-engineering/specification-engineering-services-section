@@ -24,6 +24,7 @@
               "owner",
               "layer",
               "responsibility",
+              "provides",
               "requires",
               "specificationClauseIds"
             ],
@@ -55,7 +56,8 @@
                   "additionalProperties": false,
                   "required": [
                     "componentId",
-                    "port"
+                    "port",
+                    "schemaJson"
                   ],
                   "properties": {
                     "componentId": {
@@ -63,6 +65,10 @@
                       "minLength": 1
                     },
                     "port": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "schemaJson": {
                       "type": "string",
                       "minLength": 1
                     }
@@ -75,6 +81,28 @@
                 "items": {
                   "type": "string",
                   "minLength": 1
+                },
+                "minItems": 0
+              },
+              "provides": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "port",
+                    "schemaJson"
+                  ],
+                  "properties": {
+                    "port": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "schemaJson": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
                 },
                 "minItems": 0
               }
