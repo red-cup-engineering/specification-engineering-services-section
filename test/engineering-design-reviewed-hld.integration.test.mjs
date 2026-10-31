@@ -145,3 +145,73 @@ test('host-selected finite review limits refuse before projection or inference',
   assert.throws(()=>receiveEngineeringHighLevelReview({...input,
     expectedReviewSha256:'sha256:'+'0'.repeat(64)}),/review source digest/u);
 });
+
+test('ENG-20: independently authored provider port contract and consumer demand must compose, not be synthesized',()=>{
+  // This is a held-out composition assay of the ORIGINAL reviewed-HLD
+  // consumer. Both independent authorship and the physical value grammar
+  // matter: having a port name is not evidence that its source exists.
+  const positiveSchema=JSON.stringify({
+    $schema:'https://json-schema.org/draft/2020-12/schema',
+    type:'integer',minimum:0,
+  });
+  const incompatibleSchema=JSON.stringify({
+    $schema:'https://json-schema.org/draft/2020-12/schema',
+    type:'string',minLength:1,
+  });
+  const linked=reviewFixture();
+  linked.components[0].provides=[{port:'source-values',schemaJson:positiveSchema}];
+  linked.components[1].provides=[];
+  linked.components[1].requires=[{
+    componentId:'comp-a',port:'source-values',schemaJson:positiveSchema,
+  }];
+  const received=receiveEngineeringHighLevelReview(request(linked));
+  acceptedProjection(received);
+  assert.deepEqual(received.candidate.design.components.map(c=>({
+    id:c.id,providedPorts:c.providedPorts,requiredPorts:c.requiredPorts,
+  })),[
+    {id:'comp-a',providedPorts:['source-values'],requiredPorts:[]},
+    {id:'comp-b',providedPorts:[],requiredPorts:['source-values']},
+  ]);
+  assert.deepEqual(received.candidate.design.connections,[{
+    fromComponentId:'comp-a',toComponentId:'comp-b',port:'source-values',
+  }]);
+  assert.equal(received.reviewText,JSON.stringify(linked),
+    'provider contract must remain in the pinned original review source');
+  assert.equal(received.admitted,false);
+  assert.equal(received.proof,'unreceived');
+
+  const absent=structuredClone(linked);
+  absent.components[0].provides=[];
+  assert.deepEqual(receiveEngineeringHighLevelReview(request(absent)),{
+    type:'EngineeringDesignDerivationRefusal',reason:'invalid-review',
+  },'a consumer must not create a fictional provided port');
+
+  const contradictory=structuredClone(linked);
+  contradictory.components[1].requires[0].schemaJson=incompatibleSchema;
+  assert.deepEqual(receiveEngineeringHighLevelReview(request(contradictory)),{
+    type:'EngineeringDesignDerivationRefusal',reason:'invalid-review',
+  },'locally admissible integer and string boundaries do not compose');
+  const duplicate=structuredClone(linked);
+  duplicate.components[0].provides.push({
+    port:'source-values',schemaJson:positiveSchema,
+  });
+  assert.deepEqual(receiveEngineeringHighLevelReview(request(duplicate)),{
+    type:'EngineeringDesignDerivationRefusal',reason:'invalid-review',
+  },'the provider cannot offer two contradictory claims at one port');
+
+  const forged=structuredClone(linked);
+  forged.components[0].provides[0].schemaJson=
+    '{"type":"integer","type":"string"}';
+  assert.deepEqual(receiveEngineeringHighLevelReview(request(forged)),{
+    type:'EngineeringDesignDerivationRefusal',reason:'invalid-review',
+  },'a duplicate JSON Schema member cannot erase original producer testimony');
+
+  const wrongExternal=structuredClone(linked);
+  wrongExternal.components[0].provides[0].schemaJson=
+    '{"$ref":"https://unreceived.example/schema.json"}';
+  wrongExternal.components[1].requires[0].schemaJson=
+    wrongExternal.components[0].provides[0].schemaJson;
+  assert.deepEqual(receiveEngineeringHighLevelReview(request(wrongExternal)),{
+    type:'EngineeringDesignDerivationRefusal',reason:'invalid-review',
+  },'two matching but unreceived external references do not establish a portable contract');
+});
