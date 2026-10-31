@@ -261,6 +261,12 @@ impact reader **reuses the same original Requirement revision-pressure verdict**
 changed whole-Requirement `asks` (buyer purpose) or original condition ordering
 requires renewed regeneration across the selected source domain; changed metadata
 about the origin of one selected condition regenerates only that responsibility.
+The existing `Specification.clause.test` is a separate, independently authored
+verification declaration: adding, replacing or removing that test requires
+source and test requalification, but **not** regeneration of unchanged Code.
+Its declaration is neither an executed test nor evidence of behavioral Proof.
+Changes to normative actor, keyword, statement, source mappings or architecture
+models continue to demand the corresponding implementation regeneration.
 Changes confined to **excluded** conditions, or source-level provenance alone,
 require complete source requalification without manufacturing unrelated Code
 work. Each reason remains source-addressed and unreceived; a change-impact
