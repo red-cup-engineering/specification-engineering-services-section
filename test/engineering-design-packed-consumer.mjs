@@ -250,10 +250,48 @@ assert.equal(low.type, 'EngineeringDesignCandidate');
 assert.equal(low.admitted, false);
 assert.equal(low.proof, 'unreceived');
 
-// The actual separately installed PUBLIC npm Design consumer must project a
-// request that the original CIE typed root can admit, not pass abstract
-// messages/schema fields silently ignored or refused by CIE.
+// The original installed Design source has NO independently authored test
+// procedures. A read-only plan and structural Design candidate remain useful,
+// but neither HLD nor LLD may be converted into payable CIE work yet.
 for (const stagePlan of [plan,lowPlan]) {
+  const refusal=readEngineeringDesignInferenceWork(stagePlan);
+  assert.equal(refusal.type,'EngineeringDesignInferenceWorkRefusal');
+  assert.equal(refusal.reason,'source-verification-procedures-not-declared');
+  assert.equal(refusal.sourceVerification.clauseCount,2);
+  assert.equal(refusal.sourceVerification.declaredTestCount,0);
+  assert.deepEqual(refusal.sourceVerification.missingClauseIds,['clause-a','clause-b']);
+  assert.equal(refusal.originalRequirementId,'source-req');
+  assert.deepEqual(refusal.sourceCut,
+    stagePlan.sources.map(({kind,digest})=>({kind,digest})));
+  assert.equal(refusal.inferenceSubmitted,false);
+  assert.equal(refusal.executableWork,false);
+  assert.equal('outputSchema' in refusal,false);
+}
+// Source-declaration-only positive control: the original Specification and
+// Architecture maker addresses are changed; no model output, executed test,
+// Office grant, provider authentication or original Work is fabricated.
+const declaredCieSources=readdressSpecification(spec=>{
+  for(const clause of spec.topics.flatMap(topic=>topic.clauses))
+    clause.test='node --test test/fixture-'+clause.id+'.test.mjs';
+});
+const declaredHighPlan=planEngineeringDesign({
+  stage:'high-level',sources:declaredCieSources,
+});
+const declaredHigh=receiveEngineeringDesign({
+  stage:'high-level',sources:declaredCieSources,plan:declaredHighPlan,
+  deliveryText:JSON.stringify(hld),
+});
+assert.equal(declaredHigh.type,'EngineeringDesignCandidate');
+const declaredLowSources=[
+  ...declaredCieSources,{kind:'high-level',text:JSON.stringify(declaredHigh)},
+];
+const declaredLowPlan=planEngineeringDesign({
+  stage:'low-level',sources:declaredLowSources,
+});
+// The actual separately installed public npm Design consumer must still
+// project original CIE strict work for COMPLETE declarations, but the
+// projection itself remains effect-free and cannot certify those tests.
+for (const stagePlan of [declaredHighPlan,declaredLowPlan]) {
   const oldPlan=structuredClone(stagePlan);
   const work=readEngineeringDesignInferenceWork(stagePlan);
   assert.deepEqual(Object.keys(work).sort(),[
