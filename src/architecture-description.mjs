@@ -522,26 +522,32 @@ export function readRequirementArchitectureImpact(before, after) {
         specification: artifactId(cut.specification),
         architecture: artifactId(cut.architecture),
       }),
-      // Each generated clause cites the WHOLE Requirement content address.
-      // Editing one buyer sentence changes that address in every clause's
-      // backref, even when all other clause semantics are unchanged. Keep
-      // this revision change as mandatory source requalification, but compare
-      // code-facing normative content with only that exact canonical source
-      // revision token normalized. All other citations and clause attributes
-      // remain byte-significant and can demand regeneration.
+      // A reviewed Specification clause has two separate responsibilities:
+      // normative behavior for prospective Code, and the source-authored
+      // verification procedure for the independent test receiver. Updating
+      // only clause.test must not order an implementation rewrite, but its
+      // exact declaration (including absent vs present) still needs new
+      // source/test receiving. Normalize only the complete original source
+      // revision citation; all OTHER normative clause bytes remain material.
       clauses: new Map(cut.specification.topics.flatMap(topic =>
         topic.clauses.map(clause => {
-          const comparable = Array.isArray(clause.backedBy) ? {
-            ...clause,
-            backedBy: clause.backedBy.map(reference =>
+          const comparable = { ...clause };
+          delete comparable.test;
+          if (Array.isArray(comparable.backedBy)) {
+            comparable.backedBy = comparable.backedBy.map(reference =>
               typeof reference === "string" && reference.startsWith(sourcePrefix)
                 ? "Original Requirement " + cut.requirement.id +
                   " (<source-revision-requalified>), cell " +
                   reference.slice(sourcePrefix.length)
-                : reference),
-          } : clause;
+                : reference);
+          }
           return [clause.id, artifactId(comparable)];
         }))),
+      verificationDeclarations: new Map(cut.specification.topics.flatMap(topic =>
+        topic.clauses.map(clause => [clause.id,
+          artifactId(Object.hasOwn(clause, "test")
+            ? { declared: true, test: clause.test }
+            : { declared: false })]))),
       models: new Map(cut.architecture.models.map(model =>
         [model.id, artifactId(model)])),
     };
@@ -588,11 +594,18 @@ export function readRequirementArchitectureImpact(before, after) {
       if (!equal(a.normativeClauseIds, z.normativeClauseIds)) reasons.push("normative-clause-mapping-changed");
       if (changedSourceBytes(a.normativeClauseIds, z.normativeClauseIds, older.clauses, newer.clauses))
         reasons.push("normative-clause-content-changed");
+      if (changedSourceBytes(a.normativeClauseIds, z.normativeClauseIds,
+        older.verificationDeclarations, newer.verificationDeclarations))
+        reasons.push("verification-declaration-changed");
       if (!equal(a.authoredPaths, z.authoredPaths)) reasons.push("architecture-model-trace-changed");
       if (changedSourceBytes(modelsOf(a), modelsOf(z), older.models, newer.models))
         reasons.push("architecture-model-content-changed");
     }
-    const regeneration = reasons.length !== 0;
+    // A changed verification procedure is *not* a changed Code behavior.
+    // The whole Specification NI still forces source/test requalification,
+    // but only actual normative, buyer or model changes require regeneration.
+    const regeneration = reasons.some(reason =>
+      reason !== "verification-declaration-changed");
     if (sourceRevised) reasons.push("original-source-cut-revised");
     if (architectureRevised) reasons.push("architecture-source-revised");
     if (reasons.length === 0) continue;
