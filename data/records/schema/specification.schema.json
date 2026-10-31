@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "red-cup-engineering/specification",
   "title": "specification",
-  "$comment": "A Specification is a Resource stating what is true, forbidden, and open about one thing, per the house specification format (science-services-section/.../specification-services-section/content/text/glossary/topics/specification.md). Two profiles share this envelope: 'prose' (topic sections with inline BCP 14 clauses) and 'code-work-order' (the jsnode fabrication line's Requirements/Prohibitions/Laws/Standards/Package/Operation dialect, translated elsewhere — this schema names only its section headings, never its dialect semantics).",
+  "$comment": "A Specification is a Resource stating what is true, forbidden, and open about one thing, per the Group specification format (science-services-section/.../specification-services-section/content/text/glossary/topics/specification.md). Two profiles share this envelope: 'prose' (topic sections with inline BCP 14 clauses) and 'code-work-order' (the jsnode fabrication line's Requirements/Prohibitions/Laws/Standards/Package/Operation dialect, translated elsewhere — this schema names only its section headings, never its dialect semantics).",
   "type": "object",
   "required": ["identity", "provenance"],
   "additionalProperties": false,
@@ -100,7 +100,7 @@
       }
     },
     "rfc": {
-      "$comment": "The Internet-Draft venue of a prose Specification: what RFCXML v3 (RFC 7991) front matter and references need that the house carrier does not. Rendered by src/specification-rfcxml.mjs.",
+      "$comment": "The Internet-Draft venue of a prose Specification: what RFCXML v3 (RFC 7991) front matter and references need that the Group carrier does not. Rendered by src/specification-rfcxml.mjs.",
       "type": "object",
       "additionalProperties": false,
       "required": ["docName", "category", "submissionType", "ipr", "abstract", "authors", "references"],

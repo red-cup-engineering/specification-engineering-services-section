@@ -35,7 +35,7 @@ test("deriveSpecificationRecord lifts a topic's local laws into the top-level la
   assert.equal(record.topics[0].laws, undefined);
 });
 
-test("deriveSpecificationRecord produces a record that validates against the house schema", () => {
+test("deriveSpecificationRecord produces a record that validates against the group schema", () => {
   const record = deriveSpecificationRecord(draft(), { now: "2026-09-06T00:00:00Z" });
   const { valid, issues } = validateSpecificationRecord(record);
   assert.equal(valid, true, JSON.stringify(issues));
