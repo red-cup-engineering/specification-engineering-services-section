@@ -1,7 +1,7 @@
 ---
 id: publishing-a-specification
 name: publishing-a-specification
-description: "Turn what code enforces and rulings settle into a house Specification record, render it as the house Markdown carrier and as an RFCXML v3 Internet-Draft, and verify it; submission and adoption are the founder's acts."
+description: "Turn what code enforces and rulings settle into a house Specification record, render it as the Group Markdown carrier and as an RFCXML v3 Internet-Draft, and verify it; submission and adoption are the founder's acts."
 closure-kind: process
 requires-capabilities:
   - read
@@ -51,7 +51,7 @@ run. Paths below are relative to `services/`.
 
 ## 3. Design and publish: the renderings
 
-1. Render the house carrier:
+1. Render the Group carrier:
    `node <spec section>/scripts/render-specification.mjs < <record> > <same name>.md`.
 2. Render the Internet-Draft:
    `node <spec section>/scripts/render-specification-rfcxml.mjs < <record> > <docName>.xml`.

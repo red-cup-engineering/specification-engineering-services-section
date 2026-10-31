@@ -5,7 +5,7 @@ import { readSourceJsonStdin } from "./read-source-json-stdin.mjs";
 
 if (import.meta.main) {
   if (process.argv.includes("--help")) {
-    process.stdout.write("render-specification-rfcxml — Reads one Specification record carrying an rfc block as JSON on stdin, validates it against the house schema, and writes its RFCXML v3 (RFC 7991) Internet-Draft to stdout.\n");
+    process.stdout.write("render-specification-rfcxml — Reads one Specification record carrying an rfc block as JSON on stdin, validates it against the group schema, and writes its RFCXML v3 (RFC 7991) Internet-Draft to stdout.\n");
   } else {
     const record = await readSourceJsonStdin(process.stdin);
     const { valid, issues } = validateSpecificationRecord(record);
