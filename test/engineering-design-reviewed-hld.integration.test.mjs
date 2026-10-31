@@ -19,10 +19,10 @@ function reviewFixture() {
   return {
     components: [
       { id: 'comp-a', owner: 'fixture-data-owner', layer: 'data',
-        responsibility: 'Retain independently sourced A', requires: [],
+        responsibility: 'Retain independently sourced A', provides: [], requires: [],
         specificationClauseIds: ['clause-a'] },
       { id: 'comp-b', owner: 'fixture-data-owner', layer: 'data',
-        responsibility: 'Retain independently sourced B', requires: [],
+        responsibility: 'Retain independently sourced B', provides: [], requires: [],
         specificationClauseIds: ['clause-b'] },
     ],
     openQuestions: ['Original Office source adoption and Proof remain unreceived.'],
