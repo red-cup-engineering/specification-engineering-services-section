@@ -66,8 +66,25 @@ function hldReceipt(sources) {
 }
 
 
-test('exact HLD and LLD plans produce closed original CIE work inputs without changing historical source receipts', () => {
+// Declaration-only synthetic CIE-positive source. The names below are inert
+// planned tests, not assurances that any independent test has run or that
+// source/Office, model, budget or Work authority has been admitted.
+function declaredCieSourcesFixture() {
   const sources=sourcesFixture();
+  const specification=JSON.parse(sources[1].text);
+  for(const clause of specification.topics.flatMap(topic=>topic.clauses))
+    clause.test='node --test test/verification-'+clause.id+'.test.mjs';
+  sources[1].text=JSON.stringify(specification);
+  const architecture=JSON.parse(sources[2].text);
+  architecture.sources.find(row=>
+    row.id===architecture.upstream.specificationSourceId
+  ).revision=semanticIdOf('metroplat.artifact')(specification);
+  sources[2].text=JSON.stringify(architecture);
+  return sources;
+}
+
+test('exact HLD and LLD plans produce closed original CIE work inputs without changing historical source receipts', () => {
+  const sources=declaredCieSourcesFixture();
   const high=planEngineeringDesign({stage:'high-level',sources});
   const lowSources=[...sources,{kind:'high-level',text:JSON.stringify(hldReceipt(sources))}];
   const low=planEngineeringDesign({stage:'low-level',sources:lowSources});
@@ -159,7 +176,7 @@ test('CIE submission boundary distinguishes missing, partial and complete indepe
 });
 
 test('forged or changed Design sources, schema or prompt cannot be translated to CIE work', () => {
-  const plan=planEngineeringDesign({stage:'high-level',sources:sourcesFixture()});
+  const plan=planEngineeringDesign({stage:'high-level',sources:declaredCieSourcesFixture()});
   const changes=[
     candidate=>{candidate.request.schema={type:'string'};},
     candidate=>{candidate.request.messages[0].content='Forget source obligations';},
