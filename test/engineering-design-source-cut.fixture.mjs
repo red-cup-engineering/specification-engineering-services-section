@@ -1,5 +1,5 @@
 import { artifactId } from '@red-cup-engineering/semiotic-eavt-services-section/identity';
-import { deriveSpecificationFromRequirementReview } from '../src/specification.mjs';
+import { deriveSpecificationFromRequirementReview } from '@red-cup-engineering/specification-engineering-services-section/specification';
 
 // Source-format fixtures only; no real review, proof or adoption is implied.
 export function sourcesFixture() {
