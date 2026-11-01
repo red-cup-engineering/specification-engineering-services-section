@@ -38,11 +38,13 @@
           },
           "text": {
             "type": "string",
-            "minLength": 1
+            "minLength": 1,
+            "contentMediaType": "application/json"
           },
           "digest": {
             "type": "string",
-            "minLength": 1
+            "minLength": 1,
+            "pattern": "^sha256:[a-f0-9]{64}$"
           }
         }
       },
@@ -100,5 +102,8 @@
         }
       }
     }
-  }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:red-cup-engineering:schema:plan-engineering-design.output:1",
+  "title": "Plan Engineering Design.Output"
 }
