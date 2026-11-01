@@ -725,7 +725,7 @@ export function readEngineeringCodeWork({
   const originalArchitecture = parseCanonicalJsonRecord(designCandidate.sources[2].text);
   // The same incumbent Architecture trace already knows which exact
   // Requirement cell owns each source-authored Specification test. Reuse that
-  // canonical readout instead of independently recounting tests after an LLD
+  // canonical codeWorkReadout instead of independently recounting tests after an LLD
   // has been obtained; no LLD or Code view creates a new test declaration.
   const verificationTrace=readRequirementArchitectureTrace(originalArchitecture,{
     requirement:originalRequirement,specification:originalSpecification,
@@ -750,8 +750,8 @@ export function readEngineeringCodeWork({
     owners.add(owner);
     ownersByModulePath.set(operation.module, owners);
   }
-  const views = new Map();
-  let bytes = 0;
+  const sourceViewsByKey = new Map();
+  let totalSourceBytes = 0;
   for (const view of sourceViews) {
     // Source identity is always the original HLD owner and exact path. An
     // ownerless view cannot borrow authority even when only one owner is
@@ -761,14 +761,14 @@ export function readEngineeringCodeWork({
     const owner = view.owner;
     const key = sourceViewKey(owner, view.path);
     assertDesignInput(isNonBlankString(owner) && owners?.has(owner) &&
-      plannedSourceKeys.has(key) && !views.has(key) &&
+      plannedSourceKeys.has(key) && !sourceViewsByKey.has(key) &&
       typeof view.text === 'string' && view.text.isWellFormed() &&
       /^sha256:[a-f0-9]{64}$/u.test(view.expectedSha256));
-    bytes += Buffer.byteLength(view.text, 'utf8');
-    assertDesignInput(Number.isSafeInteger(bytes) && bytes <= 2_097_152);
+    totalSourceBytes += Buffer.byteLength(view.text, 'utf8');
+    assertDesignInput(Number.isSafeInteger(totalSourceBytes) && totalSourceBytes <= 2_097_152);
     const actualSha256 =
       'sha256:' + createHash('sha256').update(view.text, 'utf8').digest('hex');
-    views.set(key, {
+    sourceViewsByKey.set(key, {
       owner, path: view.path, text: view.text,
       actualSha256, expectedSha256: view.expectedSha256,
       matchesExpectedSource: actualSha256 === view.expectedSha256,
@@ -792,53 +792,53 @@ export function readEngineeringCodeWork({
       });
     }
   }
-  const gap = (code, operationId, module, detail) =>
+  const createSourceDiscrepancy = (code, operationId, module, detail) =>
     ({ code, operationId, module, detail });
   const discrepancies = [];
-  // Only exact custodian-addressed bytes may enter the existing nonexecuting
+  // Only exact custodian-addressed totalSourceBytes may enter the existing nonexecuting
   // ECMAScript grammar reader. Unobserved and mismatched source remains
   // unknown; imported modules outside this finite original target cut cannot
   // be guessed from the consumer's installed node_modules.
-  const syntax = indexJavaScriptModuleBindings(
-    [...views.values()].filter(v => v.matchesExpectedSource)
+  const moduleBindingIndex = indexJavaScriptModuleBindings(
+    [...sourceViewsByKey.values()].filter(v => v.matchesExpectedSource)
       .map(({owner,path,text}) => ({owner,path,text})),
     {maxBytes:2_097_152,maxModules:64});
   const targets = [...designCandidate.design.operations]
     .sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0)
     .map(operation => {
-      const source = views.get(sourceViewKey(componentOwnerById.get(operation.componentId), operation.module));
+      const source = sourceViewsByKey.get(sourceViewKey(componentOwnerById.get(operation.componentId), operation.module));
       const status = source === undefined ? 'source-not-observed'
         : !source.matchesExpectedSource ? 'source-cut-disagreement'
           : 'source-present-unassayed';
       if (status === 'source-not-observed')
-        discrepancies.push(gap('SOURCE_VIEW_NOT_RECEIVED', operation.id,
-          operation.module, 'No source bytes were provided for the intended module'));
+        discrepancies.push(createSourceDiscrepancy('SOURCE_VIEW_NOT_RECEIVED', operation.id,
+          operation.module, 'No source totalSourceBytes were provided for the intended module'));
       if (status === 'source-cut-disagreement')
-        discrepancies.push(gap('SOURCE_DIGEST_DISAGREEMENT', operation.id,
-          operation.module, 'Source bytes differ from the custodian-addressed digest'));
+        discrepancies.push(createSourceDiscrepancy('SOURCE_DIGEST_DISAGREEMENT', operation.id,
+          operation.module, 'Source totalSourceBytes differ from the custodian-addressed digest'));
       const bindingObservation = status === 'source-present-unassayed'
-        ? syntax.inspect({owner:componentOwnerById.get(operation.componentId),
+        ? moduleBindingIndex.inspect({owner:componentOwnerById.get(operation.componentId),
           path:operation.module,exportName:operation.exportName}) : null;
       if (bindingObservation?.status === 'absent')
-        discrepancies.push(gap('CODE_EXPORT_NOT_OBSERVED', operation.id,
+        discrepancies.push(createSourceDiscrepancy('CODE_EXPORT_NOT_OBSERVED', operation.id,
           operation.module, 'Selected named export is absent in the complete supplied ECMAScript module'));
       if (bindingObservation?.status === 'contested')
-        discrepancies.push(gap('CODE_EXPORT_CONTESTED', operation.id,
+        discrepancies.push(createSourceDiscrepancy('CODE_EXPORT_CONTESTED', operation.id,
           operation.module, 'Distinct or duplicated ECMAScript export claims are contested'));
       // Carry the original, separately authored port schemas into Code Work
       // rather than laundering them into strings at the HLD→LLD boundary.
       // The LLD operation's own input/output does not automatically refine
       // any of these ports; real component-interface verification remains open.
       const authoredPorts = reviewedPortsByComponent?.get(operation.componentId);
-      const port = source => ({
-        ...source,
-        schemaIdentity:readEngineeringInterfaceSchema(source.schemaJson,
+      const withSchemaIdentity = portDeclaration => ({
+        ...portDeclaration,
+        schemaIdentity:readEngineeringInterfaceSchema(portDeclaration.schemaJson,
           {portableOnly:true}).sourceIdentity,
       });
       const reviewedPortContracts = authoredPorts ? {
         reviewSha256:highLevel.originalReview.expectedSha256,
-        provided:authoredPorts.provides.map(port),
-        required:authoredPorts.requires.map(port),
+        provided:authoredPorts.provides.map(withSchemaIdentity),
+        required:authoredPorts.requires.map(withSchemaIdentity),
       } : null;
       // This is a ready-to-route *plan*, not an executable WorkCell. Treat
       // qualitative test obligations as independently unreceived, never
@@ -902,11 +902,11 @@ export function readEngineeringCodeWork({
     declaredTestCount:upstreamCoverage.declaredTestCount,
     missingClauseIds:[...upstreamCoverage.missingClauseIds],
   };
-  const readout = {
+  const codeWorkReadout = {
     type: 'EngineeringDesignCodeWorkReadout', version: 1,
     designCarrierId: designSource,
     sourceCut: designCandidate.sources.map(({ kind, digest }) => ({ kind, digest })),
-    codeSnapshotScope: 'supplied-target-views-only',
+    codeSnapshotScope: 'supplied-target-sourceViewsByKey-only',
     status: discrepancies.length ? 'source-disagreement' : 'source-present-unassayed',
     targets, discrepancies, sourceVerification,
     hldPortSource: reviewedPortsByComponent
@@ -918,18 +918,18 @@ export function readEngineeringCodeWork({
     executableWork: false, codeApplied: false, beneficiaryReceived: false,
   };
   // Deeply immutable so later worker mutations cannot silently rewrite a
-  // source-target's diagnostics or original normative trace after readout.
-  const freeze = value => {
+  // source-target's diagnostics or original normative trace after codeWorkReadout.
+  const deepFreeze = value => {
     if (value !== null && typeof value === 'object') {
-      for (const child of Object.values(value)) freeze(child);
-      Object.freeze(value);
+      for (const child of Object.values(value)) deepFreeze(child);
+      Object.deepFreeze(value);
     }
     return value;
   };
   // The original Code Work carrier is now checked against its public,
   // packaged Draft 2020-12 output contract before downstream consumption.
   // This validates representation, NOT independent test/proof or Work effects.
-  if (!validateJsonSchema(readout, CODE_WORK_READOUT_SCHEMA).valid)
-    throw new TypeError('Engineering Code Work readout violates its Draft 2020-12 output contract');
-  return freeze(readout);
+  if (!validateJsonSchema(codeWorkReadout, CODE_WORK_READOUT_SCHEMA).valid)
+    throw new TypeError('Engineering Code Work codeWorkReadout violates its Draft 2020-12 output contract');
+  return deepFreeze(codeWorkReadout);
 }
