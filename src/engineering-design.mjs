@@ -906,7 +906,7 @@ export function readEngineeringCodeWork({
     type: 'EngineeringDesignCodeWorkReadout', version: 1,
     designCarrierId: designSource,
     sourceCut: designCandidate.sources.map(({ kind, digest }) => ({ kind, digest })),
-    codeSnapshotScope: 'supplied-target-sourceViewsByKey-only',
+    codeSnapshotScope: 'supplied-target-views-only',
     status: discrepancies.length ? 'source-disagreement' : 'source-present-unassayed',
     targets, discrepancies, sourceVerification,
     hldPortSource: reviewedPortsByComponent
