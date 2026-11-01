@@ -238,14 +238,45 @@ function sourceContext(stage, supplied) {
     requireThat(object(model) && nonblank(model.id) && !models.has(model.id) && nonblank(model.content));
     models.add(model.id);
   }
-  const context = { sources, cells, models, authoredClausesByCell, architectureTrace, hld: null };
+  const context = {
+    sources, cells, models, authoredClausesByCell, architectureTrace,
+    hld: null, reviewedHld: null,
+  };
   if (stage === 'low-level') {
     const upstream = parsed.get('high-level');
-    requireThat(exact(upstream, ['type', 'stage', 'sources', 'design', 'admitted', 'proof']));
-    requireThat(upstream.type === 'EngineeringDesignCandidate' && upstream.stage === 'high-level' && upstream.admitted === false && upstream.proof === 'unreceived');
-    requireThat(equal(upstream.sources, sources.slice(0, 3)));
-    requireThat(validDesign('high-level', upstream.design, context));
-    context.hld = upstream.design;
+    let candidate = upstream;
+    if (upstream?.type === 'EngineeringDesignReviewProjection') {
+      // Original reviewed HLD source is the fourth Design source, NOT only
+      // its lossy name-only candidate. Reproduce its full original review,
+      // finite host envelope, exact source cut and native HLD receiving.
+      // A digest alone proves neither authored interfaces nor Office assent.
+      requireThat(exact(upstream, [
+        'type', 'version', 'originalReview', 'reviewText', 'sourceCut',
+        'deliveryText', 'candidate', 'limits', 'admitted',
+        'independentReview', 'proof', 'executableWork',
+      ]) && upstream.version === 1 && object(upstream.originalReview) &&
+        upstream.admitted === false &&
+        upstream.independentReview === 'unreceived' &&
+        upstream.proof === 'unreceived' && upstream.executableWork === false);
+      const replay = receiveEngineeringHighLevelReview({
+        sources: supplied.slice(0, 3),
+        reviewText: upstream.reviewText,
+        expectedReviewSha256: upstream.originalReview.expectedSha256,
+        reviewedSourceCut: upstream.sourceCut,
+        limits: upstream.limits,
+      });
+      requireThat(replay?.type === 'EngineeringDesignReviewProjection' &&
+        equal(replay, upstream));
+      candidate = upstream.candidate;
+      context.reviewedHld = upstream;
+    }
+    requireThat(exact(candidate, ['type', 'stage', 'sources', 'design', 'admitted', 'proof']));
+    requireThat(candidate.type === 'EngineeringDesignCandidate' &&
+      candidate.stage === 'high-level' && candidate.admitted === false &&
+      candidate.proof === 'unreceived');
+    requireThat(equal(candidate.sources, sources.slice(0, 3)));
+    requireThat(validDesign('high-level', candidate.design, context));
+    context.hld = candidate.design;
   }
   return context;
 }
@@ -459,6 +490,23 @@ export function readEngineeringDesignInferenceWork(plan) {
       independentProof:'unreceived',
     });
   }
+  // A connected, name-only HLD cannot instruct the Code inference provider
+  // to invent its supplier interfaces. Read-only Design plans can still
+  // describe legacy source, but only a replayed original reviewed HLD may
+  // proceed to downstream CIE candidate inference over those connections.
+  if (plan.stage === 'low-level' && context.hld.connections.length > 0 &&
+      context.reviewedHld === null) {
+    return Object.freeze({
+      type:'EngineeringDesignInferenceWorkRefusal',
+      reason:'hld-reviewed-interface-contract-unreceived',
+      stage:plan.stage,
+      originalRequirementId:context.architectureTrace.originalRequirementId,
+      sourceCut:Object.freeze(derived.sources.map(({kind,digest}) =>
+        Object.freeze({kind,digest}))),
+      inferenceSubmitted:false,executableWork:false,
+      independentProof:'unreceived',
+    });
+  }
   // Complete declarations only permit constructing the original CIE request.
   // Test existence, independent execution, competent semantic review, Office
   // authority, provider availability, budgets and downstream Proof remain
@@ -587,7 +635,7 @@ export function receiveEngineeringHighLevelReview({
       semanticId:semanticIdOf('metroplat.artifact')(review),
       bytes:reviewBytes,
     },
-    reviewText, sourceCut, deliveryText, candidate,
+    reviewText, sourceCut, deliveryText, candidate, limits:{...limits},
     admitted:false, independentReview:'unreceived',
     proof:'unreceived', executableWork:false,
   };
@@ -645,6 +693,15 @@ export function readEngineeringCodeWork({
   // relative module spelling. Preserve their original ownership, without
   // inferring GitHub authorization or executable Work from the HLD label.
   const highLevel = parseObject(designCandidate.sources[3].text);
+  const originalHldCandidate = highLevel.type === 'EngineeringDesignReviewProjection'
+    ? highLevel.candidate : highLevel;
+  // This original review was already re-received against the exact whole
+  // Requirement/Specification/Architecture/HLD cut by receiveEngineeringDesign.
+  // Preserve its source-authored typed port contracts here as UNRECEIVED
+  // obligations; a matching JSON Schema NI is not runtime behavioral proof.
+  const reviewedPortComponents = highLevel.type === 'EngineeringDesignReviewProjection'
+    ? new Map(parseObject(highLevel.reviewText).components.map(c => [c.id, c]))
+    : null;
   // Read original Specification verification procedures, not invented LLD
   // expectations. Source revisions and per-clause trace were already
   // re-received above against the complete Requirement/Architecture/HLD cut.
@@ -667,7 +724,7 @@ export function readEngineeringCodeWork({
   const sourceTestsByClause=new Map(
     verificationTrace.sourceVerification.declarations.map(row=>
       [row.specificationClauseId,row]));
-  const originalOwners = new Map(highLevel.design.components.map(row =>
+  const originalOwners = new Map(originalHldCandidate.design.components.map(row =>
     [row.id, row.owner]));
   const keyOf = (owner, path) => JSON.stringify([owner, path]);
   const ownersByPath = new Map();
@@ -757,6 +814,21 @@ export function readEngineeringCodeWork({
       if (bindingObservation?.status === 'contested')
         discrepancies.push(gap('CODE_EXPORT_CONTESTED', operation.id,
           operation.module, 'Distinct or duplicated ECMAScript export claims are contested'));
+      // Carry the original, separately authored port schemas into Code Work
+      // rather than laundering them into strings at the HLD→LLD boundary.
+      // The LLD operation's own input/output does not automatically refine
+      // any of these ports; real component-interface verification remains open.
+      const authoredPorts = reviewedPortComponents?.get(operation.componentId);
+      const port = source => ({
+        ...source,
+        schemaIdentity:readEngineeringInterfaceSchema(source.schemaJson,
+          {portableOnly:true}).sourceIdentity,
+      });
+      const reviewedPortContracts = authoredPorts ? {
+        reviewSha256:highLevel.originalReview.expectedSha256,
+        provided:authoredPorts.provides.map(port),
+        required:authoredPorts.requires.map(port),
+      } : null;
       // This is a ready-to-route *plan*, not an executable WorkCell. Treat
       // qualitative test obligations as independently unreceived, never
       // automatically generated behavioral assertions or passing tests.
@@ -769,7 +841,7 @@ export function readEngineeringCodeWork({
         expectedSha256: source?.expectedSha256 ?? null,
         // Syntax-only reading, never a semantic implementation/Proof verdict.
         // Unknown imports and parser refusals cannot become a clean code assay.
-        bindingObservation,
+        bindingObservation, reviewedPortContracts,
         originalTrace: traced.get(operation.id)
           .sort((a,b) => a.requirementCellId < b.requirementCellId ? -1 :
             a.requirementCellId > b.requirementCellId ? 1 : 0),
@@ -826,6 +898,11 @@ export function readEngineeringCodeWork({
     codeSnapshotScope: 'supplied-target-views-only',
     status: discrepancies.length ? 'source-disagreement' : 'source-present-unassayed',
     targets, discrepancies, sourceVerification,
+    hldPortSource: reviewedPortComponents
+      ? { status:'reviewed-source-replayed-unadmitted',
+          reviewSha256:highLevel.originalReview.expectedSha256,
+          semanticId:highLevel.originalReview.semanticId }
+      : {status:'name-only-unreviewed'},
     originalDesignAdmitted: false, independentProof: 'unreceived',
     executableWork: false, codeApplied: false, beneficiaryReceived: false,
   };
