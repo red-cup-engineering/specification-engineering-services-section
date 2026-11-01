@@ -97,6 +97,10 @@ jobs:
           tar -tzf "$RUNNER_TEMP/$tarball" > "$RUNNER_TEMP/specification-members.txt"
           grep -Fx 'package/data/records/schema/specification.schema.json' "$RUNNER_TEMP/specification-members.txt"
           grep -Fx 'package/data/records/schema/architecture-description.schema.json' "$RUNNER_TEMP/specification-members.txt"
+          grep -Fx 'package/data/records/schema/engineering-design-code-work-readout.schema.json' "$RUNNER_TEMP/specification-members.txt"
+          grep -Fx 'package/data/records/schema/engineering-design-review-projection.schema.json' "$RUNNER_TEMP/specification-members.txt"
+          grep -Fx 'package/src/engineering-design.d.mts' "$RUNNER_TEMP/specification-members.txt"
+          grep -Fx 'package/src/engineering-design-review.d.mts' "$RUNNER_TEMP/specification-members.txt"
           grep -Fx 'package/scripts/read-source-json-stdin.mjs' "$RUNNER_TEMP/specification-members.txt"
           test "$(grep -Fc 'package/data/records/schema/' "$RUNNER_TEMP/specification-members.txt")" -ge 2
           mkdir -p "$RUNNER_TEMP/consumer"
