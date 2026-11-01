@@ -922,7 +922,7 @@ export function readEngineeringCodeWork({
   const deepFreeze = value => {
     if (value !== null && typeof value === 'object') {
       for (const child of Object.values(value)) deepFreeze(child);
-      Object.deepFreeze(value);
+      Object.freeze(value);
     }
     return value;
   };
