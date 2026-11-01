@@ -4,10 +4,12 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createHash } from 'node:crypto';
 import { validateJsonSchema } from '@red-cup-engineering/json-schema-services-section/validation';
+import { semanticIdOf } from '@red-cup-engineering/computer-data-engineering-services-section/semiotic-expression-notation/semantic-content-identity';
 import { sourcesFixture } from './engineering-design-source-cut.fixture.mjs';
 import {
   planEngineeringDesign, receiveEngineeringDesign,
-  receiveEngineeringHighLevelReview,
+  receiveEngineeringHighLevelReview, readEngineeringDesignInferenceWork,
+  readEngineeringCodeWork,
 } from '../src/engineering-design.mjs';
 
 const copy = value => structuredClone(value);
@@ -240,4 +242,139 @@ test('ENG-20: independently authored provider port contract and consumer demand 
   assert.deepEqual(receiveEngineeringHighLevelReview(request(wrongExternal)),{
     type:'EngineeringDesignDerivationRefusal',reason:'invalid-review',
   },'two matching but unreceived external references do not establish a portable contract');
+});
+
+
+test('ENG-137: reviewed provider and consumer interface meaning survives HLD→LLD→Code without authoring new source', () => {
+  // Original Specification's independent test descriptions are declared in its
+  // source record, not invented downstream to make CIE work submit-able.
+  const sources=sourcesFixture();
+  const spec=JSON.parse(sources[1].text);
+  for (const clause of spec.topics.flatMap(topic=>topic.clauses))
+    clause.test='node --test test/source-'+clause.id+'.test.mjs';
+  sources[1].text=JSON.stringify(spec);
+  const arch=JSON.parse(sources[2].text);
+  arch.sources.find(row=>row.id==='specification').revision=
+    semanticIdOf('metroplat.artifact')(spec);
+  sources[2].text=JSON.stringify(arch);
+
+  const typed=reviewFixture();
+  const schemaJson=JSON.stringify({type:'integer',minimum:0});
+  typed.components[0].provides=[{port:'source-values',schemaJson}];
+  typed.components[1].requires=[
+    {componentId:'comp-a',port:'source-values',schemaJson}];
+  const input=request(typed,sources);
+  const reviewed=receiveEngineeringHighLevelReview(input);
+  acceptedProjection(reviewed);
+  assert.equal(reviewed.candidate.design.connections.length,1);
+
+  // Original HLD REVIEW, not its lossy name-only candidate, is the fourth
+  // original source. No new Work registry or forged independent acceptance.
+  const lowSources=[...sources,{kind:'high-level',text:JSON.stringify(reviewed)}];
+  const plan=planEngineeringDesign({stage:'low-level',sources:lowSources});
+  const inference=readEngineeringDesignInferenceWork(plan);
+  assert.equal(inference.enforceProviderSchema,true);
+  assert.equal(JSON.parse(inference.context).sources[3].text,lowSources[3].text);
+  assert.equal(inference.taskClass,'code-fabrication');
+
+  const operations=typed.components.map((component,index)=>({
+    id:'op-'+component.id,componentId:component.id,
+    module:'src/retain-'+component.id+'.mjs',
+    exportName:'retain'+(index===0?'A':'B'),
+    inputSchemaJson:'{}',outputSchemaJson:'{}',
+    behavior:'Prospective retained source result '+component.id,
+    preconditions:[],postconditions:['Retained original requirement value'],
+    failureCases:['Missing or incompatible original source'],
+    resourceBounds:['Original host limit pending'],
+    effectBoundaries:['No authorized effects without Proof'],
+    acceptanceObligations:['Independent reviewer still owed'],
+  }));
+  const design={
+    operations,
+    traceability:reviewed.candidate.design.traceability.map(row=>({
+      ...row,
+      designElementIds:row.designElementIds.map(id=>'op-'+id),
+    })),
+    openQuestions:['LLD semantic refinement remains unreceived'],
+  };
+  const deliveryText=JSON.stringify(design);
+  const candidate=receiveEngineeringDesign({
+    stage:'low-level',sources:lowSources,plan,deliveryText,
+  });
+  assert.equal(candidate.type,'EngineeringDesignCandidate');
+  assert.equal(candidate.proof,'unreceived');
+  assert.equal(candidate.admitted,false);
+
+  const code=readEngineeringCodeWork({
+    designCandidate:candidate,originalPlan:plan,originalDeliveryText:deliveryText,
+    sourceViews:[],
+  });
+  assert.equal(code.executableWork,false);
+  assert.equal(code.independentProof,'unreceived');
+  const provider=code.targets.find(row=>row.componentId==='comp-a');
+  const consumer=code.targets.find(row=>row.componentId==='comp-b');
+  assert.equal(provider.reviewedPortContracts.provided[0].port,'source-values');
+  assert.equal(consumer.reviewedPortContracts.required[0].port,'source-values');
+  assert.equal(provider.reviewedPortContracts.reviewSha256,digest(input.reviewText));
+  assert.equal(provider.reviewedPortContracts.provided[0].schemaIdentity,
+    consumer.reviewedPortContracts.required[0].schemaIdentity);
+  assert.equal(code.targets.every(row=>row.testObligations.status==='unreceived'),true);
+  assert.deepEqual(readEngineeringCodeWork({
+    designCandidate:candidate,originalPlan:plan,originalDeliveryText:deliveryText,
+    sourceViews:[],
+  }),code,'same exact reviewed cut must replay without a new generator');
+});
+
+test('ENG-137: name-only connected HLD cannot mint CIE work, and spoofed or stale original reviews refuse', () => {
+  const sources=sourcesFixture();
+  const spec=JSON.parse(sources[1].text);
+  for(const clause of spec.topics.flatMap(topic=>topic.clauses))
+    clause.test='node --test test/independent-'+clause.id+'.test.mjs';
+  sources[1].text=JSON.stringify(spec);
+  const arch=JSON.parse(sources[2].text);
+  arch.sources.find(row=>row.id==='specification').revision=
+    semanticIdOf('metroplat.artifact')(spec);
+  sources[2].text=JSON.stringify(arch);
+  const sourceReview=reviewFixture();
+  const schemaJson='{"type":"integer"}';
+  sourceReview.components[0].provides=[{port:'actual-provider',schemaJson}];
+  sourceReview.components[1].requires=[
+    {componentId:'comp-a',port:'actual-provider',schemaJson}];
+  const reviewed=receiveEngineeringHighLevelReview(request(sourceReview,sources));
+  acceptedProjection(reviewed);
+
+  const fourth = row => [...sources,{kind:'high-level',text:JSON.stringify(row)}];
+  const nameOnly=planEngineeringDesign({stage:'low-level',sources:fourth(reviewed.candidate)});
+  const refusal=readEngineeringDesignInferenceWork(nameOnly);
+  assert.equal(refusal.type,'EngineeringDesignInferenceWorkRefusal');
+  assert.equal(refusal.reason,'hld-reviewed-interface-contract-unreceived');
+  assert.equal(refusal.inferenceSubmitted,false);
+  assert.equal(refusal.executableWork,false);
+  assert.equal('outputSchema' in refusal,false);
+
+  // Removing the exact review, altering its provider, deleting its host bounds
+  // or replaying it after upstream revision must not preserve a typed witness.
+  const missing=structuredClone(reviewed);
+  delete missing.reviewText;
+  assert.throws(()=>planEngineeringDesign({stage:'low-level',sources:fourth(missing)}),
+    TypeError);
+  const altered=structuredClone(reviewed);
+  altered.reviewText=altered.reviewText.replace('actual-provider','fictitious-provider');
+  assert.throws(()=>planEngineeringDesign({stage:'low-level',sources:fourth(altered)}),
+    TypeError);
+  const forged=structuredClone(reviewed);
+  forged.candidate.design.components[0].providedPorts=['other-name'];
+  assert.throws(()=>planEngineeringDesign({stage:'low-level',sources:fourth(forged)}),
+    TypeError);
+  const noBounds=structuredClone(reviewed);
+  delete noBounds.limits;
+  assert.throws(()=>planEngineeringDesign({stage:'low-level',sources:fourth(noBounds)}),
+    TypeError);
+  const changed=[...sources];
+  const different=JSON.parse(changed[0].text);
+  different['met-when'][0].says='Changed original upstream demand.';
+  changed[0]={kind:'requirement',text:JSON.stringify(different)};
+  assert.throws(()=>planEngineeringDesign({stage:'low-level',sources:[
+    ...changed,{kind:'high-level',text:JSON.stringify(reviewed)},
+  ]}),TypeError);
 });

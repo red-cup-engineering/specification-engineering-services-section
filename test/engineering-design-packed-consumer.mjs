@@ -322,6 +322,77 @@ const declaredLowSources=[
 const declaredLowPlan=planEngineeringDesign({
   stage:'low-level',sources:declaredLowSources,
 });
+
+const reviewedHldPlan=planEngineeringDesign({stage:'high-level',sources:declaredCieSources});
+const reviewedLinkedCut=receiveEngineeringHighLevelReview({
+  sources:declaredCieSources,reviewText:JSON.stringify(typedReview),
+  expectedReviewSha256:'sha256:'+createHash('sha256')
+    .update(JSON.stringify(typedReview),'utf8').digest('hex'),
+  reviewedSourceCut:reviewedHldPlan.sources.map(({kind,digest})=>({kind,digest})),
+  limits:reviewRequest.limits,
+});
+assert.equal(reviewedLinkedCut.type,'EngineeringDesignReviewProjection');
+const reviewedLowSources=[...declaredCieSources,{
+  kind:'high-level',text:JSON.stringify(reviewedLinkedCut),
+}];
+const reviewedLowPlan=planEngineeringDesign({
+  stage:'low-level',sources:reviewedLowSources,
+});
+const reviewedInference=readEngineeringDesignInferenceWork(reviewedLowPlan);
+assert.equal(reviewedInference.enforceProviderSchema,true);
+assert.equal(JSON.parse(reviewedInference.context).sources[3].text,
+  reviewedLowSources[3].text,'installed CIE readout must retain original typed port contracts');
+const strippedLowPlan=planEngineeringDesign({stage:'low-level',sources:[
+  ...declaredCieSources,{kind:'high-level',
+    text:JSON.stringify(reviewedLinkedCut.candidate)},
+]});
+const stripped=readEngineeringDesignInferenceWork(strippedLowPlan);
+assert.equal(stripped.reason,'hld-reviewed-interface-contract-unreceived');
+assert.equal(stripped.inferenceSubmitted,false);
+assert.equal('outputSchema' in stripped,false);
+const portOperations=typedReview.components.map((component,index)=>({
+  id:'operation-'+component.id,componentId:component.id,
+  module:'src/retain-'+component.id+'.mjs',
+  exportName:index===0?'retainA':'retainB',
+  inputSchemaJson:'{}',outputSchemaJson:'{}',
+  behavior:'Prospective source retaining '+component.id,
+  preconditions:[],postconditions:['Original source retained'],
+  failureCases:['Source missing'],resourceBounds:['Host ceiling unreceived'],
+  effectBoundaries:['No effects without competent Proof'],
+  acceptanceObligations:['Independent Code receiving'],
+}));
+const portDelivery={
+  operations:portOperations,
+  traceability:reviewedLinkedCut.candidate.design.traceability.map(row=>({
+    ...row,designElementIds:row.designElementIds.map(id=>'operation-'+id),
+  })),
+  openQuestions:['No design or Code Proof is received'],
+};
+const portDeliveryText=JSON.stringify(portDelivery);
+const portCandidate=receiveEngineeringDesign({
+  stage:'low-level',sources:reviewedLowSources,plan:reviewedLowPlan,
+  deliveryText:portDeliveryText,
+});
+assert.equal(portCandidate.type,'EngineeringDesignCandidate');
+const portWork=readEngineeringCodeWork({
+  designCandidate:portCandidate,originalPlan:reviewedLowPlan,
+  originalDeliveryText:portDeliveryText,sourceViews:[],
+});
+assert.equal(portWork.hldPortSource.status,'reviewed-source-replayed-unadmitted');
+assert.equal(portWork.executableWork,false);
+assert.equal(portWork.independentProof,'unreceived');
+const portProvider=portWork.targets.find(row=>row.componentId==='component-a');
+const portConsumer=portWork.targets.find(row=>row.componentId==='component-b');
+assert.equal(portProvider.reviewedPortContracts.provided[0].port,'source-facts');
+assert.equal(portConsumer.reviewedPortContracts.required[0].port,'source-facts');
+assert.equal(portProvider.reviewedPortContracts.provided[0].schemaIdentity,
+  portConsumer.reviewedPortContracts.required[0].schemaIdentity);
+const alteredLinked=structuredClone(reviewedLinkedCut);
+alteredLinked.reviewText=alteredLinked.reviewText.replace('source-facts','foreign-facts');
+assert.throws(()=>planEngineeringDesign({stage:'low-level',sources:[
+  ...declaredCieSources,{kind:'high-level',text:JSON.stringify(alteredLinked)},
+]}),TypeError,'independently installed original producer must refuse stale/forged reviewed port content');
+
 // The actual separately installed public npm Design consumer must still
 // project original CIE strict work for COMPLETE declarations, but the
 // projection itself remains effect-free and cannot certify those tests.
