@@ -70,7 +70,9 @@
                     },
                     "schemaJson": {
                       "type": "string",
-                      "minLength": 1
+                      "minLength": 1,
+                      "contentMediaType": "application/schema+json",
+                      "description": "A Draft 2020-12 JSON Schema encoded as an unambiguous UTF-8 JSON document; syntax and vocabulary require independent admission."
                     }
                   }
                 },
@@ -100,7 +102,9 @@
                     },
                     "schemaJson": {
                       "type": "string",
-                      "minLength": 1
+                      "minLength": 1,
+                      "contentMediaType": "application/schema+json",
+                      "description": "A Draft 2020-12 JSON Schema encoded as an unambiguous UTF-8 JSON document; syntax and vocabulary require independent admission."
                     }
                   }
                 },
@@ -179,5 +183,8 @@
         }
       }
     }
-  }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:red-cup-engineering:schema:project-high-level-design-review.input:1",
+  "title": "Project High Level Design Review.Input"
 }
