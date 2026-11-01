@@ -11,15 +11,27 @@ import { admitCanonicalJson, UNBOUNDED_JSON_ENVELOPE } from '@red-cup-engineerin
 import { createSchema } from '@red-cup-engineering/json-schema-services-section';
 import { semanticIdOf } from '@red-cup-engineering/computer-data-engineering-services-section/semiotic-expression-notation/semantic-content-identity';
 
-const object = value => value !== null && typeof value === 'object' &&
-  !Array.isArray(value);
+const isSchemaObject = candidate => candidate !== null && typeof candidate === 'object' &&
+  !Array.isArray(candidate);
 
-export function readEngineeringInterfaceSchema(text, { portableOnly = false } = {}) {
-  if (typeof text !== 'string' || !text.isWellFormed() ||
-      text.length === 0)
+/**
+ * Read an RFC 8259 JSON Schema document using the original 2020-12 supplier.
+ * Its identity compares content; it does not establish behavioral subtyping.
+ *
+ * @param {string} schemaText - JSON Schema source, not an instance payload.
+ * @param {{portableOnly?: boolean}} [options]
+ * @returns {{schema: object | boolean, sourceIdentity: string}}
+ */
+export function readEngineeringInterfaceSchema(schemaText, { portableOnly = false } = {}) {
+  if (typeof schemaText !== 'string' || !schemaText.isWellFormed() ||
+      schemaText.length === 0)
     throw new TypeError('Engineering interface source must be complete UTF-8 JSON text');
-  const value = admitCanonicalJson(text, UNBOUNDED_JSON_ENVELOPE).value;
-  if (typeof value !== 'boolean' && !object(value))
+  // Apply the declared source-bound byte ceiling before parsing untrusted
+  // JSON. An eventually refused source must not consume unbounded parser fuel.
+  if (portableOnly && Buffer.byteLength(schemaText, 'utf8') > 65_536)
+    throw new TypeError('Engineering review port schema exceeds its source boundary');
+  const parsedSchema = admitCanonicalJson(schemaText, UNBOUNDED_JSON_ENVELOPE).value;
+  if (typeof parsedSchema !== 'boolean' && !isSchemaObject(parsedSchema))
     throw new TypeError('Engineering interface must be a JSON Schema object or boolean');
   if (portableOnly) {
     // Only self-contained reference-free Draft 2020-12 Schemas are admitted
@@ -27,23 +39,21 @@ export function readEngineeringInterfaceSchema(text, { portableOnly = false } = 
     // accepts richer syntax, but no native reference resolver or source bundle
     // is bound into THIS review. Do not invent a partial URI/JSON-Pointer
     // resolver or treat two matching unreceived references as compatibility.
-    if (Buffer.byteLength(text, 'utf8') > 65_536)
-      throw new TypeError('Engineering review port schema exceeds its source boundary');
-    const pending=[value];
-    while(pending.length) {
-      const item=pending.pop();
-      if(item===null || typeof item!=='object')continue;
-      if(Object.hasOwn(item,'$ref') || Object.hasOwn(item,'$dynamicRef') ||
-         Object.hasOwn(item,'$recursiveRef'))
+    const pendingNodes=[parsedSchema];
+    while(pendingNodes.length) {
+      const schemaNode=pendingNodes.pop();
+      if(schemaNode===null || typeof schemaNode!=='object')continue;
+      if(Object.hasOwn(schemaNode,'$ref') || Object.hasOwn(schemaNode,'$dynamicRef') ||
+         Object.hasOwn(schemaNode,'$recursiveRef'))
         throw new TypeError('Engineering review requires materialized reference-free port schemas');
-      pending.push(...Object.values(item));
+      pendingNodes.push(...Object.values(schemaNode));
     }
   }
-  if (object(value)) createSchema(value,
-    value.$id ?? 'urn:engineering-design:unadmitted-interface',
+  if (isSchemaObject(parsedSchema)) createSchema(parsedSchema,
+    parsedSchema.$id ?? 'urn:engineering-design:unadmitted-interface',
     { allowUnknownAnnotations: true });
   return Object.freeze({
-    schema: value,
-    sourceIdentity: semanticIdOf('metroplat.artifact')(value),
+    schema: parsedSchema,
+    sourceIdentity: semanticIdOf('metroplat.artifact')(parsedSchema),
   });
 }
