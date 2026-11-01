@@ -47,6 +47,37 @@ are in their existing `data/records/schema/` home. Original obligations belong t
 schemas, source readers, relevant tests and authorized Requirement/Work owners—not to
 explanatory paragraphs duplicated in this README.
 
+## Public contract types, wire formats, and protocol ownership
+
+The `./engineering-design` and `./engineering-design-review` ESM exports retain
+their original JavaScript functions and their **unchanged JSON field names**.
+Their `src/*.d.mts` declarations supply standard NodeNext/TypeScript types
+for `DesignSourceRevision`, `DesignDerivationPlan`, `HighLevelDesignReviewProjection`,
+`DesignCodeWorkReadout`, source identities and non-executable refusals. Native
+runtime shape checking uses the **existing Draft 2020-12 JSON Schema** records in
+`data/records/schema/`, now identified with stable `$schema`/`$id` URIs.
+The reviewed-HLD and Code Work readouts are validated against their packaged
+schemas before returning; neither generated TypeScript types nor JSON Schema
+validation establishes behavioral proof or authorization.
+
+The source wire format remains RFC 8259 JSON, admitted by the existing strict
+canonical-JSON supplier; normative source `text` is labeled
+`application/json`, while the embedded `schemaJson` documents are
+`application/schema+json` (a media-type annotation, **not** implicit validation).
+Those documents are separately parsed, validated and source-identified before
+comparing producer and consumer contracts. Portable schemas retain the original
+65,536-byte bound and now refuse oversized source **before parsing**.
+
+**Transport authority stays with the existing host.** This module produces the
+native `objective/context/outputSchema` request actually accepted by the Computer
+Inference Engine; its real host owns MCP **JSON-RPC 2.0** tool transport and
+Agent2Agent task delivery where configured. The existing `scripts/` are
+stdin/stdout JSON adapters, not a new HTTP API. Do not rename a native inference
+request into an invented OpenAPI route, wrap a non-HTTP refusal in RFC 9457
+`application/problem+json`, or claim an installed protocol endpoint based on
+a schema document. An authorized HTTP host must separately qualify any HTTP
+operation, OpenAPI 3.1 description, authentication, error mapping and consumer.
+
 ## A reviewed HLD reuses the original receiver
 
 \`receiveEngineeringHighLevelReview({sources,reviewText,expectedReviewSha256,reviewedSourceCut,limits})\`
@@ -96,10 +127,14 @@ review text and digests, source cut, deterministic design text and the same
 Both carriers remain \`admitted:false\`, with independent review and Proof
 \`unreceived\` and no executable Work. An Office-supplied review digest or
 source revision is **not independently authenticated by this pure function**.
-The existing LLD planner may consume the unchanged HLD candidate as its
-fourth source; original Work, native inference for genuinely unresolved LLD,
-independent stage Proof, Code fabrication, integration and beneficiary receiving
-remain separately required.
+The LLD planner can consume the **exact reviewed HLD projection** as its fourth
+source, replaying the original review, type contracts, revision and host bounds
+before producing a candidate. An older unreviewed HLD with connected name-only
+ports remains inspectable but is refused at the CIE inference-work boundary.
+The Code Work readout retains reviewed schema identities without treating
+same-schema coincidence as operational compatibility. Original Work, genuinely
+unresolved LLD behavior, independent stage Proof, Code fabrication, integration
+and beneficiary receiving remain separately required.
 
 See the [source-cut integration regression](test/engineering-design-reviewed-hld.integration.test.mjs),
 including exact replay, stale cuts, foreign clauses, cyclic dependency and
