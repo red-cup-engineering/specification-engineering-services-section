@@ -36,8 +36,8 @@ export function projectHighLevelDesignReview({ review, trace } = {}) {
   // by the ORIGINAL shared Design/JSON Schema supplier. Identical semantic
   // schema addresses conservatively establish a typed cut; different schemas
   // need a separately received refinement law and cannot be guessed equal.
-  const providedByComponent = new Map();
-  const sourcePort = (entry, role) => {
+  const providedSchemasByComponentId = new Map();
+  const readPortSchemaIdentity = (entry, role) => {
     // The direct projector must enforce the same closed source vocabulary
     // as the received HLD review schema. Unknown fields cannot grant proof,
     // authority or a second covert supplier-owned port description.
@@ -57,19 +57,19 @@ export function projectHighLevelDesignReview({ review, trace } = {}) {
   for (const component of components) {
     if (!Array.isArray(component.provides) || !Array.isArray(component.requires))
       throw new TypeError(`original HLD review must independently author provider and consumer ports: ${component.id}`);
-    const offered = new Map();
+    const providerPortSchemas = new Map();
     for (const port of component.provides) {
-      const schema = sourcePort(port,'provider');
-      if (offered.has(port.port))
+      const schema = readPortSchemaIdentity(port,'provider');
+      if (providerPortSchemas.has(port.port))
         throw new TypeError(`duplicate provider port declaration: ${component.id}/${port.port}`);
-      offered.set(port.port,schema);
+      providerPortSchemas.set(port.port,schema);
     }
-    providedByComponent.set(component.id,offered);
+    providedSchemasByComponentId.set(component.id,providerPortSchemas);
   }
   for (const component of components) {
     const seenPorts = new Set();
     for (const requirement of component.requires) {
-      const expected = sourcePort(requirement,'consumer');
+      const consumerSchemaIdentity = readPortSchemaIdentity(requirement,'consumer');
       if (requirement.componentId === component.id) {
         throw new TypeError(`self dependency: ${component.id}`);
       }
@@ -79,35 +79,35 @@ export function projectHighLevelDesignReview({ review, trace } = {}) {
       if (seenPorts.has(requirement.port)) {
         throw new TypeError(`duplicate required port name on consumer: ${component.id}`);
       }
-      const offered=providedByComponent.get(requirement.componentId).get(requirement.port);
-      if (offered === undefined || offered !== expected)
+      const providerPortSchemas=providedSchemasByComponentId.get(requirement.componentId).get(requirement.port);
+      if (providerPortSchemas === undefined || providerPortSchemas !== consumerSchemaIdentity)
         throw new TypeError(`unreceived or incompatible provider contract for ${requirement.componentId}/${requirement.port} required by ${component.id}`);
       seenPorts.add(requirement.port);
     }
   }
 
-  const cellIds = new Set();
-  const allNormativeClauseIds = new Set();
+  const seenRequirementCellIds = new Set();
+  const requiredSpecificationClauseIds = new Set();
   for (const row of rows) {
-    if (cellIds.has(row.cell)) {
+    if (seenRequirementCellIds.has(row.cell)) {
       throw new TypeError(`duplicate trace cell id: ${row.cell}`);
     }
-    cellIds.add(row.cell);
+    seenRequirementCellIds.add(row.cell);
     for (const clauseId of row.normativeClauseIds) {
-      allNormativeClauseIds.add(clauseId);
+      requiredSpecificationClauseIds.add(clauseId);
     }
   }
 
-  const claimedClauseIds = new Set();
+  const allocatedSpecificationClauseIds = new Set();
   for (const component of components) {
     for (const clauseId of component.specificationClauseIds) {
-      claimedClauseIds.add(clauseId);
+      allocatedSpecificationClauseIds.add(clauseId);
     }
   }
 
   for (const component of components) {
     for (const clauseId of component.specificationClauseIds) {
-      if (!allNormativeClauseIds.has(clauseId)) {
+      if (!requiredSpecificationClauseIds.has(clauseId)) {
         throw new TypeError(`component clause id absent from every trace row: ${clauseId}`);
       }
     }
@@ -115,35 +115,35 @@ export function projectHighLevelDesignReview({ review, trace } = {}) {
 
   for (const row of rows) {
     for (const clauseId of row.normativeClauseIds) {
-      if (!claimedClauseIds.has(clauseId)) {
+      if (!allocatedSpecificationClauseIds.has(clauseId)) {
         throw new TypeError(`original normative clause without a claiming component: ${clauseId}`);
       }
     }
   }
 
-  const dependencyByComponentId = new Map();
+  const dependenciesByComponentId = new Map();
   for (const component of components) {
     const dependencyIds = [];
-    const seenDependencyIds = new Set();
+    const distinctDependencyIds = new Set();
     for (const requirement of component.requires) {
-      if (!seenDependencyIds.has(requirement.componentId)) {
-        seenDependencyIds.add(requirement.componentId);
+      if (!distinctDependencyIds.has(requirement.componentId)) {
+        distinctDependencyIds.add(requirement.componentId);
         dependencyIds.push(requirement.componentId);
       }
     }
-    dependencyByComponentId.set(component.id, dependencyIds);
+    dependenciesByComponentId.set(component.id, dependencyIds);
   }
 
-  function transitiveDependencyClosure(seedIds) {
+  function collectTransitiveDependencies(tracedComponentSeeds) {
     const visited = new Set();
-    const stack = [...seedIds];
+    const stack = [...tracedComponentSeeds];
     while (stack.length > 0) {
       const id = stack.pop();
       if (visited.has(id)) {
         continue;
       }
       visited.add(id);
-      const dependencies = dependencyByComponentId.get(id);
+      const dependencies = dependenciesByComponentId.get(id);
       if (dependencies) {
         for (const dependencyId of dependencies) {
           if (!visited.has(dependencyId)) {
@@ -155,10 +155,10 @@ export function projectHighLevelDesignReview({ review, trace } = {}) {
     return visited;
   }
 
-  const rowClosures = [];
-  const coveredComponentIds = new Set();
+  const traceDependencyClosures = [];
+  const tracedComponentIds = new Set();
   for (const row of rows) {
-    const seedIds = [];
+    const tracedComponentSeeds = [];
     for (const component of components) {
       let intersects = false;
       for (const clauseId of component.specificationClauseIds) {
@@ -168,29 +168,29 @@ export function projectHighLevelDesignReview({ review, trace } = {}) {
         }
       }
       if (intersects) {
-        seedIds.push(component.id);
+        tracedComponentSeeds.push(component.id);
       }
     }
-    const closure = transitiveDependencyClosure(seedIds);
-    rowClosures.push(closure);
+    const closure = collectTransitiveDependencies(tracedComponentSeeds);
+    traceDependencyClosures.push(closure);
     for (const id of closure) {
-      coveredComponentIds.add(id);
+      tracedComponentIds.add(id);
     }
   }
 
   for (const component of components) {
-    if (!coveredComponentIds.has(component.id)) {
+    if (!tracedComponentIds.has(component.id)) {
       throw new TypeError(`orphan component not in any trace closure: ${component.id}`);
     }
   }
 
-  const outComponents = [];
+  const designComponents = [];
   for (const component of components) {
     const dependencyIds = [];
-    const seenDependencyIds = new Set();
+    const distinctDependencyIds = new Set();
     for (const requirement of component.requires) {
-      if (!seenDependencyIds.has(requirement.componentId)) {
-        seenDependencyIds.add(requirement.componentId);
+      if (!distinctDependencyIds.has(requirement.componentId)) {
+        distinctDependencyIds.add(requirement.componentId);
         dependencyIds.push(requirement.componentId);
       }
     }
@@ -198,7 +198,7 @@ export function projectHighLevelDesignReview({ review, trace } = {}) {
     for (const requirement of component.requires) {
       requiredPorts.push(requirement.port);
     }
-    outComponents.push({
+    designComponents.push({
       id: component.id,
       owner: component.owner,
       layer: component.layer,
@@ -220,10 +220,10 @@ export function projectHighLevelDesignReview({ review, trace } = {}) {
     }
   }
 
-  const outTraceability = [];
+  const traceabilityRows = [];
   for (let index = 0; index < rows.length; index += 1) {
     const row = rows[index];
-    const closure = rowClosures[index];
+    const closure = traceDependencyClosures[index];
     const architectureModelIds = [];
     const seenModelIds = new Set();
     for (const authoredPath of row.authoredPaths) {
@@ -238,7 +238,7 @@ export function projectHighLevelDesignReview({ review, trace } = {}) {
         designElementIds.push(component.id);
       }
     }
-    outTraceability.push({
+    traceabilityRows.push({
       requirementCellId: row.cell,
       specificationClauseIds: [...row.normativeClauseIds],
       architectureModelIds,
@@ -247,9 +247,9 @@ export function projectHighLevelDesignReview({ review, trace } = {}) {
   }
 
   return {
-    components: outComponents,
+    components: designComponents,
     connections,
-    traceability: outTraceability,
+    traceability: traceabilityRows,
     openQuestions: [...openQuestions],
   };
 }

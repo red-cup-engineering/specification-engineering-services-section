@@ -37,7 +37,8 @@
           },
           "text": {
             "type": "string",
-            "minLength": 1
+            "minLength": 1,
+            "contentMediaType": "application/json"
           }
         }
       },
@@ -46,5 +47,8 @@
     "deliveryText": {
       "type": "string"
     }
-  }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:red-cup-engineering:schema:receive-engineering-design.input:1",
+  "title": "Receive Engineering Design.Input"
 }

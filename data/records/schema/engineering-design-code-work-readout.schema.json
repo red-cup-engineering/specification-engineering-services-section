@@ -1,0 +1,541 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "type",
+    "version",
+    "designCarrierId",
+    "sourceCut",
+    "codeSnapshotScope",
+    "status",
+    "targets",
+    "discrepancies",
+    "sourceVerification",
+    "hldPortSource",
+    "originalDesignAdmitted",
+    "independentProof",
+    "executableWork",
+    "codeApplied",
+    "beneficiaryReceived"
+  ],
+  "properties": {
+    "type": {
+      "const": "EngineeringDesignCodeWorkReadout"
+    },
+    "version": {
+      "const": 1
+    },
+    "designCarrierId": {
+      "type": "string",
+      "pattern": "^ni:///sha-256;"
+    },
+    "sourceCut": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "digest"
+        ],
+        "properties": {
+          "kind": {
+            "enum": [
+              "requirement",
+              "specification",
+              "architecture",
+              "high-level"
+            ]
+          },
+          "digest": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          }
+        }
+      },
+      "minItems": 4
+    },
+    "codeSnapshotScope": {
+      "const": "supplied-target-views-only"
+    },
+    "status": {
+      "enum": [
+        "source-disagreement",
+        "source-present-unassayed"
+      ]
+    },
+    "targets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "operationId",
+          "componentId",
+          "originalComponentOwner",
+          "module",
+          "exportName",
+          "sourceStatus",
+          "observedSha256",
+          "expectedSha256",
+          "bindingObservation",
+          "reviewedPortContracts",
+          "originalTrace",
+          "interface",
+          "testObligations"
+        ],
+        "properties": {
+          "operationId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "componentId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "originalComponentOwner": {
+            "type": "string",
+            "minLength": 1
+          },
+          "module": {
+            "type": "string",
+            "minLength": 1
+          },
+          "exportName": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sourceStatus": {
+            "enum": [
+              "source-not-observed",
+              "source-cut-disagreement",
+              "source-present-unassayed"
+            ]
+          },
+          "observedSha256": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^sha256:[a-f0-9]{64}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "expectedSha256": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^sha256:[a-f0-9]{64}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "bindingObservation": {
+            "anyOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reviewedPortContracts": {
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "reviewSha256",
+                  "provided",
+                  "required"
+                ],
+                "properties": {
+                  "reviewSha256": {
+                    "type": "string",
+                    "pattern": "^sha256:[a-f0-9]{64}$"
+                  },
+                  "provided": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "port",
+                        "schemaJson",
+                        "schemaIdentity"
+                      ],
+                      "properties": {
+                        "port": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "schemaJson": {
+                          "type": "string",
+                          "contentMediaType": "application/schema+json"
+                        },
+                        "schemaIdentity": {
+                          "type": "string",
+                          "pattern": "^ni:///sha-256;"
+                        }
+                      }
+                    },
+                    "minItems": 0
+                  },
+                  "required": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "componentId",
+                        "port",
+                        "schemaJson",
+                        "schemaIdentity"
+                      ],
+                      "properties": {
+                        "componentId": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "port": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "schemaJson": {
+                          "type": "string",
+                          "contentMediaType": "application/schema+json"
+                        },
+                        "schemaIdentity": {
+                          "type": "string",
+                          "pattern": "^ni:///sha-256;"
+                        }
+                      }
+                    },
+                    "minItems": 0
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "originalTrace": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "requirementCellId",
+                "sourceTarget",
+                "specificationClauseIds",
+                "architectureModelIds"
+              ],
+              "properties": {
+                "requirementCellId": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "sourceTarget": {
+                  "enum": [
+                    "held",
+                    "denied"
+                  ]
+                },
+                "specificationClauseIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "minItems": 0
+                },
+                "architectureModelIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "minItems": 0
+                }
+              }
+            },
+            "minItems": 0
+          },
+          "interface": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "inputSchema",
+              "outputSchema"
+            ],
+            "properties": {
+              "inputSchema": {
+                "anyOf": [
+                  {
+                    "type": "object"
+                  },
+                  {
+                    "type": "boolean"
+                  }
+                ]
+              },
+              "outputSchema": {
+                "anyOf": [
+                  {
+                    "type": "object"
+                  },
+                  {
+                    "type": "boolean"
+                  }
+                ]
+              }
+            }
+          },
+          "testObligations": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "behavior",
+              "preconditions",
+              "postconditions",
+              "failureCases",
+              "resourceBounds",
+              "effectBoundaries",
+              "acceptance",
+              "sourceVerification",
+              "status"
+            ],
+            "properties": {
+              "behavior": {
+                "type": "string",
+                "minLength": 1
+              },
+              "preconditions": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 0
+              },
+              "postconditions": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 0
+              },
+              "failureCases": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 0
+              },
+              "resourceBounds": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 0
+              },
+              "effectBoundaries": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 0
+              },
+              "acceptance": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 0
+              },
+              "sourceVerification": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "requirementCellId",
+                    "specificationClauseId",
+                    "test",
+                    "status"
+                  ],
+                  "properties": {
+                    "requirementCellId": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "specificationClauseId": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "test": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "status": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                },
+                "minItems": 0
+              },
+              "status": {
+                "const": "unreceived"
+              }
+            }
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "discrepancies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "code",
+          "operationId",
+          "module",
+          "detail"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "minLength": 1
+          },
+          "operationId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "module": {
+            "type": "string",
+            "minLength": 1
+          },
+          "detail": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "minItems": 0
+    },
+    "sourceVerification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope",
+        "status",
+        "clauseCount",
+        "declaredTestCount",
+        "missingClauseIds"
+      ],
+      "properties": {
+        "scope": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "type": "string",
+          "minLength": 1
+        },
+        "clauseCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "declaredTestCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "missingClauseIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0
+        }
+      }
+    },
+    "hldPortSource": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status"
+          ],
+          "properties": {
+            "status": {
+              "const": "name-only-unreviewed"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "reviewSha256",
+            "semanticId"
+          ],
+          "properties": {
+            "status": {
+              "const": "reviewed-source-replayed-unadmitted"
+            },
+            "reviewSha256": {
+              "type": "string",
+              "pattern": "^sha256:[a-f0-9]{64}$"
+            },
+            "semanticId": {
+              "type": "string",
+              "pattern": "^ni:///sha-256;"
+            }
+          }
+        }
+      ]
+    },
+    "originalDesignAdmitted": {
+      "const": false
+    },
+    "independentProof": {
+      "const": "unreceived"
+    },
+    "executableWork": {
+      "const": false
+    },
+    "codeApplied": {
+      "const": false
+    },
+    "beneficiaryReceived": {
+      "const": false
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:red-cup-engineering:schema:engineering-design-code-work-readout:1",
+  "title": "Engineering Design Code Work Readout",
+  "description": "Non-effectful, source-pinned Design-to-Code observations; not an executable WorkCell, mathematical proof, or customer acceptance."
+}

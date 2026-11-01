@@ -42,11 +42,13 @@
               },
               "text": {
                 "type": "string",
-                "minLength": 1
+                "minLength": 1,
+                "contentMediaType": "application/json"
               },
               "digest": {
                 "type": "string",
-                "minLength": 1
+                "minLength": 1,
+                "pattern": "^sha256:[a-f0-9]{64}$"
               }
             }
           },
@@ -251,11 +253,15 @@
                       },
                       "inputSchemaJson": {
                         "type": "string",
-                        "minLength": 1
+                        "minLength": 1,
+                        "contentMediaType": "application/schema+json",
+                        "description": "A Draft 2020-12 JSON Schema encoded as an unambiguous UTF-8 JSON document; syntax and vocabulary require independent admission."
                       },
                       "outputSchemaJson": {
                         "type": "string",
-                        "minLength": 1
+                        "minLength": 1,
+                        "contentMediaType": "application/schema+json",
+                        "description": "A Draft 2020-12 JSON Schema encoded as an unambiguous UTF-8 JSON document; syntax and vocabulary require independent admission."
                       },
                       "behavior": {
                         "type": "string",
@@ -392,5 +398,8 @@
         }
       }
     }
-  ]
+  ],
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:red-cup-engineering:schema:receive-engineering-design.output:1",
+  "title": "Receive Engineering Design.Output"
 }

@@ -1,0 +1,189 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "type",
+    "version",
+    "originalReview",
+    "reviewText",
+    "sourceCut",
+    "deliveryText",
+    "candidate",
+    "limits",
+    "admitted",
+    "independentReview",
+    "proof",
+    "executableWork"
+  ],
+  "properties": {
+    "type": {
+      "const": "EngineeringDesignReviewProjection"
+    },
+    "version": {
+      "const": 1
+    },
+    "originalReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "expectedSha256",
+        "semanticId",
+        "bytes"
+      ],
+      "properties": {
+        "expectedSha256": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "semanticId": {
+          "type": "string",
+          "pattern": "^ni:///sha-256;"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "reviewText": {
+      "type": "string",
+      "contentMediaType": "application/json",
+      "minLength": 1
+    },
+    "sourceCut": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "digest"
+        ],
+        "properties": {
+          "kind": {
+            "enum": [
+              "requirement",
+              "specification",
+              "architecture",
+              "high-level"
+            ]
+          },
+          "digest": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          }
+        }
+      },
+      "minItems": 3
+    },
+    "deliveryText": {
+      "type": "string",
+      "contentMediaType": "application/json",
+      "minLength": 1
+    },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "stage",
+        "sources",
+        "design",
+        "admitted",
+        "proof"
+      ],
+      "properties": {
+        "type": {
+          "const": "EngineeringDesignCandidate"
+        },
+        "stage": {
+          "const": "high-level"
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "text",
+              "digest"
+            ],
+            "properties": {
+              "kind": {
+                "enum": [
+                  "requirement",
+                  "specification",
+                  "architecture"
+                ]
+              },
+              "text": {
+                "type": "string",
+                "contentMediaType": "application/json",
+                "minLength": 1
+              },
+              "digest": {
+                "type": "string",
+                "pattern": "^sha256:[a-f0-9]{64}$"
+              }
+            }
+          },
+          "minItems": 3
+        },
+        "design": {
+          "type": "object"
+        },
+        "admitted": {
+          "const": false
+        },
+        "proof": {
+          "const": "unreceived"
+        }
+      }
+    },
+    "limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "maxReviewBytes",
+        "maxComponents",
+        "maxRequirements",
+        "maxTraceRows"
+      ],
+      "properties": {
+        "maxReviewBytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "maxComponents": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "maxRequirements": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "maxTraceRows": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "admitted": {
+      "const": false
+    },
+    "independentReview": {
+      "const": "unreceived"
+    },
+    "proof": {
+      "const": "unreceived"
+    },
+    "executableWork": {
+      "const": false
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:red-cup-engineering:schema:engineering-design-review-projection:1",
+  "title": "Engineering High-Level Design Review Projection",
+  "description": "Source-review provenance and unadmitted candidate, with independent proof and authorization expressly unreceived."
+}
