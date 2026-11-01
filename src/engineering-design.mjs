@@ -929,7 +929,13 @@ export function readEngineeringCodeWork({
   // The original Code Work carrier is now checked against its public,
   // packaged Draft 2020-12 output contract before downstream consumption.
   // This validates representation, NOT independent test/proof or Work effects.
-  if (!validateJsonSchema(codeWorkReadout, CODE_WORK_READOUT_SCHEMA).valid)
-    throw new TypeError('Engineering Code Work codeWorkReadout violates its Draft 2020-12 output contract');
+  const outputValidation=validateJsonSchema(codeWorkReadout, CODE_WORK_READOUT_SCHEMA);
+  if (!outputValidation.valid) {
+    // Keep the native schema supplier's bounded JSON-Pointer/keyword evidence
+    // so a source owner can repair the first actual mismatched contract.
+    const issues=outputValidation.issues?.slice(0, 8)
+      .map(({path, keyword, message})=>({path,keyword,message})) ?? [];
+    throw new TypeError('Engineering Code Work readout violates its Draft 2020-12 output contract: '+JSON.stringify(issues));
+  }
   return deepFreeze(codeWorkReadout);
 }
