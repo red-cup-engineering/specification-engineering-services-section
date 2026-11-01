@@ -200,7 +200,12 @@ export interface CodeWorkTarget {
   readonly expectedSha256: Sha256Digest | null;
   readonly bindingObservation: Record<string, unknown> | null;
   readonly reviewedPortContracts: ReviewedComponentPortContracts | null;
-  readonly originalTrace: readonly (RequirementTrace & { readonly sourceTarget: 'held' | 'denied' })[];
+  readonly originalTrace: readonly {
+    readonly requirementCellId: string;
+    readonly sourceTarget: 'held' | 'denied';
+    readonly specificationClauseIds: readonly string[];
+    readonly architectureModelIds: readonly string[];
+  }[];
   readonly interface: { readonly inputSchema: JsonSchema; readonly outputSchema: JsonSchema };
   readonly testObligations: Record<string, unknown> & { readonly status: 'unreceived' };
 }
