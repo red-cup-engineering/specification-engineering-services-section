@@ -60,6 +60,14 @@ const HIGH_LEVEL_REVIEW_SCHEMA_PATH=fileURLToPath(new URL(
   '../data/records/schema/project-high-level-design-review.input.schema.json',
   import.meta.url));
 const HIGH_LEVEL_REVIEW_SCHEMA=JSON.parse(await readFileText(HIGH_LEVEL_REVIEW_SCHEMA_PATH));
+const REVIEW_PROJECTION_SCHEMA_PATH=fileURLToPath(new URL(
+  '../data/records/schema/engineering-design-review-projection.schema.json',
+  import.meta.url));
+const REVIEW_PROJECTION_SCHEMA=JSON.parse(await readFileText(REVIEW_PROJECTION_SCHEMA_PATH));
+const CODE_WORK_READOUT_SCHEMA_PATH=fileURLToPath(new URL(
+  '../data/records/schema/engineering-design-code-work-readout.schema.json',
+  import.meta.url));
+const CODE_WORK_READOUT_SCHEMA=JSON.parse(await readFileText(CODE_WORK_READOUT_SCHEMA_PATH));
 
 const SOURCE_KINDS_IN_ORDER = ['requirement', 'specification', 'architecture', 'high-level'];
 const COMPONENT_LAYERS = ['data', 'code', 'networking', 'systems'];
@@ -628,7 +636,7 @@ export function receiveEngineeringHighLevelReview({
   // traceability are refused by the EXISTING Design receiver, not by a weaker
   // second structural checker.
   if (candidate.type !== 'EngineeringDesignCandidate') return candidate;
-  return {
+  const projection = {
     type:'EngineeringDesignReviewProjection', version:1,
     originalReview:{
       expectedSha256:expectedReviewSha256,
@@ -639,6 +647,9 @@ export function receiveEngineeringHighLevelReview({
     admitted:false, independentReview:'unreceived',
     proof:'unreceived', executableWork:false,
   };
+  if (!validateJsonSchema(projection, REVIEW_PROJECTION_SCHEMA).valid)
+    throw new TypeError('Engineering reviewed HLD projection violates its Draft 2020-12 output contract');
+  return projection;
 }
 
 
@@ -915,5 +926,10 @@ export function readEngineeringCodeWork({
     }
     return value;
   };
+  // The original Code Work carrier is now checked against its public,
+  // packaged Draft 2020-12 output contract before downstream consumption.
+  // This validates representation, NOT independent test/proof or Work effects.
+  if (!validateJsonSchema(readout, CODE_WORK_READOUT_SCHEMA).valid)
+    throw new TypeError('Engineering Code Work readout violates its Draft 2020-12 output contract');
   return freeze(readout);
 }
