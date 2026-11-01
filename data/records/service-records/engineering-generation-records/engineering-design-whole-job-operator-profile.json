@@ -1,0 +1,390 @@
+{
+  "kind": "engineering-design.original-cde-whole-job-operator-profile-proposal/v1",
+  "authoredBy": "Codex /root/koios_release_finish",
+  "status": "unreceived-operator-proposal",
+  "sourceRequest": "https://github.com/red-cup-engineering/specification-engineering-services-section/pull/19",
+  "sourceFact": {
+    "installedOriginalPath": "/gnu/store/1b34vdsdqd7782y3x9imgnhq8snflih6-koios-news-deployment-1/node_modules/@red-cup-engineering/computer-deployment-engine",
+    "actualInstalledPackageVersion": "0.4.16",
+    "installedCLIActualSHA256": "7524c8b5c3c8acee093e9bb63f6a0139b5985677868411bb951e69f65973eec0",
+    "installedStorageActualSHA256": "2a02e68e6f74be384e51cebca4e3e812beabd968a649e0e3e06c13f106cd399a",
+    "sourceComparison": {
+      "localRepository": "red-cup-engineering/computer-deployment-engine",
+      "localCommit": "6029e76638b3c9be18d971b9e30774148e4b9782",
+      "localPackageVersion": "0.5.2",
+      "additionalHeldCommit": "eed32c0009dadb2b9b4ec47785127908e0b8f562",
+      "additionalHeldVersion": "0.5.5",
+      "twoCompleteSelectedModuleBytesIdentical": true,
+      "installedPackageRelabeled": false
+    },
+    "observedControllerSeam": "Original CLI invokes runStorageStage and ordinary spawn(argv[0],argv.slice(1)) with inherited control group. Earlier outer CDE Node was outside the inner API scope; current whole-job claim did not bound the controller."
+  },
+  "originalInputs": {
+    "requirementCommit": "48f6ed16eade45cabc9d9348441fc11e8e2a4622",
+    "requirementNI": "ni:///sha-256;oJBTBcQ8qRwN78ZGaPuAtLN1zTApV_geIhvgRZkrvhQ",
+    "specificationNI": "ni:///sha-256;gujZhOB3i5vPRZ0D8XYH-ZlFi3INchXGRPcgxchQwDg",
+    "architectureNI": "ni:///sha-256;m2Rx2rHUHqPNLo9G9SGU15N5Psc_jJppov4oH0SJsQU",
+    "nativePlanSHA256": "3b64fb59a356a4d4f843169fbe7931703e8f795d32faf37f8ab34efb809e8ad1",
+    "nativePlanUnmodified": true,
+    "originalHostRequestSHA256": "ce1805a4b849a8cbc6d7d5c78a1d9e697088e5652f29750720bbdeb57a9b078f",
+    "priorRefusedDeliverySHA256": "09d1b7c3f1e8ec2f1d2bcf67f70ed97fd4b271da3755e3bf7a50b26553ee5379",
+    "priorNegativeOutcome": "ni:///sha-256;UbzAyLgA0CpKsE-0w20NON3vna_ozp9WZ6NesKuZ4bw",
+    "sourceBoundCompletionSHA256": "acfee1ca1ebd043ddadb47d5d8424d773435822b0fe9e8a7c689497ad4dede2f"
+  },
+  "distinctSuccessor": {
+    "requestSHA256": "71834b3b8c972e9ffeb1ad3a39759b0766f5c068cdf799ffda5c59d030e79c3d",
+    "requestBytes": 344256,
+    "requestDerivation": "Append the exact immutable acfee request-completion as one user-context message to the unchanged original ce180 host request. Full original69c Design contract, original source texts and native schema remain. Native plan3b64 is reused by reference, never recopied or altered.",
+    "inputManifest": {
+      "kind": "engineering-design.source-profile-high-level-completed-input-receiving/v1",
+      "preparedBy": "Codex /root/koios_release_finish",
+      "sourceCommit": "48f6ed16eade45cabc9d9348441fc11e8e2a4622",
+      "native": {
+        "host": "bare-cedar-fog",
+        "node": "v24.19.0",
+        "heapMiB": 48,
+        "semiSpaceMiB": 4,
+        "generatorSource": "db52af5115ce9cc12e027d3ec23c42fe5a2a1aa2",
+        "module": "src/engineering-design.mjs",
+        "moduleSHA256": "af06370da48f9cae5c82c58c8866798da4403667dad3a3811527f7cf8b27d7dd",
+        "operation": "planEngineeringDesign",
+        "dependencyInstallPerformed": false
+      },
+      "sourceCut": {
+        "requirementRevision": "ni:///sha-256;oJBTBcQ8qRwN78ZGaPuAtLN1zTApV_geIhvgRZkrvhQ",
+        "specificationRevision": "ni:///sha-256;gujZhOB3i5vPRZ0D8XYH-ZlFi3INchXGRPcgxchQwDg",
+        "architectureRevision": "ni:///sha-256;m2Rx2rHUHqPNLo9G9SGU15N5Psc_jJppov4oH0SJsQU",
+        "architecturePath": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/records/design-source-profile-generation-records/48f6ed16/architecture-v1-native-receiving/architecture.candidate.json",
+        "architectureSHA256": "91708bf4a7bdb80f58902ddf6b6c8163dffdab663b2900318cee9c2871a69837"
+      },
+      "nativeSourceDigests": [
+        {
+          "kind": "requirement",
+          "digest": "sha256:a74820e71f3570a7c1df43a28ce98906e5283a120e97f1a60cfc29b3f3d63df1"
+        },
+        {
+          "kind": "specification",
+          "digest": "sha256:025e099dc1f918c5e02d1263d74d6b5c1e95265ed74d908ed1ce684cf0036912"
+        },
+        {
+          "kind": "architecture",
+          "digest": "sha256:91708bf4a7bdb80f58902ddf6b6c8163dffdab663b2900318cee9c2871a69837"
+        }
+      ],
+      "independentArchitectureReceiving": {
+        "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/records/design-source-profile-generation-records/48f6ed16/architecture-v1-independent-root/received.json",
+        "sha256": "d7876369f4304a1b2013883128a208e22d6470a8d1e99f143b4ad86cff982076"
+      },
+      "originalNativeDesignContract": {
+        "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/engineering-design-generation-contract-state/db52af5115ce/69c9b0714717907428b2754e9aa527160bfaf18da57fdfa22e634e33eeb9e621/source-contract.json",
+        "sha256": "69c9b0714717907428b2754e9aa527160bfaf18da57fdfa22e634e33eeb9e621"
+      },
+      "nativeTraceRows": 13,
+      "hostRequestAdditionalContextDoesNotMutateNativePlan": true,
+      "codeSourceReceivingGranted": false,
+      "requestSHA256": "71834b3b8c972e9ffeb1ad3a39759b0766f5c068cdf799ffda5c59d030e79c3d",
+      "requestBytes": 344256,
+      "nativePlanSHA256": "3b64fb59a356a4d4f843169fbe7931703e8f795d32faf37f8ab34efb809e8ad1",
+      "nativePlanBytes": 120392,
+      "nativePlanUnmodified": true,
+      "inferencePerformed": false,
+      "highLevelDesignGenerated": false,
+      "originalHostRequest": {
+        "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/design-source-profile-generation-state/48f6ed16/high-level-inputs/ce1805a4b849a8cbc6d7d5c78a1d9e697088e5652f29750720bbdeb57a9b078f/request.json",
+        "sha256": "ce1805a4b849a8cbc6d7d5c78a1d9e697088e5652f29750720bbdeb57a9b078f"
+      },
+      "originalNativePlan": {
+        "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/design-source-profile-generation-state/48f6ed16/high-level-inputs/ce1805a4b849a8cbc6d7d5c78a1d9e697088e5652f29750720bbdeb57a9b078f/native-plan.json",
+        "sha256": "3b64fb59a356a4d4f843169fbe7931703e8f795d32faf37f8ab34efb809e8ad1"
+      },
+      "sourceBoundCompletion": {
+        "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/design-source-profile-generation-state/48f6ed16/high-level-source-contract/acfee1ca1ebd043ddadb47d5d8424d773435822b0fe9e8a7c689497ad4dede2f/request-completion.json",
+        "sha256": "acfee1ca1ebd043ddadb47d5d8424d773435822b0fe9e8a7c689497ad4dede2f"
+      },
+      "priorNegativeOutcome": "ni:///sha-256;UbzAyLgA0CpKsE-0w20NON3vna_ozp9WZ6NesKuZ4bw",
+      "resourceProfile": "first-original-controller-and-model-whole-job-qualification/v1",
+      "noDuplicateNativePlanMaterialization": true
+    },
+    "nativeCdeExecutionPlanSHA256": "cb8118c39f342f2067d5568d48e266588ad4c2e6d788e166ed1ee88bcae8aa82",
+    "nativeCdeExecutionPlanBytes": 19298,
+    "nativeCdeExecutionPlanPath": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/records/design-source-profile-generation-records/48f6ed16/high-level-v2-whole-job/cb8118c39f342f2067d5568d48e266588ad4c2e6d788e166ed1ee88bcae8aa82/plan.json",
+    "stateRoot": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/design-source-profile-generation-state/48f6ed16/high-level-v2-whole-job",
+    "originalIntentDeliveryAndFeedbackUntouched": true,
+    "inputManifestSHA256": "5d7499f802cce730ae0ea0326c10bc44219792828a00b00cfb5a5d24ebcc8785",
+    "inputManifestBytes": 4687,
+    "inputManifestByteEncoding": "UTF-8 JSON.stringify(inputManifest,null,2) plus one LF; no added preparedAt field"
+  },
+  "resourceProfile": {
+    "memoryMaxBytes": 134217728,
+    "memorySwapMaxBytes": 0,
+    "cpuQuotaPercent": 25,
+    "tasksMax": 32,
+    "hostReserveKiB": 131072,
+    "preAnyNodeAdmissionKiB": 262144,
+    "controllerNodeHeapMiB": 48,
+    "modelNodeHeapMiB": 64,
+    "semiSpaceMiB": 4,
+    "nodeAllocationBeforeGate": false,
+    "controllerAndDirectChildSameManagedDomain": true,
+    "innerSystemdScope": false,
+    "nativeCdeStorageChecksUnchanged": true,
+    "noBudgetHeapOrReserveLowering": true,
+    "noPersistentWrapper": true,
+    "noServiceStop": true,
+    "noSourceIdentitySubstitution": true,
+    "enclosingMemoryAdmission": {
+      "rootHostMemAvailableFloorKiB": 262144,
+      "hostFloorCreditedWithCgroupCurrent": false,
+      "nonRootReadings": [
+        "memory.current",
+        "memory.max",
+        "memory.high"
+      ],
+      "ownScope": "Enforce128MiB job cap only; no host reserve charged inside the job scope. Use one same-snapshot own current for self comparison.",
+      "finiteAncestors": "For each finite memory.max and memory.high enclosure, require limit-current >= max(0,134217728-ownScope.memory.current)+134217728. Read own scope current before ancestor current; record each reading and result.",
+      "unlimitedAncestors": "Literal native max is recorded, not inferred from missing files.",
+      "unknownOrMalformed": "Refuse before any Node; numeric values beyond this operator's15-digit integer bound also refuse.",
+      "hierarchyBounds": "Canonical unified cgroup path; full-root cgroup2 mount at /sys/fs/cgroup; at most128 enclosures. Only true root missing both memory.max/current uses the explicit host MemAvailable budget under native kernel contract.",
+      "preflightHelper": "Record actual scope.memory.current for the helper. Keep fixed conservative whole-job plus reserve host floor without claiming identical host and cgroup metrics.",
+      "snapshotNotReservation": true
+    },
+    "tasksMaxSource": {
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/records/design-source-profile-generation-records/48f6ed16/high-level-v1/e1cddcb270e03852b179fce8368f103b0638b16652ddf7d1f6e762a78a999d76/plan.json",
+      "sha256": "e1cddcb270e03852b179fce8368f103b0638b16652ddf7d1f6e762a78a999d76",
+      "stage": "generate-original-design-source-profile-high-level",
+      "actualArgvPair": [
+        "-p",
+        "TasksMax=32"
+      ],
+      "originalExecutedProfileTerminalCode": 0,
+      "newBudgetLowering": false,
+      "checks": "Original complete profile file hash beforeNode; exact original stage argv TasksMax32 membership before model intent."
+    }
+  },
+  "exactOuterArgv": [
+    "/usr/bin/systemd-run",
+    "--user",
+    "--scope",
+    "--quiet",
+    "--unit=design-source-profile-hld-whole-job-v1",
+    "-p",
+    "MemoryMax=128M",
+    "-p",
+    "MemorySwapMax=0",
+    "-p",
+    "CPUQuota=25%",
+    "-p",
+    "TasksMax=32",
+    "/usr/bin/sh",
+    "-c",
+    "set -eu\n[ \"$#\" -eq 3 ] || exit 64\nwhole_job_plan=$1\nwhole_job_plan_sha=$2\nwhole_job_stage=$3\nwhole_job_cgroup=\nwhile IFS=: read -r whole_job_hierarchy whole_job_controllers whole_job_path; do\n if [ \"$whole_job_hierarchy\" = 0 ]; then whole_job_cgroup=$whole_job_path; fi\ndone < /proc/self/cgroup\ncase \"$whole_job_cgroup\" in ''|*[!A-Za-z0-9_./@-]*|*'/../'*|*'/./'*|*'//'*) exit 64;; esac\n[ \"${whole_job_cgroup#/}\" != \"$whole_job_cgroup\" ] && [ \"$whole_job_cgroup\" != / ] || exit 64\nwhole_job_group=/sys/fs/cgroup$whole_job_cgroup\nwhole_job_decimal() {\n case \"$1\" in ''|*[!0-9]*) return 64;; esac\n [ \"${#1}\" -le 15 ] || return 64\n case \"$1\" in 0|[1-9]*) return 0;; *) return 64;; esac\n}\nwhole_job_read() {\n [ -r \"$1\" ] || return 64\n whole_job_value=\n IFS= read -r whole_job_value < \"$1\"\n [ \"${#whole_job_value}\" -le 128 ] || return 64\n}\nwhole_job_read \"$whole_job_group/memory.max\"\n[ \"$whole_job_value\" = 134217728 ] || exit 64\nwhole_job_read \"$whole_job_group/memory.swap.max\"\n[ \"$whole_job_value\" = 0 ] || exit 64\nwhole_job_read \"$whole_job_group/pids.max\"\n[ \"$whole_job_value\" = 32 ] || exit 64\nIFS=' ' read -r whole_job_cpu_quota whole_job_cpu_period < \"$whole_job_group/cpu.max\"\nwhole_job_decimal \"$whole_job_cpu_quota\"\nwhole_job_decimal \"$whole_job_cpu_period\"\n[ \"$whole_job_cpu_quota\" -gt 0 ] && [ \"$whole_job_cpu_period\" -gt 0 ] && [ \"$((whole_job_cpu_quota * 4))\" -eq \"$whole_job_cpu_period\" ] || exit 64\nprintf '%s\\n' '7524c8b5c3c8acee093e9bb63f6a0139b5985677868411bb951e69f65973eec0  /gnu/store/1b34vdsdqd7782y3x9imgnhq8snflih6-koios-news-deployment-1/node_modules/@red-cup-engineering/computer-deployment-engine/scripts/admit-fabrication-stage.mjs' '2a02e68e6f74be384e51cebca4e3e812beabd968a649e0e3e06c13f106cd399a  /gnu/store/1b34vdsdqd7782y3x9imgnhq8snflih6-koios-news-deployment-1/node_modules/@red-cup-engineering/computer-deployment-engine/src/fabrication-storage.mjs' 'e1cddcb270e03852b179fce8368f103b0638b16652ddf7d1f6e762a78a999d76  /home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/records/design-source-profile-generation-records/48f6ed16/high-level-v1/e1cddcb270e03852b179fce8368f103b0638b16652ddf7d1f6e762a78a999d76/plan.json' | /usr/bin/sha256sum --check --status\nwhole_job_mount_root=$(/usr/bin/awk 'NR > 2048 || length($0) > 8192 {bad=1;exit 64} index($0,\" - cgroup2 \") && $5 == \"/sys/fs/cgroup\" {n++;root=$4} END {if(bad||n!=1||root!=\"/\")exit 64;print root}' /proc/self/mountinfo)\n[ \"$whole_job_mount_root\" = / ] || exit 64\nwhole_job_cursor=$whole_job_cgroup\nwhole_job_depth=0\nwhile :; do\n whole_job_depth=$((whole_job_depth + 1))\n [ \"$whole_job_depth\" -le 128 ] || exit 64\n whole_job_at=/sys/fs/cgroup$whole_job_cursor\n if [ \"$whole_job_cursor\" = / ] && [ ! -e \"$whole_job_at/memory.max\" ] && [ ! -e \"$whole_job_at/memory.current\" ]; then\n  printf '{\"phase\":\"memory-enclosure-before-any-node\",\"cgroup\":\"/\",\"budget\":\"explicit-host-MemAvailable-floor\",\"memoryControllerRootInterfaces\":\"non-applicable-per-native-kernel-contract\",\"unlimitedCapacityAssumed\":false}\\n'\n  break\n fi\n whole_job_read \"$whole_job_group/memory.current\"\n whole_job_scope_current=$whole_job_value\n whole_job_decimal \"$whole_job_scope_current\"\n [ \"$whole_job_scope_current\" -le 134217728 ] || exit 64\n whole_job_remaining=$((134217728 - whole_job_scope_current))\n if [ \"$whole_job_cursor\" = \"$whole_job_cgroup\" ]; then\n  whole_job_current=$whole_job_scope_current\n else\n  whole_job_read \"$whole_job_at/memory.current\"\n  whole_job_current=$whole_job_value\n  whole_job_decimal \"$whole_job_current\"\n fi\n whole_job_required=$whole_job_remaining\n if [ \"$whole_job_cursor\" != \"$whole_job_cgroup\" ]; then whole_job_required=$((whole_job_remaining + 134217728)); fi\n for whole_job_limit_name in memory.max memory.high; do\n  whole_job_read \"$whole_job_at/$whole_job_limit_name\"\n  whole_job_limit=$whole_job_value\n  if [ \"$whole_job_limit\" = max ]; then\n   printf '{\"phase\":\"memory-enclosure-before-any-node\",\"cgroup\":\"%s\",\"limitKind\":\"%s\",\"limitBytes\":\"max\",\"currentBytes\":%s,\"ownScopeCurrentBytes\":%s,\"remainingJobBytes\":%s,\"requiredAdditionalBytes\":%s,\"admitted\":true}\\n' \"$whole_job_cursor\" \"$whole_job_limit_name\" \"$whole_job_current\" \"$whole_job_scope_current\" \"$whole_job_remaining\" \"$whole_job_required\"\n  else\n   whole_job_decimal \"$whole_job_limit\"\n   if [ \"$whole_job_limit\" -lt \"$whole_job_current\" ] || [ \"$((whole_job_limit - whole_job_current))\" -lt \"$whole_job_required\" ]; then\n    printf '{\"phase\":\"memory-enclosure-before-any-node\",\"cgroup\":\"%s\",\"limitKind\":\"%s\",\"limitBytes\":%s,\"currentBytes\":%s,\"ownScopeCurrentBytes\":%s,\"remainingJobBytes\":%s,\"requiredAdditionalBytes\":%s,\"admitted\":false}\\n' \"$whole_job_cursor\" \"$whole_job_limit_name\" \"$whole_job_limit\" \"$whole_job_current\" \"$whole_job_scope_current\" \"$whole_job_remaining\" \"$whole_job_required\"\n    exit 1\n   fi\n   printf '{\"phase\":\"memory-enclosure-before-any-node\",\"cgroup\":\"%s\",\"limitKind\":\"%s\",\"limitBytes\":%s,\"currentBytes\":%s,\"ownScopeCurrentBytes\":%s,\"remainingJobBytes\":%s,\"requiredAdditionalBytes\":%s,\"admitted\":true}\\n' \"$whole_job_cursor\" \"$whole_job_limit_name\" \"$whole_job_limit\" \"$whole_job_current\" \"$whole_job_scope_current\" \"$whole_job_remaining\" \"$whole_job_required\"\n  fi\n done\n [ \"$whole_job_cursor\" != / ] || break\n whole_job_cursor=${whole_job_cursor%/*}\n [ -n \"$whole_job_cursor\" ] || whole_job_cursor=/\ndone\nwhole_job_available=$(/usr/bin/awk '$1 == \"MemAvailable:\" {print $2;found=1;exit} END {if(!found)exit 1}' /proc/meminfo)\nwhole_job_decimal \"$whole_job_available\"\nif [ \"$whole_job_available\" -lt 262144 ]; then\n printf 'Original whole-job host admission refused before ANY Node: availableKiB=%s requiredKiB=262144\\n' \"$whole_job_available\" >&2\n exit 1\nfi\nwhole_job_read \"$whole_job_group/memory.current\"\nwhole_job_helper_current=$whole_job_value\nwhole_job_decimal \"$whole_job_helper_current\"\n[ \"$whole_job_helper_current\" -le 134217728 ] || exit 64\nexport NATIVE_WHOLE_JOB_ADMITTED_CGROUP=$whole_job_cgroup\nexport NATIVE_WHOLE_JOB_CONTROLLER_PID=$$\nexport NATIVE_WHOLE_JOB_ADMITTED_KIB=$whole_job_available\nprintf '{\"phase\":\"memory-admitted-before-any-node-allocation\",\"cgroup\":\"%s\",\"controllerPid\":%s,\"availableKiB\":%s,\"requiredKiB\":262144,\"memoryMaxBytes\":134217728,\"memorySwapMaxBytes\":0,\"tasksMax\":32,\"cpuQuotaPercent\":25,\"preflightHelperScopeCurrentBytes\":%s,\"hostFloorIsFixedConservativeWholeJobPlusReserve\":true,\"ancestorReadingsAreSnapshotNotReservation\":true}\\n' \"$whole_job_cgroup\" \"$$\" \"$whole_job_available\" \"$whole_job_helper_current\"\nexec /gnu/store/kba00zrnc1d1cg9bkx0krpvc2sp7wzrh-node-24.18.0/bin/node --max-old-space-size=48 --max-semi-space-size=4 /gnu/store/1b34vdsdqd7782y3x9imgnhq8snflih6-koios-news-deployment-1/node_modules/@red-cup-engineering/computer-deployment-engine/scripts/admit-fabrication-stage.mjs --plan \"$whole_job_plan\" --plan-sha256 \"$whole_job_plan_sha\" --stage \"$whole_job_stage\"\n",
+    "original-cde-whole-job-preflight",
+    "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/records/design-source-profile-generation-records/48f6ed16/high-level-v2-whole-job/cb8118c39f342f2067d5568d48e266588ad4c2e6d788e166ed1ee88bcae8aa82/plan.json",
+    "cb8118c39f342f2067d5568d48e266588ad4c2e6d788e166ed1ee88bcae8aa82",
+    "generate-design-source-profile-hld-whole-job"
+  ],
+  "exactNativeCdeExecutionPlan": {
+    "version": 1,
+    "stages": [
+      {
+        "name": "generate-design-source-profile-hld-whole-job",
+        "lifecycle": {
+          "owner": "red-cup-engineering/specification-engineering-services-section",
+          "invocation": "https://github.com/red-cup-engineering/specification-engineering-services-section/pull/19",
+          "purpose": "First qualification of one128MiB whole-job CDE controller plus serial API child for the distinct completed HLD request71834, native plan3b64 unchanged, original13 source conditions and actual negative feedback preserved. No source implementation or operating admission.",
+          "kind": "unique",
+          "retention": "Retain original request/task/feedback and all current immutable inputs. One first whole-job qualification; unknown/OOM/signal is not success and grants no automatic replay/profile raise. Reuse exact installed CLI/module, original CIE2.12 and shared allowance ledger; no install/source tree copy.",
+          "source": [
+            {
+              "repository": "red-cup-engineering/specification-engineering-services-section",
+              "commit": "48f6ed16eade45cabc9d9348441fc11e8e2a4622",
+              "path": "data/records/service-records/requirements-service-records/engineering-design-accepts-explicit-source-profiles.json"
+            },
+            {
+              "repository": "red-cup-engineering/specification-engineering-services-section",
+              "commit": "db52af5115ce9cc12e027d3ec23c42fe5a2a1aa2",
+              "path": "src/engineering-design.mjs"
+            }
+          ],
+          "custody": [
+            {
+              "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/design-source-profile-generation-state/48f6ed16/high-level-inputs/71834b3b8c972e9ffeb1ad3a39759b0766f5c068cdf799ffda5c59d030e79c3d/request.json",
+              "sha256": "71834b3b8c972e9ffeb1ad3a39759b0766f5c068cdf799ffda5c59d030e79c3d",
+              "role": "creation"
+            },
+            {
+              "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/design-source-profile-generation-state/48f6ed16/high-level-inputs/ce1805a4b849a8cbc6d7d5c78a1d9e697088e5652f29750720bbdeb57a9b078f/native-plan.json",
+              "sha256": "3b64fb59a356a4d4f843169fbe7931703e8f795d32faf37f8ab34efb809e8ad1",
+              "role": "product"
+            },
+            {
+              "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/design-source-profile-generation-state/48f6ed16/high-level-source-contract/acfee1ca1ebd043ddadb47d5d8424d773435822b0fe9e8a7c689497ad4dede2f/request-completion.json",
+              "sha256": "acfee1ca1ebd043ddadb47d5d8424d773435822b0fe9e8a7c689497ad4dede2f",
+              "role": "creation"
+            },
+            {
+              "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/records/design-source-profile-generation-records/48f6ed16/high-level-v1-native-receiving/received.json",
+              "sha256": "ad8da60d42118ddd2dfb63be97f1b82cdfe3d716a546ddacc34d656770e9ea61",
+              "role": "terminal"
+            },
+            {
+              "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/records/design-source-profile-generation-records/48f6ed16/high-level-v1/e1cddcb270e03852b179fce8368f103b0638b16652ddf7d1f6e762a78a999d76/plan.json",
+              "sha256": "e1cddcb270e03852b179fce8368f103b0638b16652ddf7d1f6e762a78a999d76",
+              "role": "product"
+            },
+            {
+              "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/design-source-profile-generation-state/48f6ed16/high-level-inputs/71834b3b8c972e9ffeb1ad3a39759b0766f5c068cdf799ffda5c59d030e79c3d/input-manifest.json",
+              "sha256": "5d7499f802cce730ae0ea0326c10bc44219792828a00b00cfb5a5d24ebcc8785",
+              "role": "creation"
+            }
+          ],
+          "status": "planned"
+        },
+        "destinations": [
+          {
+            "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/design-source-profile-generation-state/48f6ed16/high-level-v2-whole-job",
+            "peakBytes": 16777216,
+            "peakInodes": 2048,
+            "basis": "One distinct344256byte source-bound HLD request, one original native work-lot journal/task/delivery/receiving; exact installed source/dependency products and shared allowance ledger reused. No install or duplicate source tree.",
+            "estimateKind": "upper-bound"
+          }
+        ],
+        "headroom": {
+          "minFreePercent": 3,
+          "minFreeInodes": 100000,
+          "growthBytes": 16777216,
+          "growthInodes": 2048
+        },
+        "command": [
+          "/gnu/store/kba00zrnc1d1cg9bkx0krpvc2sp7wzrh-node-24.18.0/bin/node",
+          "--max-old-space-size=64",
+          "--max-semi-space-size=4",
+          "--input-type=module",
+          "--eval",
+          "\nimport fs from'node:fs';import crypto from'node:crypto';import{pathToFileURL}from'node:url';\nimport{materializeFileProjection as project}from'/gnu/store/y24wikpqj6wmiiababd41p067nghi0ck-registry-runtime/node_modules/.pnpm/@red-cup-engineering+computer-file-engineering-services-section@0.8.0/node_modules/@red-cup-engineering/computer-file-engineering-services-section/src/infomaterial.mjs';\nimport{appendServiceLog}from'/gnu/store/9b6b8kvnm6c7mqbizca3mwkzblqyrwa6-native-publisher-runtime/node_modules/.pnpm/@red-cup-engineering+computer-systems-logging-engine@0.1.0/node_modules/@red-cup-engineering/computer-systems-logging-engine/src/append-service-log.mjs';\nconst root='/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section',D=root+'/data',base=D+'/state/design-source-profile-generation-state/48f6ed16/high-level-v2-whole-job',input=D+'/state/design-source-profile-generation-state/48f6ed16/high-level-inputs/71834b3b8c972e9ffeb1ad3a39759b0766f5c068cdf799ffda5c59d030e79c3d',now=()=>new Date().toISOString(),sha=b=>crypto.createHash('sha256').update(b).digest('hex');\n\nconst currentCgroup=pid=>fs.readFileSync('/proc/'+pid+'/cgroup','utf8').split('\\n').find(line=>line.startsWith('0::'))?.slice(3);\nconst wholeJobCgroup=process.env.NATIVE_WHOLE_JOB_ADMITTED_CGROUP,controllerPid=Number(process.env.NATIVE_WHOLE_JOB_CONTROLLER_PID);\nif(typeof wholeJobCgroup!=='string'||!wholeJobCgroup.startsWith('/')||currentCgroup('self')!==wholeJobCgroup||!Number.isSafeInteger(controllerPid)||controllerPid!==process.ppid||currentCgroup(controllerPid)!==wholeJobCgroup)throw Error('Original CDE controller and model child are not in the one admitted domain');\nconst group='/sys/fs/cgroup'+wholeJobCgroup;\nif(fs.readFileSync(group+'/memory.max','utf8').trim()!=='134217728'||fs.readFileSync(group+'/memory.swap.max','utf8').trim()!=='0'||fs.readFileSync(group+'/pids.max','utf8').trim()!=='32'||(!Number.isSafeInteger(Number(process.env.NATIVE_WHOLE_JOB_ADMITTED_KIB))||Number(process.env.NATIVE_WHOLE_JOB_ADMITTED_KIB)<262144))throw Error('Original whole-job resource admission changed');\nconst [cpuQuota,cpuPeriod]=fs.readFileSync(group+'/cpu.max','utf8').trim().split(/\\s+/);\nif(!/^\\d+$/.test(cpuQuota)||!/^\\d+$/.test(cpuPeriod)||BigInt(cpuQuota)<=0n||BigInt(cpuPeriod)<=0n||BigInt(cpuQuota)*4n!==BigInt(cpuPeriod))throw Error('Original whole-job CPU bound changed');\nconst originalTaskProfileBytes=fs.readFileSync(\"/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/records/design-source-profile-generation-records/48f6ed16/high-level-v1/e1cddcb270e03852b179fce8368f103b0638b16652ddf7d1f6e762a78a999d76/plan.json\");if(sha(originalTaskProfileBytes)!=='e1cddcb270e03852b179fce8368f103b0638b16652ddf7d1f6e762a78a999d76')throw Error('Original TasksMax32 profile input changed');const originalTaskArgv=JSON.parse(originalTaskProfileBytes).stages.find(s=>s.name==='generate-original-design-source-profile-high-level')?.command;if(!Array.isArray(originalTaskArgv)||!originalTaskArgv.some((v,i)=>v==='-p'&&originalTaskArgv[i+1]==='TasksMax=32'))throw Error('TasksMax32 lacks its original source profile input');\nconst priorFeedback=JSON.parse(fs.readFileSync(\"/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/design-source-profile-generation-state/48f6ed16/high-level-v1/feedback/receiving/received.json\"));\nif(priorFeedback.isError||priorFeedback.result?.outcome!=='receiver-outcome-recorded'||priorFeedback.result?.observation?.id!=='ni:///sha-256;UbzAyLgA0CpKsE-0w20NON3vna_ozp9WZ6NesKuZ4bw'||priorFeedback.result?.observation?.outcome!=='refused')throw Error('Original negative receiving is not preserved');\nconst originalCompletionBytes=fs.readFileSync(\"/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/services/cold-red-gate-services-section/data/state/design-source-profile-generation-state/48f6ed16/high-level-source-contract/acfee1ca1ebd043ddadb47d5d8424d773435822b0fe9e8a7c689497ad4dede2f/request-completion.json\");\nif(sha(originalCompletionBytes)!=='acfee1ca1ebd043ddadb47d5d8424d773435822b0fe9e8a7c689497ad4dede2f')throw Error('Original HLD request completion changed');\nconsole.log(JSON.stringify({phase:'whole-job-domain-received-before-model-intent',cgroup:wholeJobCgroup,controllerPid,modelPid:process.pid,parentAndChildSameDomain:true,memoryMaxBytes:134217728,memorySwapMaxBytes:0,tasksMax:32,cpuQuotaPercent:25,admittedBeforeAnyNodeAvailableKiB:Number(process.env.NATIVE_WHOLE_JOB_ADMITTED_KIB)}));\n\nif(fs.existsSync(base+'/intent'))throw Error('Original high-level Design attempt has intent; receive original effect, never replay');\nconst requestBytes=fs.readFileSync(input+'/request.json');if(sha(requestBytes)!=='71834b3b8c972e9ffeb1ad3a39759b0766f5c068cdf799ffda5c59d030e79c3d')throw Error('Original source request changed');const manifestBytes=fs.readFileSync(input+'/input-manifest.json');if(sha(manifestBytes)!==\"5d7499f802cce730ae0ea0326c10bc44219792828a00b00cfb5a5d24ebcc8785\")throw Error('Reviewed exact input manifest changed');const request=JSON.parse(requestBytes),manifest=JSON.parse(manifestBytes);\nconst originalNativePlanBytes=fs.readFileSync(manifest.originalNativePlan.path);if(sha(originalNativePlanBytes)!=='3b64fb59a356a4d4f843169fbe7931703e8f795d32faf37f8ab34efb809e8ad1')throw Error('Original native HLD plan changed');const originalNativePlan=JSON.parse(originalNativePlanBytes);if(originalNativePlan.stage!=='high-level'||JSON.stringify(originalNativePlan.request.schema)!==JSON.stringify(request.schema))throw Error('Original native HLD schema changed');const independentBytes=fs.readFileSync(manifest.independentArchitectureReceiving.path);if(sha(independentBytes)!==manifest.independentArchitectureReceiving.sha256)throw Error('Original independent Architecture receiving changed');\nconst contractBytes=fs.readFileSync(manifest.originalNativeDesignContract.path);if(sha(contractBytes)!==manifest.originalNativeDesignContract.sha256)throw Error('Original native high-level Design source contract changed');\nconst cie=fs.realpathSync(D+'/state/content-mill-source-qualification-state/04616823/source-final/node_modules/@red-cup-engineering/computer-inference-engine');\nconst environment={...process.env,INFERENCE_WORK_LOT_STATE_ROOT:base+'/market-state',INFERENCE_WORK_LOT_DATA_ROOT:base+'/market-state/data',EXPECTED_RESOLUTION_PRICING_ROOT:D+'/state/pnpm-native-generation-state/5ac433219799/architecture-gemini-v1/market-state/pricing',INFERENCE_ALLOWANCE_LEDGER_FILE:'/home/emsenn/.local/state/561-group/computer-inference-engine/allowance-ledger.sqlite'};\nconst credentialInput=fs.readFileSync('/run/user/1001/561-group-credentials/koios-news.env','utf8');for(const name of['API_KEY_GROQ','API_KEY_INFERENCE_NVIDIA']){const line=credentialInput.split('\\n').find(x=>x.startsWith(name+'='));if(line){let value=line.slice(name.length+1);if(value.startsWith('\"')&&value.endsWith('\"'))value=JSON.parse(value);environment[name]=value;}}\nif(!environment.API_KEY_GROQ&&!environment.API_KEY_INFERENCE_NVIDIA)throw Error('Original held credential unavailable');\nconst{inferenceDispatchPort}=await import(pathToFileURL(cie+'/src/dispatch/inference-dispatch-port.mjs'));\nconst{loadDirectEndpointProviderDescriptors}=await import(pathToFileURL(cie+'/src/dispatch/direct-endpoint-provider.mjs'));\nconst{remoteInferenceMarket,DISPATCH_TOOL,OUTCOME_TOOL}=await import(pathToFileURL(cie+'/src/dispatch/remote-inference-market.mjs'));\nconst allowedProviders=['urn:ame:groq-inference-team','urn:ame:nvidia-inference-team'],descriptors=loadDirectEndpointProviderDescriptors(environment),excluded=descriptors.filter(x=>!allowedProviders.includes(x.provider)).map(x=>x.provider),port=inferenceDispatchPort({environment,dataRoot:environment.INFERENCE_WORK_LOT_DATA_ROOT});\nconst intent={kind:'engineering-design.source-profile-high-level-intent/v1',at:now(),request:input+'/request.json',requestSHA256:sha(requestBytes),requestBytes:requestBytes.length,sourceCut:manifest.sourceCut,sourceCommit:'48f6ed16eade45cabc9d9348441fc11e8e2a4622',implementationSource:'db52af5115ce9cc12e027d3ec23c42fe5a2a1aa2',customer:port.customer,zeroCashOnly:true,requiredQualityTiers:['frontier-hosted'],eligibleHeldProviders:allowedProviders,modelSelectedByOriginalMarket:true,fullOriginalSourceContract:manifest.originalNativeDesignContract,inferenceReceived:false,highLevelDesignAccepted:false};\nawait project([{path:'intent.json',mode:0o100644n,bytes:Buffer.from(JSON.stringify(intent,null,2)+'\\n')}],{path:base+'/intent'});\nconst market=remoteInferenceMarket({call:async({tool,input})=>{const name=tool===DISPATCH_TOOL?'dispatch_inference':tool===OUTCOME_TOOL?'record_inference_outcome':undefined;if(!name)throw Error('Unsupported original inference operation');const r=await port.call(name,tool===DISPATCH_TOOL?{...input,zeroCashOnly:true,excludeProviders:[...new Set([...(input.excludeProviders??[]),...excluded])]}:input);const value=r.structuredContent??JSON.parse(r.content.find(x=>x.type==='text').text);if(r.isError)throw Error(value.reason??'Original native inference refusal',{cause:value});return value;}});\n\nfunction boundedLotCoordinates(lot){\n const keys=['workLot','provider','taskClass','selectedOffer','receipt','receiver','model','configurationIdentity'],out={};\n for(const key of keys){const value=lot?.[key];if(value===undefined&&key==='configurationIdentity')continue;if(typeof value!=='string'||!value.trim()||Buffer.byteLength(value)>2048)throw Error('Original lot coordinate is missing or exceeds operator receiving bound: '+key);out[key]=value;}return out;\n}\nfunction boundedDeliveryMetadata(delivery){\n const resources=delivery?.measuredResources?.resources,allowedResources=new Set(['requests','input-tokens','output-tokens','total-tokens','cached-input-tokens','cache-write-input-tokens','cache-creation-input-tokens','cache-read-input-tokens','reasoning-output-tokens','reported-cost','duration']),allowedUnits=new Set(['request','token','millisecond','provider-cost-unit']),selected=[];\n if(Array.isArray(resources)&&resources.length<=64)for(const value of resources){const numerator=value?.amount?.numerator,denominator=value?.amount?.denominator;if(!allowedResources.has(value?.resource)||!allowedUnits.has(value?.unit)||typeof numerator!=='string'||typeof denominator!=='string'||numerator.length>128||denominator.length>128||!/^\\d+$/.test(numerator)||!/^\\d+$/.test(denominator)||BigInt(denominator)<=0n)continue;const row={resource:value.resource,unit:value.unit,amount:{numerator,denominator}};if(typeof value.asset==='string'&&Buffer.byteLength(value.asset)<=2048)row.asset=value.asset;selected.push(row);}\n return {configurationModel:typeof delivery?.configuration?.model==='string'&&Buffer.byteLength(delivery.configuration.model)<=2048?delivery.configuration.model:null,nativeOutcome:typeof delivery?.outcome==='string'?delivery.outcome.slice(0,128):null,durationMs:Number.isSafeInteger(delivery?.durationMs)&&delivery.durationMs>=0?delivery.durationMs:null,resources:selected,resourceProjectionComplete:Array.isArray(resources)&&resources.length===selected.length,unselectedResourceCount:Array.isArray(resources)&&resources.length<=64?resources.length-selected.length:null,originalCieJournalOwnsFullDelivery:true,providerEvidenceOrRequestTreeCopied:false};\n}\n\nlet outcome,files=[],deliveredTextObserved=false;try{const r=await market.chat(request);deliveredTextObserved=true;files.push({path:'review-delivery.txt',mode:0o100644n,bytes:Buffer.from(r.text)});outcome={kind:'engineering-design.source-profile-high-level-delivery/v1',at:now(),state:'provider-delivered-unreceived',requestSHA256:intent.requestSHA256,sourceCut:intent.sourceCut,lot:boundedLotCoordinates(r.lot),deliveryMetadata:boundedDeliveryMetadata(r.lot.delivery),highLevelDesignGenerated:false,independentSemanticReceiving:false,codeWritten:false};}catch(error){outcome={kind:'engineering-design.source-profile-high-level-delivery/v1',at:now(),state:deliveredTextObserved?'provider-delivered-metadata-refused':'refused',requestSHA256:intent.requestSHA256,sourceCut:intent.sourceCut,error:{name:String(error.name).slice(0,128),code:typeof error.code==='string'?error.code.slice(0,128):null,message:String(error.message).slice(0,4096)},native:{outcome:typeof error.cause?.outcome==='string'?error.cause.outcome.slice(0,128):null,reason:typeof error.cause?.reason==='string'?error.cause.reason.slice(0,4096):null},highLevelDesignGenerated:false,codeWritten:false};}\nfiles.push({path:'received.json',mode:0o100644n,bytes:Buffer.from(JSON.stringify(outcome,null,2)+'\\n')});await project(files,{path:base+'/receiving'});\nconst log=await appendServiceLog({root,hirer:'engineering-release-engineer',service:'engineering-design-source-profiles',at:outcome.at,entry:{subject:'Codex /root/koios_release_finish',entity:input+'/request.json',attribute:'high-level-provider-delivery',value:{state:outcome.state,requestSHA256:intent.requestSHA256,zeroCashOnly:true,sourceCut:intent.sourceCut,receiving:base+'/receiving/received.json',highLevelDesignAccepted:false},time:outcome.at}});\nconsole.log(JSON.stringify({state:outcome.state,error:outcome.error??null,native:outcome.native??null,receiving:base+'/receiving/received.json',log:log.path}));\n"
+        ]
+      }
+    ]
+  },
+  "preparationReceiving": {
+    "host": "bare-cedar-fog",
+    "node": "v24.18.0",
+    "heapMiB": 48,
+    "semiSpaceMiB": 4,
+    "originalNativePlanReproducedExactly": true,
+    "originalNativePlanSource": "db52af5115ce9cc12e027d3ec23c42fe5a2a1aa2",
+    "actualInstalledSourceHashesReceived": true,
+    "losslessSourceFrameSHA256": "ea04e464d74f1e949aebecf88cdd7d4d86568d087c418c0c57e5a2fabb9c259f",
+    "nativeValidateStoragePlanPassed": true,
+    "nativeApiSyntaxCheckPassed": true,
+    "operatorShellSyntaxCheckPassed": true,
+    "crgNodeAdmissionOrModelExecuted": false,
+    "duplicateFilesystemInputTreeCreated": false,
+    "nativeCdeExecutionPlanSHA256": "cb8118c39f342f2067d5568d48e266588ad4c2e6d788e166ed1ee88bcae8aa82",
+    "nativeCommandSHA256": "d542a22e0ebaedf8c7b5ff1eda413a7f3bab11563be35f76814533f9000167b0",
+    "compactReceiptAndAncestorRevisionChecksPassed": true,
+    "exactManifestPinNativeSyntaxCheckPassed": true
+  },
+  "qualificationReceiving": {
+    "required": [
+      "Exact outer unit/cgroup memory.max134217728, memory.swap.max0, pids.max32 and CPU25% before any Node allocation",
+      "Fresh MemAvailable >=262144KiB before CDE controller allocation; refusal must launch no Node or model",
+      "Original CDE controller PID equals direct child parent PID and both actual /proc cgroup addresses equal the admitted scope",
+      "Actual original CDE before/after storage, inode, backing/destination and input/custody receiving",
+      "Actual same held CIE2.12/zeroCash/frontier request and original shared allowance ledger",
+      "Terminal of whole managed domain, command code/signal/OOM state and exact delivery receiving",
+      "Original native HLD schema/source-cut receiving and distinct independent semantic review",
+      "Each applicable enclosing memory.max/high/current reading and finite remaining-job plus reserve check before Node; malformed or missing non-root interfaces refuse",
+      "Compact original lot refs/finite usage, separate native configuration.model, unchanged raw text once and original CIE ownership of complete delivery"
+    ],
+    "notSuccess": [
+      "OOM",
+      "signal",
+      "unknown parent/child/domain/task effect",
+      "memory/storage/custody refusal",
+      "transport alone"
+    ],
+    "automaticRetry": false,
+    "automaticProfileRaise": false,
+    "sourceOrRuntimeAdmissionGranted": false,
+    "genericCde174ImplementationClaimed": false,
+    "twentyNewArticlesPerDayReceived": false
+  },
+  "revision": 3,
+  "previousProposal": {
+    "sourceCommit": "ab696c1b66bc15a00dcc8fc9be76bb96208cfb25",
+    "executionPlanSHA256": "81c0ad12b4b374db0747b3c399cd927683cc24b1d2af7517fb51e3d84f103182",
+    "receiving": "Root accepted same-domain structure for qualification but required compact receipt storage, enclosing limit/current admission and Tasks32 source provenance; no execution was cleared or attempted."
+  },
+  "receiptStorage": {
+    "coordinates": [
+      "workLot",
+      "provider",
+      "taskClass",
+      "selectedOffer",
+      "receipt",
+      "receiver",
+      "model",
+      "configurationIdentity"
+    ],
+    "coordinateUtf8ByteBound": 2048,
+    "configurationModel": "Retain finite native delivery.configuration.model separately from top-level lot.model and configurationIdentity; infer no alias mapping.",
+    "rawText": "One review-delivery.txt; no text/candidate inside metadata record.",
+    "usage": "Only finite observed duration/outcome and selected exact metrological resource dimensions; at most64 incoming rows, known resource/unit membership, at most128 decimal digits per exact amount; absence remains unknown.",
+    "fullDeliveryOwner": "Original CIE task/journal; receiving does not copy lot.delivery, candidate, providerEvidence, request or exchange trees.",
+    "errorMetadata": "Bounded primitive name/code/message/native outcome/reason only. A delivered text whose metadata refuses is retained once and marked provider-delivered-metadata-refused, never reported as no provider effect.",
+    "noRecursiveLotPersistence": true
+  },
+  "primarySources": [
+    {
+      "url": "https://docs.kernel.org/admin-guide/cgroup-v2.html",
+      "supports": "Child processes inherit parent cgroup; memory.current covers a group and descendants; memory.max/current are non-root interfaces; nested limits constrain the hierarchy."
+    },
+    {
+      "url": "https://docs.kernel.org/filesystems/proc.html#meminfo",
+      "supports": "MemAvailable estimates reclaimable capacity for new applications and is not identical to cgroup charge."
+    }
+  ],
+  "arithmeticReviewWitnesses": [
+    {
+      "kind": "same-metric-only-example",
+      "ownScopeCurrentMiB": 8,
+      "remainingJobMiB": 120,
+      "ancestorAdditionalHeadroomMiB": 252,
+      "requiredAdditionalWithReserveMiB": 248,
+      "admitted": true,
+      "actualCapacityMeasurement": false
+    },
+    {
+      "kind": "same-metric-only-example",
+      "ownScopeCurrentMiB": 8,
+      "remainingJobMiB": 120,
+      "ancestorAdditionalHeadroomMiB": 240,
+      "requiredAdditionalWithReserveMiB": 248,
+      "admitted": false,
+      "actualCapacityMeasurement": false
+    },
+    {
+      "kind": "host-floor-independent",
+      "hostAvailableMiB": 240,
+      "requiredHostAvailableMiB": 256,
+      "cgroupReadingsCannotCreditHostMetric": true,
+      "admitted": false,
+      "actualCapacityMeasurement": false
+    }
+  ],
+  "previousRevisedProposal": {
+    "sourceCommit": "ed246369e0f94e27f7058fe6fd585eb6cf6a3627",
+    "executionPlanSHA256": "eb731e28fd0e167bd2f96e093a10876ec8c058d45fd78066643676d33714ee02",
+    "independentReceiving": "Publisher independently accepted resource mechanism but required exact input-manifest byte pin before consuming source paths/hashes. No execution occurred."
+  },
+  "sourceInputReceiving": {
+    "requestSHA256": "71834b3b8c972e9ffeb1ad3a39759b0766f5c068cdf799ffda5c59d030e79c3d",
+    "exactInputManifestSHA256": "5d7499f802cce730ae0ea0326c10bc44219792828a00b00cfb5a5d24ebcc8785",
+    "exactInputManifestBytes": 4687,
+    "manifestCheckedBeforeParsingOrConsumingFields": true,
+    "originalNativePlanSHA256": "3b64fb59a356a4d4f843169fbe7931703e8f795d32faf37f8ab34efb809e8ad1",
+    "independentArchitectureAndNativeContractPathsAndDigestsBoundByPinnedManifest": true,
+    "cdeLifecycleCustodyIsDescriptiveNotPayloadVerification": true
+  }
+}

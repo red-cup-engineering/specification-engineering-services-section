@@ -1,0 +1,217 @@
+{
+  "kind": "IndependentExistingDesignSourceCorrectionReceiving",
+  "version": 1,
+  "reviewedBy": "Codex /root/koios_release_finish",
+  "allocation": "Parent-assigned bounded existing-source receiving; no incumbency, source authority or runtime admission inferred",
+  "source": {
+    "repository": "red-cup-engineering/specification-engineering-services-section",
+    "pr": 19,
+    "head": "e548d7e32976c0868ed676a5289edac34c9c14bf",
+    "predecessor": "89157bf64e7c6a81ff50abb58a17056047c040bf",
+    "comparison": {
+      "status": "ahead",
+      "aheadBy": 4,
+      "behindBy": 0,
+      "changedFiles": 4
+    },
+    "commits": [
+      "0ba1a655bc6ebb0e3d42d6a6046c7db7968728f3",
+      "f66e2c0c7f686b4a239d1a16ab9ec6b1aacffd13",
+      "b0ba04c274b0265304713bea209fa3facfab238e",
+      "e548d7e32976c0868ed676a5289edac34c9c14bf"
+    ],
+    "completeChangedSourceFamily": [
+      {
+        "path": "src/engineering-design.mjs",
+        "bytes": 34188,
+        "sha256": "f4598a73ee0c65878ac90b60c761f7d882e6d51ef9c830dae15f061c602a77d1",
+        "blob": "9f09b2a3364dee820a425ba1aeec6ffe08fe50be"
+      },
+      {
+        "path": "README.md",
+        "bytes": 26984,
+        "sha256": "2a7c40ef012113d3ff185b30f96352d33cfe3437aba4f740d5fbbbc87b529c7a",
+        "blob": "f68cec0b01dfe4eaca33b023e2a24862ffc4a431"
+      },
+      {
+        "path": "test/engineering-design-packed-consumer.mjs",
+        "bytes": 15458,
+        "sha256": "9d7fbb104f050b16764e996af5b2e0ff7cda5b70dfb2a4838bb92c408da1e6b4",
+        "blob": "11900b7993cdbb3f4fdf439464a4bf902268c434"
+      },
+      {
+        "path": "test/engineering-design-source-cut.test.mjs",
+        "bytes": 28628,
+        "sha256": "88a34a69ad840532f16c014850bc97f1df5fad8677a45901c61dbf1bff751a67",
+        "blob": "d243a6091ca36a9a521c2690c8e43e6f8541e847"
+      }
+    ]
+  },
+  "actualSourceFindings": {
+    "originalGenerationPrefixBeforeCodeWorkByteIdentical": true,
+    "originalDb52ModuleSHA256": "af06370da48f9cae5c82c58c8866798da4403667dad3a3811527f7cf8b27d7dd",
+    "newModuleSHA256": "f4598a73ee0c65878ac90b60c761f7d882e6d51ef9c830dae15f061c602a77d1",
+    "changedBehavior": [
+      "Explicit original owner required for every supplied Code source view; single-owner fallback removed.",
+      "Data semanticIdOf('metroplat.artifact') now addresses the complete parsed Design candidate as designCarrierId, replacing property-order-sensitive designCarrierSha256.",
+      "Original source and independently installed packed consumer fixtures plus README updated for those bounded semantics."
+    ],
+    "remainingHardcodes": [
+      {
+        "path": "src/engineering-design.mjs",
+        "lines": [
+          53,
+          323,
+          325
+        ],
+        "finding": "Implicit src/*.mjs and whole ASCII export spelling; no source-profile selector/finite validator."
+      }
+    ],
+    "newDeclaredSchemasOrWorkOrdersChanged": false
+  },
+  "originalGenerationProvenance": {
+    "currentStageRecord": "data/records/service-records/engineering-generation-records/engineering-design-explicit-source-profiles-stages.json",
+    "recordStillNames": {
+      "producerCommit": "db52af5115ce9cc12e027d3ec23c42fe5a2a1aa2",
+      "designModuleSHA256": "af06370da48f9cae5c82c58c8866798da4403667dad3a3811527f7cf8b27d7dd",
+      "highLevelCandidateSHA256": "bbde1ea9d7484ac99cfbd0061c1b69123bda2381087b93715d04651a4c913c69",
+      "normativeImplementationWritten": false
+    },
+    "newLowLevelRecordFound": false,
+    "newFabricationRecordFound": false,
+    "scope": "All15 changed PR paths inspected; exact four-commit comparison adds only four source/test/doc changes. No global absence claim about unexamined external private records.",
+    "upstream": {
+      "engineeringIssue137": "https://github.com/red-cup-engineering/engineering-services-section/issues/137",
+      "requirement": {
+        "repository": "red-cup-engineering/engineering-services-section",
+        "commit": "d11f80170c947e18e695bdaa0dbfb713edac1252",
+        "path": "data/records/service-records/requirements-management-service-records/requirements-generate-specifications-designs-and-normative-code.json",
+        "blob": "af65a330beb411f5d43c4b557960a954825b1612",
+        "controllingCells": [
+          "agents-write-requirements-not-code",
+          "lld-generates-normative-code",
+          "existing-code-is-regenerated"
+        ]
+      }
+    },
+    "disposition": "Original-maker provenance remains unreceived. Commit author/login and existing bootstrap comment cannot supply a new generation receipt; no claim is made about who physically authored the four edits."
+  },
+  "actualIndependentCI": {
+    "runId": 40814922701,
+    "sourceJobId": 123253643138,
+    "attestationJobId": 123253872486,
+    "runConclusion": "success",
+    "head": "e548d7e32976c0868ed676a5289edac34c9c14bf",
+    "actualCheckout": "41b3b60ddc9faea3affc8370fda81f1d49167072",
+    "checkoutDescription": "GitHub pull/19/merge: merge e548 into db52, as recorded in original job logs",
+    "nodeTests": {
+      "passed": 167,
+      "failed": 0
+    },
+    "additionalSourceTests": {
+      "passed": 35,
+      "failed": 0
+    },
+    "historicalTests": {
+      "passed": 30,
+      "failed": 0
+    },
+    "packedConsumerPassed": true,
+    "sourceArtifact": {
+      "id": 12871832322,
+      "name": "specification-design-qualified-source-41b3b60ddc9faea3affc8370fda81f1d49167072",
+      "zipBytes": 57233,
+      "zipDigest": "sha256:d89857d17070fd1fdf8631bc7eb20613b5ff44abab705786c5b95dbbb02049b1",
+      "attestedPackage": "red-cup-engineering-specification-engineering-services-section-0.1.3-dev.1.tgz",
+      "attestedPackageSHA256": "e46bf0b6f38890f95700c707a54dd84b3367c591d878417f74a6f39aeca20fde"
+    },
+    "sigstoreSlsaVerificationReportedSuccessful": true,
+    "logBodiesRetainedByOriginalGitHubJobs": true,
+    "scope": "Source/archive tests and workflow attestation are actual; they are not original LLD/Fabrication provenance, full13-condition acceptance, native Scheme receiving, publication or operating qualification."
+  },
+  "conditionReceiving": [
+    {
+      "cell": "engineering-design-accepts-explicit-source-profiles:original-owner",
+      "status": "preserved-in-source",
+      "finding": "The four edits remain in the one existing original provider; general explicit-profile capability remains incomplete."
+    },
+    {
+      "cell": "engineering-design-accepts-explicit-source-profiles:explicit-profile",
+      "status": "unimplemented",
+      "finding": "planEngineeringDesign/receiveEngineeringDesign/readEngineeringCodeWork still have no mandatory checked source profile; source selector remains implicit."
+    },
+    {
+      "cell": "engineering-design-accepts-explicit-source-profiles:data-policy",
+      "status": "unimplemented",
+      "finding": "No finite literal source-profile data shape, membership, bounds or policy validator is added."
+    },
+    {
+      "cell": "engineering-design-accepts-explicit-source-profiles:general-names",
+      "status": "unimplemented",
+      "finding": "SYSTEM line53 and validator lines323/325 still require src/*.mjs and ASCII export spelling; no Scheme/scripts/test family receiving."
+    },
+    {
+      "cell": "engineering-design-accepts-explicit-source-profiles:profile-source-binding",
+      "status": "unimplemented",
+      "finding": "No complete profile is bound through plan, candidate, HLD/LLD reconstruction and Code Work."
+    },
+    {
+      "cell": "engineering-design-accepts-explicit-source-profiles:preserve-original-cut",
+      "status": "bounded-useful-correction-only",
+      "finding": "designCarrierId now delegates identity of the complete parsed candidate to original Data semanticIdOf; original stage-prefix bytes remain exact. This does not establish full profile/source-chain qualification."
+    },
+    {
+      "cell": "engineering-design-accepts-explicit-source-profiles:preserve-traces",
+      "status": "source-preserved-not-newly-qualified",
+      "finding": "Complete generation prefix before readEngineeringCodeWork is byte-identical to original db52; actual Node source-cut regressions pass. No newly generated profile-native LLD or independent whole-condition receiving exists."
+    },
+    {
+      "cell": "engineering-design-accepts-explicit-source-profiles:source-owner-custody",
+      "status": "bounded-source-correction-present",
+      "finding": "Every supplied Code source view now requires explicit original owner; ownerless fallback removed. Existing owner/path pair logic retained; source and packed-consumer tests migrated. Native original-generation provenance for this correction remains unreceived."
+    },
+    {
+      "cell": "engineering-design-accepts-explicit-source-profiles:candidate-limits",
+      "status": "preserved-in-source-and-node-assays",
+      "finding": "Original source keeps candidate admitted:false/proof:unreceived and Code Work executableWork:false; these are barriers, not independent stage or operation acceptance."
+    },
+    {
+      "cell": "engineering-design-accepts-explicit-source-profiles:original-fabrication",
+      "status": "unreceived",
+      "finding": "No new native LLD/Fabrication source-transformation request/task/delivery/custody/assay receipt accompanies the four commits. CI/SLSA authenticates a source archive and cannot supply missing original-maker provenance."
+    },
+    {
+      "cell": "engineering-design-accepts-explicit-source-profiles:whole-family-cutover",
+      "status": "incomplete",
+      "finding": "Only README, source reader and two tests changed; no explicit-profile API/schema/work-order/examples/full-family cutover is delivered."
+    },
+    {
+      "cell": "engineering-design-accepts-explicit-source-profiles:native-receiving",
+      "status": "incomplete",
+      "finding": "Actual Node suite, historical/source regressions and packed consumer pass. No mandatory-profile adversarial family or qualified native Scheme parser/consumer receiving is evidenced."
+    },
+    {
+      "cell": "engineering-design-accepts-explicit-source-profiles:source-and-operation-evidence",
+      "status": "incomplete",
+      "finding": "Exact commit/archive/CI evidence exists for bounded source; it does not establish source-profile native generation, dependent CDE/Koios operation or twenty new articles per day."
+    }
+  ],
+  "disposition": "preserve-useful-bounded-correction-as-unreceived-source; full13-cell completion and original-chain provenance not accepted",
+  "originalInputs": {
+    "producerCommit": "db52af5115ce9cc12e027d3ec23c42fe5a2a1aa2",
+    "nativeLowLevelPlanSHA256": "b81a953ab983a609b97dc4940826f58401263d1211dfc6c78ff1957139205a18",
+    "hostLowLevelRequestSHA256": "8c5cf8dec0a66f40b8c4703c1859e8e684621d23dc9b6ff31fb2869cd2589a1a",
+    "untouched": true
+  },
+  "recommendedContinuation": "Keep the exact accepted stage cuts and prepared native LLD immutable. Original detailed LLD/generic Fabrication remains necessary. Before actual source fabrication, bind this current complete source family and useful bounded corrections as honestly unreceived target context, with original source authority/history and independent whole-family JS/Scheme receiving. Do not hand-merge edits, discard useful work unseen, add compatibility fields or qualify Code from CI.",
+  "effects": {
+    "crgReadOrWrite": false,
+    "model": false,
+    "feedback": false,
+    "sourceMutation": false,
+    "merge": false,
+    "packageEdition": false,
+    "activation": false,
+    "twentyNewArticlesPerDayClaim": false
+  }
+}
