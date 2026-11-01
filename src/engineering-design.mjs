@@ -82,7 +82,7 @@ function hasExactProperties(v, keys) {
   return isJsonRecord(v) && Object.keys(v).length === keys.length && keys.every(k => Object.hasOwn(v, k));
 }
 function isStringArray(v, minimum = 0, unique = false) {
-  return Array.isArray(v) && v.length >= minimum && v.every(nonblank) && (!unique || new Set(v).size === v.length);
+  return Array.isArray(v) && v.length >= minimum && v.every(isNonBlankString) && (!unique || new Set(v).size === v.length);
 }
 function haveSameMembers(a, b) {
   const x = new Set(a), y = new Set(b);
