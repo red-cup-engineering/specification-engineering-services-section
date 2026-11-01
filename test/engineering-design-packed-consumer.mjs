@@ -3,6 +3,7 @@
 // export, never ../src, and preserves source/Proof/admission boundaries.
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import { artifactId } from '@red-cup-engineering/semiotic-eavt-services-section/identity';
 import { spawnSync } from 'node:child_process';
 import {
@@ -13,6 +14,7 @@ import {
   readEngineeringCodeWork,
 } from '@red-cup-engineering/specification-engineering-services-section/engineering-design';
 import { indexJavaScriptModuleBindings } from '@red-cup-engineering/specification-engineering-services-section/javascript-module-bindings';
+import { validateJsonSchema } from '@red-cup-engineering/json-schema-services-section/validation';
 import {
   readRequirementArchitectureTrace, readRequirementArchitectureImpact,
   readRequirementRevisionPressure,
@@ -55,6 +57,31 @@ assert.equal(runtimeBindings.inspect({
   owner:'fixture-only',path:'src/forward.mjs',exportName:'absent',
 }).status,'absent');
 assert.throws(()=>indexJavaScriptModuleBindings([],{}),RangeError);
+
+// Type declarations and the actual Draft 2020-12 contract schemas must be
+// present in the separately installed package, not just the checkout.
+const installedRuntimeUrl=import.meta.resolve(
+  '@red-cup-engineering/specification-engineering-services-section/engineering-design');
+const installedManifest=JSON.parse(readFileSync(
+  new URL('../package.json',installedRuntimeUrl),'utf8'));
+for(const exportedName of ['engineering-design','engineering-design-review']){
+  assert.deepEqual(installedManifest.exports['./'+exportedName],{
+    types:'./src/'+exportedName+'.d.mts',
+    default:'./src/'+exportedName+'.mjs',
+  });
+  assert.match(readFileSync(new URL('./'+exportedName+'.d.mts',installedRuntimeUrl),'utf8'),
+    /export (interface|type|function)/u);
+}
+const installedReadoutSchema=JSON.parse(readFileSync(
+  new URL('../data/records/schema/engineering-design-code-work-readout.schema.json',
+    installedRuntimeUrl),'utf8'));
+const installedReviewProjectionSchema=JSON.parse(readFileSync(
+  new URL('../data/records/schema/engineering-design-review-projection.schema.json',
+    installedRuntimeUrl),'utf8'));
+for(const contract of [installedReadoutSchema,installedReviewProjectionSchema]){
+  assert.equal(contract.$schema,'https://json-schema.org/draft/2020-12/schema');
+  assert.match(contract.$id,/^urn:red-cup-engineering:schema:/u);
+}
 
 const original = sourcesFixture();
 // Separate installed public API, before any HLD, LLD or Code fabrication:
@@ -164,6 +191,7 @@ const reviewPortCut=changed=>{
 };
 const typedProjection=receiveEngineeringHighLevelReview(reviewPortCut(typedReview));
 assert.equal(typedProjection.type,'EngineeringDesignReviewProjection');
+assert.equal(validateJsonSchema(typedProjection,installedReviewProjectionSchema).valid,true);
 assert.deepEqual(typedProjection.candidate.design.connections,[{
   fromComponentId:'component-a',toComponentId:'component-b',port:'source-facts',
 }]);
@@ -530,6 +558,7 @@ const work=readEngineeringCodeWork({
   originalDeliveryText:JSON.stringify(low.design),sourceViews:sourceCut,
 });
 assert.equal(work.type,'EngineeringDesignCodeWorkReadout');
+assert.equal(validateJsonSchema(work,installedReadoutSchema).valid,true);
 assert.equal(work.targets[0].bindingObservation.status,'observed');
 assert.deepEqual(work.targets[0].bindingObservation.resolved,{
   owner:'fixture-only',path:'src/source-operation.mjs',binding:'retainSourceValue',
