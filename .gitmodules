@@ -1,0 +1,3 @@
+[submodule "services/561-group-specification-engineering-services-section"]
+	path = services/561-group-specification-engineering-services-section
+	url = https://github.com/red-cup-engineering/561-group-specification-engineering-services-section.git
