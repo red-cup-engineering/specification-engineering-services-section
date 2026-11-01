@@ -1,3 +1,5 @@
+import { readEngineeringInterfaceSchema } from './engineering-interface-schema.mjs';
+
 /**
  * Derive graph and source trace once from a high-level review; original EngineeringDesign source receiving remains external.
  * @param {{review:object,trace:object}} params
@@ -25,9 +27,49 @@ export function projectHighLevelDesignReview({ review, trace } = {}) {
     componentIds.add(component.id);
   }
 
+  // ENG-20: provider interfaces are separately authored source, not the
+  // closure of consumer wishes. Previously we "supplied" every demanded port
+  // by deriving provider.providedPorts from consumers' requires, then used
+  // that self-created declaration as evidence of composition.
+  //
+  // Each portable interface carries an actual JSON Schema document, admitted
+  // by the ORIGINAL shared Design/JSON Schema supplier. Identical semantic
+  // schema addresses conservatively establish a typed cut; different schemas
+  // need a separately received refinement law and cannot be guessed equal.
+  const providedByComponent = new Map();
+  const sourcePort = (entry, role) => {
+    // The direct projector must enforce the same closed source vocabulary
+    // as the received HLD review schema. Unknown fields cannot grant proof,
+    // authority or a second covert supplier-owned port description.
+    const keys=role==='provider'
+      ? ['port','schemaJson'] : ['componentId','port','schemaJson'];
+    if (entry === null || typeof entry !== 'object' || Array.isArray(entry) ||
+        Object.keys(entry).length !== keys.length ||
+        !keys.every(key=>Object.hasOwn(entry,key)) ||
+        typeof entry.port !== 'string' || !entry.port.trim() ||
+        !entry.port.isWellFormed() || entry.port.normalize('NFC') !== entry.port ||
+        /[\r\n\u0000]/u.test(entry.port) ||
+        typeof entry.schemaJson !== 'string')
+      throw new TypeError(`invalid source-owned ${role} port declaration`);
+    return readEngineeringInterfaceSchema(entry.schemaJson,
+      {portableOnly:true}).sourceIdentity;
+  };
+  for (const component of components) {
+    if (!Array.isArray(component.provides) || !Array.isArray(component.requires))
+      throw new TypeError(`original HLD review must independently author provider and consumer ports: ${component.id}`);
+    const offered = new Map();
+    for (const port of component.provides) {
+      const schema = sourcePort(port,'provider');
+      if (offered.has(port.port))
+        throw new TypeError(`duplicate provider port declaration: ${component.id}/${port.port}`);
+      offered.set(port.port,schema);
+    }
+    providedByComponent.set(component.id,offered);
+  }
   for (const component of components) {
     const seenPorts = new Set();
     for (const requirement of component.requires) {
+      const expected = sourcePort(requirement,'consumer');
       if (requirement.componentId === component.id) {
         throw new TypeError(`self dependency: ${component.id}`);
       }
@@ -37,6 +79,9 @@ export function projectHighLevelDesignReview({ review, trace } = {}) {
       if (seenPorts.has(requirement.port)) {
         throw new TypeError(`duplicate required port name on consumer: ${component.id}`);
       }
+      const offered=providedByComponent.get(requirement.componentId).get(requirement.port);
+      if (offered === undefined || offered !== expected)
+        throw new TypeError(`unreceived or incompatible provider contract for ${requirement.componentId}/${requirement.port} required by ${component.id}`);
       seenPorts.add(requirement.port);
     }
   }
@@ -139,24 +184,6 @@ export function projectHighLevelDesignReview({ review, trace } = {}) {
     }
   }
 
-  const providedPortsByComponentId = new Map();
-  for (const target of components) {
-    const providedPorts = [];
-    const seenPorts = new Set();
-    for (const consumer of components) {
-      if (consumer.id === target.id) {
-        continue;
-      }
-      for (const requirement of consumer.requires) {
-        if (requirement.componentId === target.id && !seenPorts.has(requirement.port)) {
-          seenPorts.add(requirement.port);
-          providedPorts.push(requirement.port);
-        }
-      }
-    }
-    providedPortsByComponentId.set(target.id, providedPorts);
-  }
-
   const outComponents = [];
   for (const component of components) {
     const dependencyIds = [];
@@ -177,7 +204,7 @@ export function projectHighLevelDesignReview({ review, trace } = {}) {
       layer: component.layer,
       responsibility: component.responsibility,
       dependencyIds,
-      providedPorts: providedPortsByComponentId.get(component.id),
+      providedPorts: component.provides.map(port => port.port),
       requiredPorts,
     });
   }

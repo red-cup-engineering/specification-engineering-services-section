@@ -10,9 +10,9 @@ const command=fileURLToPath(new URL('../scripts/receive-engineering-high-level-r
 const review={
   components:[
     {id:'comp-a',owner:'original-data',layer:'data',responsibility:'Retain A',
-      requires:[],specificationClauseIds:['clause-a']},
+      provides:[],requires:[],specificationClauseIds:['clause-a']},
     {id:'comp-b',owner:'original-data',layer:'data',responsibility:'Retain B',
-      requires:[],specificationClauseIds:['clause-b']},
+      provides:[],requires:[],specificationClauseIds:['clause-b']},
   ],
   openQuestions:['Office adoption is separate from source projection.'],
 };
